@@ -13,8 +13,10 @@ One thing end to end before ten things halfway.
 - [x] Finding schema and skill frontmatter schema, as code
 - [x] Check catalog, prior art, open questions
 - [x] README written as if the project were already good
-- [ ] **Verify P1–P9** in [open-questions.md](open-questions.md). Blocks everything below.
-- [ ] Pick the fixture app (Kevin's call)
+- [x] Nine decisions taken — see [decisions.md](decisions.md)
+- [ ] **Verify P1–P9** in [open-questions.md](open-questions.md). Blocks everything below (D1)
+- [ ] Build the minimal SwiftUI fixture into `eval/fixtures/` with seeded defects (D2)
+- [ ] Push to a private GitHub repo; eval PRs modify `eval/fixtures/` (D9)
 
 ## Next: the vertical slice
 
@@ -32,6 +34,7 @@ Build order, each step independently testable:
    from the end-to-end corpus: the impact layer's precision *is* the product's precision.
 3. `core/skills/` — load, validate, dispatch. Assert fired/not-fired with a reason.
 4. `runners/xcode/` — build; `xcresult.py` adapter tested against a committed real bundle.
+   Our own thin wrappers, not an MCP dependency (D4).
 5. `runners/simulator/` — boot with `bootstatus -b`, retry-with-erase, deterministic
    device state, capture.
 6. UI test target discovery/injection into a **scratch clone**, never the checkout.

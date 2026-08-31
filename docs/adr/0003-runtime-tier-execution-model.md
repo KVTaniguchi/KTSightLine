@@ -113,6 +113,13 @@ Hard bounds, enforced in code and in the workflow:
 
 ### 4. Simulator lifecycle
 
+`xcodebuild` and `simctl` are wrapped by our own thin runners rather than by
+`XcodeBuildMCP` or `ios-simulator-mcp` (D4). We need roughly a dozen invocations, and
+every one of them carries the retry, gating, and determinism policy below — policy an
+upstream wrapper has no reason to implement our way. It also keeps a Node/MCP process
+out of every CI job. Cost accepted: we own the flag surface across Xcode releases.
+
+
 - **Pre-warm.** Boot the matrix in a background step that starts *concurrently with the
   build*, not after it. Boot time and build time overlap almost perfectly and there is no
   reason to serialize them.
@@ -171,6 +178,7 @@ file and one fixture change. Do not let this shape leak into `Finding` construct
 | Build fails on head | Post *that* as a finding (with the build log as evidence) — it is the most useful comment we could make |
 | Build fails on base only | Run head-only skills; suppress every `differential_*` skill with reason `no_baseline` |
 | Simulator boot fails after 3 retries | Neutral for runtime; static findings post |
+| PR is from a fork | Skip; summary says "fork PR — no cache or credentials". Policy, not failure (D7) |
 | A single skill throws | That skill is `errored` in the trajectory; every other skill still posts |
 | Evidence capture fails | Findings from that skill are suppressed by ADR-0002's gate — no evidence, no post |
 
@@ -221,6 +229,8 @@ wrong, the cost section needs rewriting.
 - Is `simctl status_bar override` sufficient to make renders byte-stable across boots, or
   do we also need to mask the status bar region? Determine empirically; it changes the
   masking config every repo has to write.
-- Cache scoping across forks: PRs from forks cannot read the base-build cache on GitHub's
-  default token permissions. Either the runtime tier does not run on fork PRs in v1, or
-  we accept a cold base build for them. Leaning: does not run, stated clearly.
+- ~~Cache scoping across forks~~ — **resolved 2026-08-31 (D7): the runtime tier does not
+  run on fork PRs.** No base-build cache, no credentials. Reported as policy, not
+  failure. This keeps us off `pull_request_target` and its privilege-escalation
+  history entirely, which is the right posture for a tool that reads other people's code.
+  Consequence: outside contributors to an open-source repo get the static tier only.

@@ -109,6 +109,13 @@ model.
 most valuable artifact we produce for our own development — it is the list of checks we
 almost got right, and it is what tells us which verifier to build next.
 
+**What the author sees** (decided 2026-08-31, D8): counts and reasons, collapsed in the
+run summary — `3 findings suppressed — 2 missing_evidence, 1 no_baseline`. Never the
+claim text. Surfacing suppressed claims in a fold is posting unverified findings with
+extra steps, and the first time someone acts on one we lose the argument for the gate.
+Counts alone still resolve the ambiguity that matters: the reader can tell "found
+nothing" from "found things and killed them".
+
 ### 4. Fingerprints are content-derived
 
 ```
@@ -203,7 +210,5 @@ and the suppression log needs a periodic human read.
 - Noise floor for `differential_metric` on GitHub-hosted runners is unknown and probably
   bad. Needs measurement before any performance skill ships. Until then, performance
   skills are `experimental` and do not post.
-- Do we surface suppressed findings anywhere the author can see? Leaning toward a
-  collapsed `<details>` block in the run summary, not on the diff.
 - Artifact retention beyond CI job expiry — an S3-backed store is the obvious v2, but the
   `EvidenceStore` interface must not assume a filesystem now.

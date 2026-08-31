@@ -135,9 +135,17 @@ model-assisted) and [`skills/missing-usage-description.md`](skills/missing-usage
 | [`docs/check-catalog.md`](docs/check-catalog.md) | Every check, tiered, with status. The map. |
 | [`docs/roadmap.md`](docs/roadmap.md) | The one vertical slice, then what. |
 | [`docs/prior-art.md`](docs/prior-art.md) | What we borrowed and from where. |
+| [`docs/decisions.md`](docs/decisions.md) | Decisions taken outside an ADR, dated, with the reasoning. |
 | [`docs/open-questions.md`](docs/open-questions.md) | Unverified premises and unsettled decisions, with owners. |
 
 ## Requirements
 
 Python 3.12+, `uv`, Xcode 26+, macOS runners for the runtime tier. GitHub first; the
 review engine never imports a GitHub type, so other forges are an adapter away.
+
+The runtime tier does not run on PRs from forks — no build cache, no credentials. Outside
+contributors get the static tier, and the run summary says so.
+
+## License
+
+Apache-2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).

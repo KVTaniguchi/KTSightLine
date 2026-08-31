@@ -81,6 +81,11 @@ trajectory with the reason:
    `cost_budget_usd` inside the remaining run budget, is its `simulator_matrix` inside
    the repo's configured allowlist?
 
+   Default budgets are deliberately tight (D6): **$0.50 per PR, $20/day per repo**. A
+   tight cap means denials will happen, so **a denial is never silent** — the run summary
+   names the skill, its declared budget, and the remaining budget. A skill that quietly
+   stopped running is exactly the failure that makes the bot's silence untrustworthy.
+
 Only after all three does anything execute, and only *inside* execution does a model see
 anything.
 
@@ -145,11 +150,32 @@ Two fields the brief did not have, and why:
 - **`max_findings`** — precision over recall, enforced structurally. A skill that wants
   to post nine comments about the same screen is wrong about something; make it choose.
 
-### 5. `model_tier: none` is legal and encouraged
+### 5. `model_tier` resolves to one model at varying effort
 
-Most Tier 0 checks are pure static analysis with a deterministic oracle. They should not
-touch a model at all. Making `none` a first-class tier keeps the cheap checks cheap and
-makes it obvious in review when a skill is spending money.
+Decided 2026-08-31 (D5). Every non-`none` tier is `claude-opus-5`; the tier selects
+`output_config.effort`:
+
+| `model_tier` | Model | Effort |
+|---|---|---|
+| `none` | — | — |
+| `cheap` | `claude-opus-5` | `low` |
+| `standard` | `claude-opus-5` | `high` |
+| `frontier` | `claude-opus-5` | `xhigh` |
+
+Prompt caches are model-scoped, so a model cascade forfeits cache reuse across tiers —
+and our prefix (system prompt + skill body + repo config) is exactly the stable shape
+that caches well. Lower effort on a current model also tends to beat higher effort on a
+smaller one, so the cascade buys less than its per-token table suggests. Revisit only
+with measured per-skill numbers.
+
+The tier names stay model-agnostic on purpose: the mapping is config, and a future
+cascade is a config change rather than a frontmatter migration across every repo's
+skills.
+
+**`model_tier: none` is legal and encouraged.** Most Tier 0 checks are pure static
+analysis with a deterministic oracle and should not touch a model at all. Making `none`
+a first-class tier keeps the cheap checks cheap and makes it obvious in review when a
+skill is spending money.
 
 ## Alternatives considered
 

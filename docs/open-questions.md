@@ -54,11 +54,10 @@ with a date and a link.
   having addressal data to justify the matrix.
 
 ### Not yet assigned to an ADR
-- **Which fixture app.** Needs a small, buildable, permissively-licensed open-source iOS
-  app to vendor into `eval/fixtures/`. Kevin's call.
-- **Depend on `XcodeBuildMCP` / `ios-simulator-mcp`, or vendor the subset?** Leaning
-  vendor: we need a handful of `simctl`/`xcodebuild` invocations under our own retry and
-  determinism policy, and an MCP dependency in a CI harness is a lot of surface for that.
-  Revisit after the vertical slice proves what we actually call.
-- **Model routing config format.** Per-skill `model_tier` is decided; the tier→model-id
-  mapping lives in config and has no schema yet.
+- **Model routing config format.** The tier→model/effort mapping is decided (D5); it
+  lives in config and still has no schema.
+- **GitHub account/org for the private repo** (D9). Needed before the first real PR.
+
+### Resolved — see [decisions.md](decisions.md)
+D1 verification scope · D2 fixture app · D3 license · D4 vendor vs MCP ·
+D5 model routing · D6 budgets · D7 fork PRs · D8 suppression visibility · D9 eval PRs
