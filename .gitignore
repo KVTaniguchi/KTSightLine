@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Sightline run output
+.sightline/run/
+.sightline/evidence/
+.sightline/*.sqlite
+*.xcresult/
+DerivedData/
+
+# macOS
+.DS_Store
