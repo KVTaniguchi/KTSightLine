@@ -18,3 +18,7 @@ DerivedData/
 
 # macOS
 .DS_Store
+
+# Xcode user state inside fixtures
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/

@@ -19,8 +19,11 @@ One thing end to end before ten things halfway.
 - [x] Contract invariants under test — 22 tests in `tests/test_contracts.py` covering
       fingerprint line-independence, the gate-only `VerifiedFinding` constructor,
       evidence minimums, `start_side`, and strict frontmatter
-- [ ] Build the minimal SwiftUI fixture into `eval/fixtures/` with seeded defects (D2)
-- [ ] Push to a private GitHub repo; eval PRs modify `eval/fixtures/` (D9)
+- [x] **Built the SwiftUI fixture** (D2) — `eval/fixtures/CheckoutDemo`, 5 screens,
+      5 seeded defects, 1 clean control, hand-maintained `.xcodeproj`, builds and runs
+      its UI tests on iPhone SE / iOS 26.5. Ground truth is **observed**, not intended
+- [x] Pushed to [KVTaniguchi/KTSightLine](https://github.com/KVTaniguchi/KTSightLine) (D9, public per D10)
+- [ ] Re-scope the first slice around D-004, not D-001 — see below
 
 ## Next: the vertical slice
 
@@ -30,6 +33,20 @@ The whole slice, nothing beside it:
 > one simulator → run an accessibility audit against that screen → produce one `Finding`
 > with a screenshot artifact → post one correctly-positioned GitHub review comment →
 > write the trajectory and addressal-ledger records.
+
+**Re-scoped after building the fixture.** The slice's finding is **D-004** (an
+image-only button whose derived label is the SF Symbol name), not D-001 (Dynamic Type
+clipping). Two reasons, both measured:
+
+- `performAccessibilityAudit` does not report `textClipped` for SwiftUI views that are
+  visibly clipped at AX5 — four shapes tried, none fired. Clipping needs
+  `differential_render`, which is a later verifier.
+- D-004 arrives with a populated `identifier` and `frame`, so it can be anchored to a
+  file and line. Several audit issues — including the contrast defect we seeded on
+  purpose — arrive with `element = nil` and cannot currently be anchored at all.
+
+D-004 is the one defect that is detected, attributable, and mechanically fixable
+(`.accessibilityLabel("Help")`). That makes it the honest first end-to-end case.
 
 Build order, each step independently testable:
 

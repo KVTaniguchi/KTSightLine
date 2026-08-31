@@ -51,6 +51,22 @@ the source line — a missing `.accessibilityLabel`, a `.lineLimit(1)` that shou
 If the fix requires knowing design intent, omit the suggestion. A wrong suggestion costs
 more trust than a missing one.
 
+## Severity and suppression
+
+Measured on the fixture, 2026-08-31. Without these rules the skill comments on every
+screen in the app, including deliberately-correct ones.
+
+- **`compactDescription` carries the severity, not `auditType`.** Post only issues whose
+  description says **failed**. Suppress "nearly passed" and "partially unsupported" —
+  they are sub-threshold warnings.
+- **Suppress issues on stock system controls.** `NavigationLink` labels report
+  "Dynamic Type font sizes are partially unsupported"; List section headers and bordered
+  buttons report "Contrast nearly passed". Those are Apple's components, not the
+  author's code.
+- **An issue with `element = nil` has no identifier and no frame.** It cannot be
+  anchored to a line. Do not invent one — drop it and let the trajectory record it
+  (see OQ-FIXTURE-1).
+
 ## Rules
 
 - One issue per finding. Never bundle.

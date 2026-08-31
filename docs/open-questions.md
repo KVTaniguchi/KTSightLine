@@ -56,6 +56,14 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
 - **GitHub account/org for the private repo** (D9). Needed before the first real PR.
 - **Camera and notification permission denial.** Not `simctl privacy` services (see the
   verification report). Needs another mechanism before that catalog row is implementable.
+- **OQ-FIXTURE-1 — anchoring unattributable audit issues.** Many issues arrive with
+  `element = nil`, so there is no identifier and no frame. A `Finding` needs a file and
+  a line. Fall back to the screen's entry-point symbol, or suppress? Blocks the
+  accessibility skill's anchoring logic.
+- **OQ-FIXTURE-2 — is `textClipped` UIKit-only in practice?** It did not fire on a
+  SwiftUI view clipped mid-glyph at AX5, across four clipping shapes. If it is
+  UIKit-only, every Dynamic Type clipping check must go through `differential_render`
+  and the audit can never be the cheap path for it.
 
 ### Resolved — see [decisions.md](decisions.md)
 D1 verification scope · D2 fixture app · D3 license · D4 vendor vs MCP ·
