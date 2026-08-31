@@ -40,12 +40,20 @@ class Anchor(BaseModel):
     file: str
     line: int
     side: Side = Side.RIGHT
-    start_line: int | None = None  # multi-line comments on the newer GitHub API
+    # Multi-line comments require BOTH start_line and start_side (verified against the
+    # GitHub REST docs 2026-08-31, P8). `position` is deprecated and is never sent.
+    start_line: int | None = None
+    start_side: Side | None = None
 
     @model_validator(mode="after")
-    def _start_before_end(self) -> Anchor:
-        if self.start_line is not None and self.start_line > self.line:
-            raise ValueError("start_line must be <= line")
+    def _multiline_is_complete(self) -> Anchor:
+        if self.start_line is not None:
+            if self.start_line > self.line:
+                raise ValueError("start_line must be <= line")
+            if self.start_side is None:
+                raise ValueError("start_side is required whenever start_line is set")
+        elif self.start_side is not None:
+            raise ValueError("start_side is meaningless without start_line")
         return self
 
 
