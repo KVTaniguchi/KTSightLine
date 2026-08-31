@@ -1,0 +1,32 @@
+[project]
+name = "sightline"
+version = "0.0.0"
+description = "An evidence-grounded PR reviewer for iOS. It builds the branch, boots simulators, and reviews what it saw."
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.7",
+    "pyyaml>=6.0",
+    "click>=8.1",
+]
+
+[project.scripts]
+sightline = "sightline.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
