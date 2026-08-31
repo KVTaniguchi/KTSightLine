@@ -50,8 +50,10 @@ One claim. One evidence link. A suggestion when the fix is mechanically derivabl
 No style comments, ever. No "consider possibly."
 
 The format is not taste. [arXiv 2607.21997](docs/prior-art.md) measured 54,713 real agent
-review comments: a concrete code suggestion raises adoption by ~11 percentage points, and
-longer comments do worse.
+review comments: a concrete code suggestion moves resolution from 64.6% to 75.5% — 10.9
+percentage points. Useful comments averaged 616 characters; ignored ones averaged 807.
+(Caveat: that corpus is 341 Python repos, so the direction transfers to Swift and the
+magnitudes are not evidence about iOS.)
 
 ## How it works
 

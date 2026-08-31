@@ -14,7 +14,11 @@ One thing end to end before ten things halfway.
 - [x] Check catalog, prior art, open questions
 - [x] README written as if the project were already good
 - [x] Nine decisions taken — see [decisions.md](decisions.md)
-- [ ] **Verify P1–P9** in [open-questions.md](open-questions.md). Blocks everything below (D1)
+- [x] **Verified P1–P9** (D1) — five confirmed, four wrong; corrections applied.
+      See [verification-2026-08-31.md](verification-2026-08-31.md)
+- [x] Contract invariants under test — 22 tests in `tests/test_contracts.py` covering
+      fingerprint line-independence, the gate-only `VerifiedFinding` constructor,
+      evidence minimums, `start_side`, and strict frontmatter
 - [ ] Build the minimal SwiftUI fixture into `eval/fixtures/` with seeded defects (D2)
 - [ ] Push to a private GitHub repo; eval PRs modify `eval/fixtures/` (D9)
 
@@ -32,7 +36,8 @@ Build order, each step independently testable:
 1. `core/diff/` — PR diff → changed files, symbols, targets. Fixture-driven.
 2. `core/impact/` — changed symbols → trigger set. **Its own eval fixtures**, separate
    from the end-to-end corpus: the impact layer's precision *is* the product's precision.
-3. `core/skills/` — load, validate, dispatch. Assert fired/not-fired with a reason.
+3. `core/skills/` — ~~load, validate~~ (done: `loader.py`), then dispatch. Assert
+   fired/not-fired with a reason.
 4. `runners/xcode/` — build; `xcresult.py` adapter tested against a committed real bundle.
    Our own thin wrappers, not an MCP dependency (D4).
 5. `runners/simulator/` — boot with `bootstatus -b`, retry-with-erase, deterministic

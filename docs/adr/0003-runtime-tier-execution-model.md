@@ -4,11 +4,10 @@
 - **Date:** 2026-08-31
 - **Deciders:** Kevin Taniguchi
 
-> **Unverified inputs.** This ADR is built on four factual claims from `PROMPT.md` that
-> have **not** been checked against Apple/GitHub documentation in this pass. They are
-> tracked in [`docs/open-questions.md`](../open-questions.md) and each is marked
-> `[UNVERIFIED]` below. If any is wrong, the affected section is wrong. Verify before
-> this ADR moves to `Accepted`.
+> **Verified 2026-08-31** — see [`docs/verification-2026-08-31.md`](../verification-2026-08-31.md).
+> P1's mechanism was wrong (price ratio, not a minutes multiplier) and the cost model
+> below now uses real per-minute rates. P2, P3, P4 confirmed, with P3 better than
+> claimed. Corrections are marked inline.
 
 ## Context
 
@@ -18,12 +17,15 @@ designed on the assumption that it is expensive and unreliable, because it is.
 
 Forces:
 
-- `[UNVERIFIED]` GitHub-hosted macOS runners bill at a 10× minutes multiplier.
-- `[UNVERIFIED]` `macos-26` went GA Feb 2026; `macos-latest` points at it as of Jun 2026.
-- `[UNVERIFIED]` `xcresulttool get object --format json` is deprecated as of Xcode 16;
-  `get test-results summary|tests --format json` is the supported path.
-- `[UNVERIFIED]` `performAccessibilityAudit(for:)` throws and runs only inside a UI test
-  target.
+- macOS runners cost **$0.062/min** against Linux at **$0.006/min** — a 10.3× price
+  ratio, not a minutes multiplier (P1, corrected).
+- `macos-26` GA 2026-02-26; `macos-latest` migrated to it starting 2026-06-15 over 30
+  days. Its default Xcode is **26.4.1** (P2).
+- `xcresulttool get object` is deprecated; `get test-results summary|tests` is supported,
+  the schema **is** published via `--schema`/`--schema-version`, and `xcresulttool
+  compare --baseline-path` ships a native differential (P3).
+- `performAccessibilityAudit(for:)` throws, is `@MainActor`, and lives on
+  `XCUIApplication` in `XCUIAutomation.framework` — test targets only (P4).
 - ADR-0002's `differential_*` verifiers require **base and head, same runner, same job**.
   That is not an optimization we can skip; cross-runner comparison is noise.
 - Simulator boot is slow and flaky. Xcode builds are slow.
@@ -77,8 +79,7 @@ trust in the bot's silence.
 
 ### 3. Cost model
 
-The math, parameterized so it can be re-run when the rates are verified. Let `M` = macOS
-minutes multiplier `[UNVERIFIED: 10]`, `R` = base per-minute rate for the runner class.
+Rates verified 2026-08-31: macOS **$0.062/min**, Linux **$0.006/min**.
 
 | Stage | Wall-clock (est.) | Notes |
 |---|---|---|
@@ -89,7 +90,14 @@ minutes multiplier `[UNVERIFIED: 10]`, `R` = base per-minute rate for the runner
 | Boot simulator matrix (3 devices, parallel) | 1–3 min | Pre-warmed; `simctl bootstatus -b` |
 | Drive + capture per surface per config | 20–60 s | Multiplied by matrix size |
 | Verify + model calls | 0.5–2 min | Bounded by per-skill `cost_budget_usd` |
-| **Total, typical gated PR** | **10–20 min** | Billed as `10–20 × M × R` |
+| **Total, typical gated PR** | **10–20 min** | **$0.62 – $1.24** at $0.062/min |
+
+The static job is **$0.006–$0.012** — free in practice, which is why it is ungated.
+
+**A correction worth stating plainly:** runner cost does *not* dwarf model cost. At the
+D6 cap of $0.50/PR, a gated PR is roughly $0.62–$1.24 of runner plus up to $0.50 of
+model — the same order of magnitude, within ~2×. Both levers matter; neither one can be
+ignored as noise.
 
 Two consequences fall out immediately:
 
@@ -137,8 +145,10 @@ out of every CI job. Cost accepted: we own the flag surface across Xcode release
 
 ### 5. UI test target injection
 
-`performAccessibilityAudit` only runs inside a UI test target `[UNVERIFIED]`, and most
-repos will not have one shaped the way we need.
+`performAccessibilityAudit` lives on `XCUIApplication` in `XCUIAutomation.framework`,
+which only test targets link — confirmed (P4). It is also `@MainActor` and `throws`, so
+the injected driver must be main-actor-isolated and handle the throw. Most repos will not
+have a UI test target shaped the way we need.
 
 Strategy, in order of preference:
 
@@ -160,13 +170,32 @@ someone's project and make the failure legible.
 
 ### 6. `.xcresult` parsing behind an adapter
 
-Parse via `xcrun xcresulttool get test-results summary --format json` and
-`... get test-results tests --format json` `[UNVERIFIED]`. Never `--legacy`.
+Parse via `xcrun xcresulttool get test-results summary` and `... get test-results tests`.
+Never `get object`, never `--legacy`.
+
+**Pin the schema.** Every modern subcommand takes `--schema-version <major.minor.patch>`
+and errors on an unknown version; `--schema` emits the JSON Schema itself. So the adapter
+pins a version explicitly and a schema change is a loud error, not silent parse drift.
+This matters concretely: the `macos-26` runner ships Xcode 26.4.1 while a developer
+machine may be on 26.6, so "it parsed locally" proves nothing about CI.
+
+**Use `compare` instead of writing a differential.** `xcresulttool compare <path>
+--baseline-path <path>` supports `--summary`, `--test-failures`, `--tests`,
+`--build-warnings`, and `--analyzer-issues`. The warning-delta check in Tier 1 and the
+test-delta half of `differential_metric` are a `compare` invocation plus a threshold —
+not a diffing engine we own. Also available and unplanned for: `get build-results`
+(build warnings/issues) and `get test-results metrics` (performance metrics, filterable
+by `--test-id`).
 
 The adapter (`runners/xcode/xcresult.py`) is the *only* place that knows the JSON shape,
-it records the `xcresulttool` version in the trajectory, and it is tested against a real
-committed `.xcresult` fixture. When Xcode changes the schema — and it will — exactly one
-file and one fixture change. Do not let this shape leak into `Finding` construction.
+it records the `xcresulttool` version **and pinned schema version** in the trajectory,
+and it is tested against a real committed `.xcresult` fixture. When Apple changes the
+schema, exactly one file and one fixture change. Do not let this shape leak into
+`Finding` construction.
+
+**Stale help text, flagged so nobody chases it:** the `get object` deprecation message
+recommends `xcresulttool get test-report`, which does not exist. The real subcommand is
+`get test-results`.
 
 ### 7. Degradation ladder
 
@@ -227,8 +256,14 @@ wrong, the cost section needs rewriting.
 - Measure actual cold/warm build times on `macos-26` for a representative app before
   committing to the 30-minute timeout.
 - Is `simctl status_bar override` sufficient to make renders byte-stable across boots, or
-  do we also need to mask the status bar region? Determine empirically; it changes the
-  masking config every repo has to write.
+  do we also need to mask the status bar region? The mechanism is confirmed to cover every
+  mutable status-bar element (P7), so region masking is now a known fallback rather than
+  the plan. Still needs an empirical answer; it changes the masking config every repo
+  writes.
+- **Camera and notification permission denial have no `simctl privacy` service** (found
+  during the P6/P7 checks — the service list is calendar, contacts, location, photos,
+  media-library, microphone, motion, reminders, siri). The catalog's permission-denied
+  check needs another mechanism for those two, which are the two that matter most.
 - ~~Cache scoping across forks~~ — **resolved 2026-08-31 (D7): the runtime tier does not
   run on fork PRs.** No base-build cache, no credentials. Reported as policy, not
   failure. This keeps us off `pull_request_target` and its privilege-escalation

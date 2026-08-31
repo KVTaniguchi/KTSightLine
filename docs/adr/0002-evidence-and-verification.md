@@ -99,6 +99,13 @@ is *adversarial by construction*: it tries to reject. Ambiguity resolves to reje
 | `reexecution` | The failure reproduces on a second, independent run | 2× (`console_log` \| `crash_report`) | data races; constraint conflicts; migration crashes |
 | `differential_metric` | Base and head measured **on the same runner in the same job**, delta exceeds noise floor by a configured factor | `metric_series` ×2 | launch time; memory; app size; warning delta |
 
+For anything already inside an `.xcresult`, `differential_metric` does **not** compute the
+delta itself: `xcresulttool compare --baseline-path` ships a native differential with
+`--build-warnings`, `--test-failures`, `--tests`, and `--analyzer-issues` (verified
+2026-08-31, P3). The verifier's job is the threshold and the artifact bookkeeping, not the
+diff. Metrics outside an `.xcresult` — app size from the thinned size report, wall-clock
+build time — still need our own comparison.
+
 A skill's `verifier:` field names one. A verifier that cannot find its required artifact
 kind returns `reject(reason="missing_evidence")` — it does not fall back to trusting the
 model.

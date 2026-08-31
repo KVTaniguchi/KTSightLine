@@ -35,7 +35,7 @@ Not automatically wrong ≠ not worth a comment. The suppression checks follow
 
 | Check | Verifier | Notes | Status |
 |---|---|---|---|
-| Warning **delta** attributable to the diff | `differential_metric` | Never absolute counts. Requires base+head, same job | planned |
+| Warning **delta** attributable to the diff | `differential_metric` | Never absolute counts. `xcresulttool compare --baseline-path --build-warnings` does the diff natively — we supply the threshold | planned |
 | App size delta | `differential_metric` | From the thinned App Store size report | planned |
 | Build-time regression on touched modules | `differential_metric` | Noise floor unmeasured — see open-questions | planned |
 | Architectural drift — a new import crossing a layer boundary declared in config | `structured_oracle` | Config-driven; generic, so it works on any repo | planned |
@@ -46,9 +46,9 @@ The reason the project exists. Gated per ADR-0003.
 
 | Check | Verifier | Evidence | Status |
 |---|---|---|---|
-| **Accessibility audit** — `performAccessibilityAudit(for:)` across contrast, dynamic type, element description, hit region, trait, clipped text, on the screens the diff reaches. First-party API, structured output, effectively zero false positives | `structured_oracle` | `xcresult` + `screenshot` | **slice** |
+| **Accessibility audit** — `performAccessibilityAudit(for:)` across `contrast`, `elementDetection`, `hitRegion`, `sufficientElementDescription`, `dynamicType`, `textClipped`, `trait` (exact `XCUIAccessibilityAuditType` spellings, verified 2026-08-31; it is a bitmask, OR-folded). First-party API, structured output, effectively zero false positives | `structured_oracle` | `xcresult` + `screenshot` | **slice** |
 | Dynamic Type matrix — render at AX5, compare against base-branch render for clipping, truncation, overlap | `differential_render` | 2× `screenshot` + `render_diff` | planned |
-| Appearance matrix — dark mode. Catches hardcoded colors that vanish or go unreadable | `differential_render` | 2× `screenshot` + `render_diff` | planned |
+| Appearance matrix — `simctl ui <device> appearance dark`. Catches hardcoded colors that vanish or go unreadable. `simctl ui <device> increase_contrast enabled` is also available and unplanned | `differential_render` | 2× `screenshot` + `render_diff` | planned |
 | RTL and pseudolocalization — `-AppleLanguages "(ar)"` and `(en-XA)`. Unmirrored layouts, string-expansion overflow | `differential_render` | 2× `screenshot` | planned |
 | Device matrix — smallest supported, largest, iPad split view. Most layout bugs are a smallest-device bug | (multiplier on the above) | — | planned |
 | Console diagnostics harvest — `UIViewAlertForUnsatisfiableConstraints`, "Publishing changes from within view updates", "Modifying state during view update", Main Thread Checker. Printed on every run, read by nobody | `reexecution` | `console_log` ×2 | planned |
@@ -56,7 +56,7 @@ The reason the project exists. Gated per ADR-0003.
 | Performance regression — `XCTApplicationLaunchMetric`, `XCTMemoryMetric`, `XCTOSSignpostMetric.scrollDecelerationHitches`, both branches, same job, same runner | `differential_metric` | `metric_series` ×2 | blocked on noise floor |
 | Leak check — navigate to the changed screen and back N times, assert the VC/VM deallocates | `reexecution` | `console_log` / `instruments_trace` | planned |
 | Degraded-network and offline — airplane mode, slow-network profile. Loading, empty, and error states, or a permanent spinner? | `reexecution` | `screenshot` + `console_log` | planned |
-| Permission-denied paths — launch with camera/photos/notifications pre-denied. The single most common untested branch in iOS apps | `reexecution` | `screenshot` + `crash_report` | planned |
+| Permission-denied paths — the single most common untested branch in iOS apps. `simctl privacy revoke` covers photos, contacts, location, microphone, calendar, reminders, motion, media-library, siri. **Camera and notifications are not `simctl privacy` services** — they need another mechanism (open question) | `reexecution` | `screenshot` + `crash_report` | planned, partially blocked |
 | Persistence migration — install base build, seed a store, install PR build over it. Scariest class of iOS bug, essentially never caught in review | `reexecution` | `crash_report` + `console_log` | planned |
 | Backgrounding and state restoration — background, terminate, relaunch. Is state lost? | `differential_render` | `screenshot` ×2 | planned |
 | Deep link replay — if routing changed, replay a configured corpus of universal links | `reexecution` | `console_log` + `screenshot` | planned |

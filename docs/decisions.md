@@ -8,7 +8,7 @@ the ADR is the reasoning.
 
 | # | Decision | Why | Lands in |
 |---|---|---|---|
-| D1 | **Verify all nine unverified premises (P1–P9) before writing code against them** | Every ADR rests on them, and ADR-0003's cost model is meaningless if the runner multiplier is wrong. Nothing moves to `Accepted` until this is done. | [open-questions.md](open-questions.md) |
+| D1 | **Verify all nine unverified premises (P1–P9) before writing code against them** | Every ADR rests on them, and ADR-0003's cost model is meaningless if the runner multiplier is wrong. **Done 2026-08-31: five confirmed, four wrong.** | [verification-2026-08-31.md](verification-2026-08-31.md) |
 | D2 | **Fixture is a purpose-built minimal SwiftUI app**, vendored to `eval/fixtures/` | Builds in seconds, no license question, and seeded defects give exact ground truth for precision/recall. Explicitly *not* a proof that we survive a real project's build graph — a real repo becomes target #2 before we claim that. | [roadmap.md](roadmap.md) |
 | D3 | **Apache-2.0** | Explicit patent grant is what gets a CI tool through corporate legal review. | `LICENSE`, `NOTICE` |
 | D4 | **Vendor the `xcodebuild`/`simctl` subset; no MCP dependency** | We need ~a dozen invocations, and every one carries ADR-0003's retry-with-erase, `bootstatus` gating, and deterministic-device-state policy that an upstream wrapper won't have. Also keeps a Node/MCP process out of the CI job. | ADR-0003 §4, `runners/` |

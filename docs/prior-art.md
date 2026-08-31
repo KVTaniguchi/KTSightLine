@@ -16,7 +16,7 @@ anything — most of the hard thinking is already public.
 | `getsentry/XcodeBuildMCP`, `joshuayoes/ios-simulator-mcp` | Agent-facing wrappers around `xcodebuild` / `simctl`. Open question: depend, or vendor the subset. |
 | `a7ex/xcresultparser` | `.xcresult` parsing prior art, including how it survived schema changes. |
 | `pointfreeco/swift-snapshot-testing` | Snapshot comparison prior art. We reject committed baselines (ADR-0002 §5) but should consume a repo's existing ones as evidence. |
-| arXiv 2607.21997, *"Go Home Copilot, You're Drunk"* | 54,713 real agent review comments. A concrete code suggestion raises adoption ~11pp; longer comments do worse. The comment format is designed around this. ⚠️ unverified — see [open-questions.md](open-questions.md) P9. |
+| arXiv 2607.21997, *"Go Home Copilot, You're Drunk"* | ✅ verified 2026-08-31. 54,713 agent comments across three agents. Inline suggestion: 75.5% vs 64.6% resolution = **10.9pp**. Useful comments averaged **616 chars**, non-accepted **807** (OR 0.926 — real but marginal). Corpus is 341 **Python** repos; direction transfers, magnitudes are not iOS evidence. |
 
 ## The five properties from uReview
 

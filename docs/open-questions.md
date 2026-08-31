@@ -5,26 +5,23 @@ nobody has checked) and **unsettled decisions** (things the ADRs deliberately de
 
 An ADR cannot move to `Accepted` while it depends on an unverified premise.
 
-## Unverified premises
+## Unverified premises — RESOLVED 2026-08-31
 
-These come from `PROMPT.md` and were **not** checked in the planning pass. Each blocks an
-ADR. Verify against Apple/GitHub documentation or `--help`, then record the answer here
-with a date and a link.
+All nine checked. Full report with evidence:
+[`verification-2026-08-31.md`](verification-2026-08-31.md). Five confirmed, four wrong.
+Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
 
-| # | Claim | Blocks | Status |
-|---|---|---|---|
-| P1 | GitHub-hosted macOS runners bill at a **10× minutes multiplier** | ADR-0003 §3 cost model | Unverified |
-| P2 | `macos-26` went GA Feb 2026; `macos-latest` points at it as of Jun 2026 | ADR-0003 §1 job config | Unverified |
-| P3 | `xcresulttool get object --format json` is deprecated as of Xcode 16; `get test-results summary\|tests --format json` is the supported path | ADR-0003 §6 | Unverified |
-| P4 | `performAccessibilityAudit(for:)` throws and runs only inside a UI test target | ADR-0003 §5 injection strategy | Unverified |
-| P5 | The audit type names (`clippedText`, `contrast`, `dynamicType`, `elementDetection`, `hitRegion`, `traits`) match the current SDK | `skills/accessibility-audit.md` | Unverified |
-| P6 | `simctl ui <udid> content_size <value>` and `simctl ui <udid> appearance dark` exist with those exact spellings | check catalog, Tier 2 | Unverified |
-| P7 | `simctl status_bar override` is sufficient to make renders byte-stable | ADR-0002 §5 stage 1 | Unverified |
-| P8 | GitHub review comments position via `line` + `side` + `start_line` on the current API | vertical slice | Unverified |
-| P9 | arXiv 2607.21997 exists and reports ~11pp adoption lift from concrete suggestions | README, comment format | Unverified |
-
-**Do not write code against P3–P8 before checking them.** A confidently hallucinated
-`simctl` flag costs an afternoon.
+| # | Verdict |
+|---|---|
+| P1 | ⚠️ 10.3× **price ratio** ($0.062 vs $0.006/min), not a minutes multiplier |
+| P2 | ✅ GA 2026-02-26; `macos-latest` migrated from 2026-06-15. Runner Xcode is 26.4.1 |
+| P3 | ✅ …and better: schema **is** published (`--schema-version`), and `compare --baseline-path` ships a native differential |
+| P4 | ✅ throws, `@MainActor`, test-target only |
+| P5 | ❌ `textClipped` not `clippedText`; `trait` not `traits`; `sufficientElementDescription` not `elementDescription` |
+| P6 | ✅ verbatim correct. Bonus: `increase_contrast` |
+| P7 | ✅ mechanism confirmed; byte-stability still empirical |
+| P8 | ⚠️ confirmed, but `start_side` was missing from our schema; `position` is deprecated, not a fallback |
+| P9 | ✅ 54,713 comments, 10.9pp. Caveat: corpus is 341 **Python** repos |
 
 ## Unsettled decisions
 
@@ -57,6 +54,8 @@ with a date and a link.
 - **Model routing config format.** The tier→model/effort mapping is decided (D5); it
   lives in config and still has no schema.
 - **GitHub account/org for the private repo** (D9). Needed before the first real PR.
+- **Camera and notification permission denial.** Not `simctl privacy` services (see the
+  verification report). Needs another mechanism before that catalog row is implementable.
 
 ### Resolved — see [decisions.md](decisions.md)
 D1 verification scope · D2 fixture app · D3 license · D4 vendor vs MCP ·
