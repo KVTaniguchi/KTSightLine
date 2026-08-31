@@ -13,7 +13,10 @@ capabilities:
       strategy: impact_derived
   - run_audit:
       kind: accessibility
-      types: [clippedText, contrast, dynamicType, elementDetection, hitRegion, traits]
+      # XCUIAccessibilityAuditType members; OR-folded into one bitmask by the harness.
+      # Verified against Xcode 26.6 headers 2026-08-31 (P5) — these spellings are exact.
+      types: [contrast, elementDetection, hitRegion, sufficientElementDescription,
+              dynamicType, textClipped, trait]
   - capture: [screenshot]
 simulator_matrix: [se-smallest]
 model_tier: cheap
@@ -34,8 +37,10 @@ into one sentence a reviewer will act on, and derive a suggestion when one is me
 
 ## Your job
 
-You are given, per issue: the audit type, the element's accessibility identifier and
-label, its frame, the surface it was found on, and the screenshot.
+You are given, per issue: the audit type, `compactDescription`, `detailedDescription`,
+the element's accessibility identifier and label, its frame, the surface it was found on,
+and the screenshot. Identifier and frame come off the issue's `element`, which is
+optional — an issue with no element still reports its type and descriptions.
 
 Write the `claim` as one sentence naming the element and what is wrong with it. Name the
 element the way it appears in source, not the way the audit's internal description reads.
