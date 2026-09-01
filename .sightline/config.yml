@@ -1,0 +1,32 @@
+# Sightline's own configuration, pointed at the vendored eval fixture.
+#
+# `surfaces` is the load-bearing part: impact analysis decides *which* screens a diff
+# reaches; this says *how to reach* them. That split is what keeps the deterministic
+# layer app-agnostic without the harness guessing at navigation.
+#
+# No `simulator.udid` here on purpose — it is machine-specific. Pass `--udid`.
+
+project: eval/fixtures/CheckoutDemo/CheckoutDemo.xcodeproj
+app_target: CheckoutDemo
+ui_test_target: CheckoutDemoUITests
+
+surfaces:
+  Cart:
+    view: CartView
+    wait_for: cart.continue
+  CheckoutSummary:
+    view: CheckoutSummaryView
+    taps: [cart.continue]
+    wait_for: checkout.payment
+  PaymentMethod:
+    view: PaymentMethodView
+    taps: [cart.continue, checkout.payment]
+    wait_for: payment.disclosure
+  ScanCard:
+    view: ScanCardView
+    taps: [cart.continue, checkout.payment, payment.scanCard]
+    wait_for: scanCard.start
+  OrderConfirmation:
+    view: OrderConfirmationView
+    taps: [cart.continue, checkout.payment, payment.placeOrder]
+    wait_for: confirmation.viewHistory

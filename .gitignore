@@ -13,6 +13,7 @@ build/
 .sightline/run/
 .sightline/evidence/
 .sightline/scratch/
+!.sightline/config.yml
 .sightline/*.sqlite
 *.xcresult/
 DerivedData/

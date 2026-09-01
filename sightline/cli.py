@@ -10,17 +10,14 @@ from pathlib import Path
 import click
 
 from sightline.adapters.forge.github import GitHubAdapter
-from sightline.core.diff.models import ChangeType
-from sightline.core.impact.analyzer import analyze
-from sightline.core.skills.dispatch import RunPolicy, dispatch
-from sightline.core.skills.frontmatter import Tier
-from sightline.core.telemetry.trajectory import GateTrace, SkillTrace, Trajectory
+from sightline.core.telemetry.trajectory import SkillTrace, Trajectory
+from sightline.review import ReviewOptions
+from sightline.review import review as run_review
 from sightline.runners.simulator.device import Appearance, ContentSize, Simulator
 from sightline.runners.xcode.build import Destination, XcodeBuild
 from sightline.runners.xcode.driver_template import Surface
 from sightline.runners.xcode.injection import InjectionUnavailable, prepare_workspace
 from sightline.runners.xcode.xcresult import XcresultTool, postable_issues
-from sightline.skills_builtin import load_all
 
 
 def _parse_pr(target: str) -> tuple[str, int]:
@@ -43,107 +40,80 @@ def main() -> None:
 
 @main.command()
 @click.option("--pr", "target", required=True, help="owner/repo#123 or a PR URL.")
+@click.option(
+    "--path",
+    "checkout",
+    type=click.Path(exists=True, path_type=Path),
+    default=Path("."),
+    help="Local checkout of the PR head. Needed for the runtime tier.",
+)
 @click.option("--skills-dir", type=click.Path(path_type=Path), multiple=True)
 @click.option("--runtime/--no-runtime", default=False, help="Enable the macOS runtime tier.")
+@click.option("--udid", default=None, help="Simulator UDID (overrides config).")
+@click.option("--content-size", default="large", show_default=True)
+@click.option("--appearance", type=click.Choice(["light", "dark"]), default="light")
 @click.option("--allow-experimental", is_flag=True)
 @click.option("--budget", type=float, default=0.50, show_default=True)
 @click.option("--out", type=click.Path(path_type=Path), default=Path(".sightline/run"))
 @click.option("--post/--no-post", default=False, help="Post to the PR. Off by default.")
 def review(
     target: str,
+    checkout: Path,
     skills_dir: tuple[Path, ...],
     runtime: bool,
+    udid: str | None,
+    content_size: str,
+    appearance: str,
     allow_experimental: bool,
     budget: float,
     out: Path,
     post: bool,
 ) -> None:
-    """Review a pull request.
+    """Review a pull request, end to end.
 
     Posting is opt-in: without --post this is a dry run that writes a trajectory and
-    prints what it *would* say. That default is deliberate — a reviewer that comments
-    the first time someone tries it is a reviewer people uninstall.
+    prints what it would say. A reviewer that comments the first time someone tries it
+    is a reviewer people uninstall.
     """
     repo, number = _parse_pr(target)
-    run_id = uuid.uuid4().hex[:12]
-    forge = GitHubAdapter()
-
-    pr = forge.get_pull_request(repo, number)
-    diff = forge.get_diff(repo, number)
-
-    # Impact analysis needs head-side contents, not just the diff: a change confined to
-    # an existing view's `body` matches no declaration in the added lines, and without
-    # the file we cannot tell the enclosing type is a View. Missing that means every
-    # runtime skill silently does not fire.
-    sources: dict[str, str] = {}
-    for changed in diff.files:
-        is_live_swift = (
-            changed.path.endswith(".swift") and changed.change_type is not ChangeType.DELETED
-        )
-        if is_live_swift and (content := forge.get_file(repo, changed.path, pr.head_sha)):
-            sources[changed.path] = content
-
-    impact = analyze(diff, sources=sources)
-
-    trajectory = Trajectory(
-        run_id=run_id,
-        repo=repo,
-        pr_number=number,
-        base_sha=pr.base_sha,
-        head_sha=pr.head_sha,
-        triggers=sorted(t.value for t in impact.triggers),
-        trigger_evidence=[
-            {"trigger": e.trigger.value, "path": e.path, "line": e.line, "reason": e.reason}
-            for e in impact.evidence
-        ],
+    options = ReviewOptions(
+        checkout=Path(checkout),
+        runtime=runtime,
+        allow_experimental=allow_experimental,
+        post=post,
         budget_usd=budget,
+        content_size=content_size,
+        appearance=appearance,
+        out_dir=Path(out),
+        skills_dirs=list(skills_dir),
+        udid=udid,
     )
+    result = run_review(GitHubAdapter(), repo, number, options)
+    t = result.trajectory
 
-    # ADR-0003 §7: fork PRs get the static tier and are told so plainly.
-    if pr.is_fork and runtime:
-        runtime = False
-        trajectory.gate = GateTrace(
-            runtime_enabled=False,
-            reason="fork PR — no build cache or credentials",
-            stage="fork",
-        )
+    click.echo(f"{repo}#{number}  {t.head_sha[:8]}")
+    click.echo(f"triggers: {', '.join(t.triggers) or 'none'}")
+    for d in result.decisions:
+        click.echo(f"  {'✔' if d.fired else '·'} {d.skill_id}: {d.outcome.value} — {d.reason}")
+    for note in result.notes:
+        click.echo(f"  {note}")
+
+    for finding in result.verified:
+        p = finding.proposed
+        click.echo(f"\n  {p.anchor.file}:{p.anchor.line}  [{p.severity}]")
+        click.echo(f"    {p.claim}")
+    if summary := t.suppression_summary():
+        detail = ", ".join(f"{n} {reason}" for reason, n in summary.items())
+        click.echo(f"\nsuppressed: {detail}")
+
+    click.echo(f"\ntrajectory: {result.trajectory_path}")
+    if post:
+        for url in result.posted_urls:
+            click.echo(f"posted: {url}")
+        if not result.verified:
+            click.echo("nothing to post")
     else:
-        trajectory.gate = GateTrace(
-            runtime_enabled=runtime,
-            reason="runtime tier enabled" if runtime else "runtime tier not requested",
-        )
-
-    tiers = frozenset(Tier) if runtime else frozenset({Tier.STATIC})
-    policy = RunPolicy(
-        enabled_tiers=tiers, pr_budget_usd=budget, allow_experimental=allow_experimental
-    )
-
-    skills, errors = load_all(list(skills_dir))
-    trajectory.notes.extend(f"skill failed to load: {e}" for e in errors)
-
-    decisions = dispatch(skills, diff.paths, impact, policy)
-    trajectory.skills = [
-        SkillTrace(
-            skill_id=d.skill_id,
-            outcome=d.outcome.value,
-            reason=d.reason,
-            matched_paths=list(d.matched_paths),
-            matched_triggers=list(d.matched_triggers),
-            reserved_usd=d.reserved_usd,
-        )
-        for d in decisions
-    ]
-
-    path = trajectory.finish().write(Path(out) / f"trajectory-{run_id}.json")
-
-    click.echo(f"{repo}#{number}  {pr.head_sha[:8]}  ({len(diff.files)} files changed)")
-    click.echo(f"triggers: {', '.join(trajectory.triggers) or 'none'}")
-    for d in decisions:
-        mark = "✔" if d.fired else "·"
-        click.echo(f"  {mark} {d.skill_id}: {d.outcome.value} — {d.reason}")
-    click.echo(f"trajectory: {path}")
-    if not post:
-        click.echo("dry run — nothing posted (pass --post to comment)")
+        click.echo(f"dry run — {len(result.verified)} finding(s) would post (use --post)")
 
 
 @main.command("check-anchors")
