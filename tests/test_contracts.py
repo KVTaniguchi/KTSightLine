@@ -25,27 +25,27 @@ REPO = Path(__file__).resolve().parent.parent
 
 
 def _artifact(**over) -> ArtifactRef:
-    kw = dict(
-        content=b"fake-png-bytes",
-        kind=ArtifactKind.SCREENSHOT,
-        produced_by="simulator.capture.screenshot",
-        run_id="run-1",
-        context={"device": "iPhone SE (3rd generation)", "content_size": "AX5"},
-        created_at=datetime(2026, 8, 31, tzinfo=UTC),
-    )
+    kw = {
+        "content": b"fake-png-bytes",
+        "kind": ArtifactKind.SCREENSHOT,
+        "produced_by": "simulator.capture.screenshot",
+        "run_id": "run-1",
+        "context": {"device": "iPhone SE (3rd generation)", "content_size": "AX5"},
+        "created_at": datetime(2026, 8, 31, tzinfo=UTC),
+    }
     kw.update(over)
     return ArtifactRef.for_content(**kw)
 
 
 def _proposed(**over) -> ProposedFinding:
-    kw = dict(
-        rule_id="accessibility-audit",
-        anchor=Anchor(file="Sources/CheckoutSummaryView.swift", line=142),
-        enclosing_symbol="CheckoutSummaryView.body",
-        severity="high",
-        claim='"Estimated delivery" truncates to "Estimated de…" at AX5 on iPhone SE.',
-        evidence=[_artifact()],
-    )
+    kw = {
+        "rule_id": "accessibility-audit",
+        "anchor": Anchor(file="Sources/CheckoutSummaryView.swift", line=142),
+        "enclosing_symbol": "CheckoutSummaryView.body",
+        "severity": "high",
+        "claim": '"Estimated delivery" truncates to "Estimated de…" at AX5 on iPhone SE.',
+        "evidence": [_artifact()],
+    }
     kw.update(over)
     return ProposedFinding(**kw)
 
@@ -157,9 +157,7 @@ def test_builtin_skills_load():
 def test_accessibility_audit_declares_verified_audit_types():
     """P5: the spellings that were wrong before 2026-08-31 verification."""
     skill = load_skill(REPO / "skills" / "accessibility-audit.md")
-    run_audit = next(
-        c["run_audit"] for c in skill.frontmatter.capabilities if "run_audit" in c
-    )
+    run_audit = next(c["run_audit"] for c in skill.frontmatter.capabilities if "run_audit" in c)
     types = set(run_audit["types"])
     assert "textClipped" in types and "clippedText" not in types
     assert "trait" in types and "traits" not in types

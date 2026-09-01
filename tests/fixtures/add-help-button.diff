@@ -1,0 +1,19 @@
+diff --git a/eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift b/eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift
+index 1111111..2222222 100644
+--- a/eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift
++++ b/eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift
+@@ -50,6 +50,14 @@ struct CartView: View {
+             }
+             .navigationTitle("Cart")
+             .toolbar {
++                ToolbarItem(placement: .topBarTrailing) {
++                    Button {
++                        // open help
++                    } label: {
++                        Image(systemName: "questionmark.circle")
++                    }
++                    .accessibilityIdentifier("cart.help")
++                }
+             }
+         }
+     }

@@ -103,9 +103,7 @@ class ProposedFinding(BaseModel):
 
     @property
     def fingerprint(self) -> str:
-        return fingerprint(
-            self.rule_id, self.anchor.file, self.enclosing_symbol, self.claim
-        )
+        return fingerprint(self.rule_id, self.anchor.file, self.enclosing_symbol, self.claim)
 
 
 class Verdict(BaseModel):
