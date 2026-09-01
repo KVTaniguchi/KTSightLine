@@ -11,6 +11,7 @@ from pathlib import Path
 import click
 
 from sightline.adapters.forge.github import GitHubAdapter
+from sightline.core.findings.render import render_preview
 from sightline.core.impact.analyzer import analyze
 from sightline.core.telemetry.trajectory import SkillTrace, Trajectory
 from sightline.eval_harness import run_corpus
@@ -62,6 +63,13 @@ def main() -> None:
 @click.option("--budget", type=float, default=0.50, show_default=True)
 @click.option("--out", type=click.Path(path_type=Path), default=Path(".sightline/run"))
 @click.option("--post/--no-post", default=False, help="Post to the PR. Off by default.")
+@click.option(
+    "--summary-file",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Write a markdown report, including each comment body verbatim. "
+    "Point at $GITHUB_STEP_SUMMARY in CI.",
+)
 def review(
     target: str,
     checkout: Path,
@@ -74,6 +82,7 @@ def review(
     budget: float,
     out: Path,
     post: bool,
+    summary_file: Path | None,
 ) -> None:
     """Review a pull request, end to end.
 
@@ -111,6 +120,18 @@ def review(
     if summary := t.suppression_summary():
         detail = ", ".join(f"{n} {reason}" for reason, n in summary.items())
         click.echo(f"\nsuppressed: {detail}")
+
+    if summary_file:
+        Path(summary_file).parent.mkdir(parents=True, exist_ok=True)
+        with open(summary_file, "a", encoding="utf-8") as handle:
+            handle.write(
+                render_preview(
+                    result.verified,
+                    suppressed=t.suppression_summary(),
+                    notes=result.notes,
+                    posted=post,
+                )
+            )
 
     click.echo(f"\ntrajectory: {result.trajectory_path}")
     if post:

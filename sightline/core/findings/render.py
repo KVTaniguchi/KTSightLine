@@ -88,3 +88,51 @@ def render_summary(
     if trajectory_url:
         lines += ["", f"[Trajectory]({trajectory_url})"]
     return "\n".join(lines)
+
+
+def render_preview(
+    findings: list[VerifiedFinding],
+    *,
+    suppressed: dict[str, int],
+    notes: list[str],
+    posted: bool,
+    evidence_base_url: str | None = None,
+) -> str:
+    """A full run report, including each comment body verbatim.
+
+    Written for the dry-run period: the point of not posting yet is to read exactly what
+    *would* have been posted, and a count is not that. Renders the real comment bodies,
+    so what you review here is byte-for-byte what lands when `--post` is turned on.
+    """
+    verb = "Posted" if posted else "Would post"
+    lines = [f"## Sightline — {verb} {len(findings)} comment{'s' if len(findings) != 1 else ''}"]
+    if not posted:
+        lines += [
+            "",
+            (
+                "_Dry run: nothing was posted to this PR. Each block below is the "
+                "exact comment body, on the exact line it would anchor to._"
+            ),
+        ]
+    for note in notes:
+        lines += ["", f"- {note}"]
+
+    for finding in findings:
+        anchor = finding.proposed.anchor
+        lines += [
+            "",
+            "---",
+            "",
+            (
+                f"**`{anchor.file}:{anchor.line}`** · side `{anchor.side.value}` · "
+                f"verified by `{finding.verified_by}`"
+            ),
+            "",
+            render_comment(finding, evidence_base_url=evidence_base_url),
+        ]
+
+    if suppressed:
+        total = sum(suppressed.values())
+        detail = ", ".join(f"{n} {reason}" for reason, n in suppressed.items())
+        lines += ["", "---", "", f"**{total} suppressed** — {detail}"]
+    return "\n".join(lines) + "\n"

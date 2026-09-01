@@ -8,6 +8,9 @@
 #
 # Nothing here is a required check. The runtime job carries continue-on-error so a
 # flake, a timeout, or an unavailable runner reports neutral and never blocks a merge.
+#
+# CURRENTLY DRY RUN. Neither job passes `--post`; both write the comments they *would*
+# have made into the job summary instead. Add `--post` to the review steps to go live.
 
 name: Sightline
 
@@ -51,12 +54,13 @@ jobs:
       - name: Install
         run: uv sync --frozen
 
-      - name: Review (static tier)
+      - name: Review (static tier, dry run)
         run: |
           uv run sightline review \
             --pr "${{ github.repository }}#${{ github.event.pull_request.number }}" \
             --no-runtime --allow-experimental \
-            --out "$RUNNER_TEMP/sightline"
+            --out "$RUNNER_TEMP/sightline" \
+            --summary-file "$GITHUB_STEP_SUMMARY"
 
       - name: Gate the runtime tier
         id: gate
@@ -130,14 +134,21 @@ jobs:
           # bootstatus -b blocks on real readiness. Sleeping is how you get a 15% flake rate.
           xcrun simctl bootstatus "$UDID" -b
 
-      - name: Review (runtime tier)
+      # DRY RUN. `--post` is deliberately absent while we watch a few runs.
+      #
+      # `--summary-file` renders each would-be comment verbatim into the job summary,
+      # on the exact line it would anchor to — the point of not posting yet is to read
+      # what *would* have been posted, and a count is not that.
+      #
+      # To go live: add `--post` here. Nothing else changes.
+      - name: Review (runtime tier, dry run)
         run: |
           uv run sightline review \
             --pr "${{ github.repository }}#${{ github.event.pull_request.number }}" \
             --path . --runtime --allow-experimental \
             --udid "${{ steps.sim.outputs.udid }}" \
             --out "$RUNNER_TEMP/sightline" \
-            --post
+            --summary-file "$GITHUB_STEP_SUMMARY"
 
       - name: Upload evidence
         if: always()

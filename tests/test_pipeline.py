@@ -482,3 +482,56 @@ def test_file_level_anchor_needs_no_line(tmp_path):
     payload = comment_payload(finding)
     assert payload["subject_type"] == "file"
     assert "line" not in payload and "side" not in payload
+
+
+# --- dry-run preview ------------------------------------------------------------------
+
+
+def test_preview_renders_the_comment_body_verbatim(tmp_path):
+    """The point of not posting yet is to read what *would* post, byte for byte."""
+    from sightline.core.findings.render import render_preview
+
+    store = FilesystemEvidenceStore(tmp_path, run_id="r")
+    finding = _verified(store, suggestion='.accessibilityLabel("Help")')
+    body = render_preview(
+        [finding], suppressed={"below_threshold": 3}, notes=["runtime tier: ok"], posted=False
+    )
+    assert render_comment(finding) in body
+
+
+def test_preview_says_would_post_when_dry():
+    from sightline.core.findings.render import render_preview
+
+    body = render_preview([], suppressed={}, notes=[], posted=False)
+    assert "Would post 0 comments" in body
+    assert "Dry run" in body
+
+
+def test_preview_says_posted_when_live(tmp_path):
+    from sightline.core.findings.render import render_preview
+
+    store = FilesystemEvidenceStore(tmp_path, run_id="r")
+    body = render_preview([_verified(store)], suppressed={}, notes=[], posted=True)
+    assert "Posted 1 comment" in body
+    assert "Dry run" not in body
+
+
+def test_preview_shows_the_anchor_and_the_verifier(tmp_path):
+    from sightline.core.findings.render import render_preview
+
+    store = FilesystemEvidenceStore(tmp_path, run_id="r")
+    body = render_preview([_verified(store)], suppressed={}, notes=[], posted=False)
+    assert "CartView.swift:53" in body
+    assert "side `RIGHT`" in body
+    assert "structured_oracle" in body
+
+
+def test_preview_shows_suppression_counts_but_no_claims(tmp_path):
+    """D8 applies here too: counts and reasons, never suppressed claim text."""
+    from sightline.core.findings.render import render_preview
+
+    body = render_preview(
+        [], suppressed={"below_threshold": 8, "not_in_diff": 2}, notes=[], posted=False
+    )
+    assert "10 suppressed" in body
+    assert "8 below_threshold" in body
