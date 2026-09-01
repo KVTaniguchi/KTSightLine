@@ -98,9 +98,30 @@ class ChangedFile(BaseModel):
         }
 
     @property
+    def context_old_lines(self) -> set[int]:
+        """Base-side line numbers of unchanged context inside a hunk."""
+        return {
+            line.old_line
+            for hunk in self.hunks
+            for line in hunk.lines
+            if line.kind is LineKind.CONTEXT and line.old_line is not None
+        }
+
+    @property
     def commentable_lines(self) -> set[int]:
         """Every head-side line a RIGHT-side comment may anchor to."""
         return self.added_lines | self.context_lines
+
+    @property
+    def commentable_left_lines(self) -> set[int]:
+        """Every base-side line a LEFT-side comment may anchor to.
+
+        Context counts here as well as on the right: an unchanged line appears on both
+        sides of a split diff, and GitHub accepts a LEFT comment on it. Verified
+        2026-08-31 against real accepted comments on astral-sh/ruff#28200, which is how
+        this gap was found — the first version only allowed removed lines.
+        """
+        return self.removed_lines | self.context_old_lines
 
     def added_text(self) -> Iterator[tuple[int, str]]:
         """(head line number, text) for added lines only.

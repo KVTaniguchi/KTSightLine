@@ -194,3 +194,53 @@ comment. That is a concrete target for our format, not a vibe.
 The catalog's permission-denied check named camera and notifications specifically. Photos
 and microphone are reachable via `simctl privacy revoke`; **camera and notification
 denial need another mechanism** — new open question.
+
+---
+
+## P8 follow-up — cross-checked against real accepted comments (2026-08-31)
+
+Reading the docs is not verification. Since positioning is the disqualifying risk, our
+`commentable_lines` was cross-checked against comments **GitHub itself accepted** — every
+existing review comment on a PR is, by definition, a position GitHub allowed. Read-only,
+nothing posted.
+
+Sampled 26 anchored review comments across `cli/cli`, `pallets/click`, `astral-sh/ruff`,
+`pydantic/pydantic`, `encode/httpx`, `tiangolo/fastapi`, `psf/black`, and `python/mypy`.
+
+**Result: 25/26 agree. The two initial disagreements were both informative.**
+
+### Found a real bug: LEFT-side comments on context lines
+
+`astral-sh/ruff#28200` carries an accepted comment at `ci.yaml:597, side=LEFT`. Our
+validator refused it, because `commentable_left_lines` was originally just
+`removed_lines`. That is wrong: an unchanged context line appears on **both** sides of a
+split diff, and GitHub accepts a LEFT comment on it. Fixed —
+`commentable_left_lines = removed_lines | context_old_lines`, with a regression test.
+
+This is exactly the class of error the brief warned about, and it would not have been
+caught by any amount of reading the docs.
+
+### Found a feature we were not using: `subject_type: "file"`
+
+The same PR carries comments with `subject_type: "file"` and a placeholder `line: 1`.
+These are **file-level** comments — a legitimate anchoring mode that needs no line.
+
+Relevant beyond bookkeeping: this is the honest third option for **OQ-FIXTURE-1**. An
+audit issue arriving with `element = nil` currently gets dropped, because ADR-0002
+forbids inventing a line. A file-level comment attributes it to the file without
+inventing anything. `Anchor.file_level` now exists and `comment_payload` emits
+`subject_type: "file"` for it.
+
+### The one remaining disagreement is not ours
+
+`python/mypy#21888` has an accepted comment at `check-sentinels.test:178`, while the
+diff GitHub serves us has a single hunk starting at line 181. Our parse matches the raw
+diff exactly. The explanation is GitHub's UI letting a reviewer expand context beyond
+the hunk and comment there.
+
+We deliberately do not follow: our validator refuses anchors outside the served diff.
+Commenting only where we are certain the position is right is the conservative choice,
+and the cost is losing a capability we have no use for.
+
+**Still not verified:** that a comment we post lands where we intend. That requires
+actually posting one, which needs Kevin's authorization.

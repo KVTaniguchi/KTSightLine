@@ -71,12 +71,23 @@ Build order, each step independently testable:
    increase-contrast, screenshot, and a `revoke_privacy` that refuses `camera` with a
    message instead of silently pretending.
 6. UI test target discovery/injection into a **scratch clone**, never the checkout.
-7. `core/evidence/` — content-addressed store with the redaction pass in front of it.
-8. `core/verify/` — the `structured_oracle` verifier and the gate.
-9. `adapters/forge/github.py` — comment positioning. **Test against a real PR early**;
-   getting `line`/`side`/`start_line` wrong is instantly disqualifying.
-10. `core/telemetry/` — trajectory JSON + addressal ledger (SQLite behind an interface).
-11. `cli` — `sightline review --pr <url>`.
+   **Still to do — the last structural piece.**
+7. ~~`core/evidence/`~~ **done** — content-addressed store; redaction runs *before*
+   addressing, so unmasked bytes never reach disk (asserted, not assumed). An
+   undecodable capture is refused with a typed error rather than crashing the run.
+8. ~~`core/verify/`~~ **done** — `structured_oracle` looks up an `oracle_key` in the
+   tool's own output rather than reading the claim, so an invented finding dies here.
+   Unanchorable findings are dropped and *counted* (OQ-FIXTURE-1).
+9. ~~`adapters/forge/github.py`~~ **done (code + read-only verification)** — anchors are
+   validated against the parsed diff before any network call; `position` is never sent.
+   Cross-checked against 26 real accepted GitHub comments: 25/26 agree, and the
+   disagreement found a real bug in our LEFT-side handling. **Posting a comment is still
+   unverified — it needs authorization.**
+10. ~~`core/telemetry/`~~ **done** — trajectory JSON with a suppression summary that
+    carries counts and reasons only (D8), plus a SQLite addressal ledger whose rate
+    excludes open comments from the denominator.
+11. ~~`cli`~~ **done** — `sightline review` (dry run by default), `check-anchors`, and
+    `diff`. Posting is opt-in behind `--post`.
 
 **Done when:** `sightline review --pr <url>` against the fixture repo posts one
 true-positive accessibility comment with a screenshot attached, and writes a trajectory

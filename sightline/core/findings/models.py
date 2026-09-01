@@ -40,6 +40,13 @@ class Anchor(BaseModel):
     file: str
     line: int
     side: Side = Side.RIGHT
+    file_level: bool = False
+    """Comment on the file rather than a line (GitHub ``subject_type: "file"``).
+
+    A real anchoring mode, not a degenerate one — and the honest option for an audit
+    issue that arrives with ``element = nil`` (OQ-FIXTURE-1): it attributes the finding
+    to the file without inventing a line number.
+    """
     # Multi-line comments require BOTH start_line and start_side (verified against the
     # GitHub REST docs 2026-08-31, P8). `position` is deprecated and is never sent.
     start_line: int | None = None
@@ -100,6 +107,11 @@ class ProposedFinding(BaseModel):
     evidence: Annotated[list[ArtifactRef], Field(min_length=1)]
     suggestion: str | None = None  # verbatim replacement code; rendered as ```suggestion
     owners: list[str] = Field(default_factory=list)
+    oracle_key: str | None = None
+    """Names the independent record backing this claim, e.g.
+    ``"sufficientElementDescription:cart.help"``. The ``structured_oracle`` verifier
+    looks this up rather than trusting the claim text, which is what makes the check
+    adversarial instead of self-confirming."""
 
     @property
     def fingerprint(self) -> str:
