@@ -59,7 +59,10 @@ struct CartView: View {
                         // share cart
                     } label: {
                         Image(systemName: "square.and.arrow.up")
+                            .resizable()
+                            .frame(width: 14, height: 14)
                     }
+                    .accessibilityLabel("Share cart")
                     .accessibilityIdentifier("cart.share")
                 }
             }
