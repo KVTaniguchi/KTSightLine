@@ -331,3 +331,59 @@ def test_generated_target_builds_and_audits(app_copy, tmp_path):
     proc = _run_injected(w)
     assert "** TEST SUCCEEDED **" in proc.stdout, proc.stdout[-3000:]
     assert "SIGHTLINE|Cart|" in proc.stdout
+
+
+# --- the OpenStep reader, which is why this module works on Linux --------------------
+
+
+def test_parses_the_openstep_subset_xcode_emits():
+    from sightline.runners.xcode.project import parse_openstep
+
+    parsed = parse_openstep(
+        """
+        {
+            /* a block comment */
+            archiveVersion = 1;   // a line comment
+            objects = {
+                ABC /* CartView.swift */ = {
+                    isa = PBXFileReference;
+                    path = "Cart View.swift";
+                    children = ( A, B, );
+                };
+            };
+        }
+        """
+    )
+    assert parsed["archiveVersion"] == "1"
+    obj = parsed["objects"]["ABC"]
+    assert obj["path"] == "Cart View.swift"  # quoted, with a space
+    assert obj["children"] == ["A", "B"]  # trailing comma tolerated
+
+
+def test_reader_keeps_escapes_in_quoted_strings():
+    from sightline.runners.xcode.project import parse_openstep
+
+    assert parse_openstep(r'{ s = "a\"b\nc"; }')["s"] == 'a"b\nc'
+
+
+def test_reader_rejects_malformed_input():
+    from sightline.runners.xcode.project import parse_openstep
+
+    with pytest.raises(ValueError):
+        parse_openstep("{ unterminated = ")
+
+
+def test_reading_does_not_shell_out(monkeypatch):
+    """The whole point of the hand-written reader: no macOS-only binary in the path.
+
+    plutil was the first implementation and worked, but it meant the module doing the
+    riskiest surgery in the codebase could not be tested on the Linux job that runs on
+    every PR.
+    """
+    import subprocess as sp
+
+    def explode(*a, **kw):
+        raise AssertionError("PbxProject must not shell out to read a project")
+
+    monkeypatch.setattr(sp, "run", explode)
+    assert PbxProject(FIXTURE / PROJECT).app_targets()[0].name == "CheckoutDemo"

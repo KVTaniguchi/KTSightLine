@@ -3,10 +3,15 @@
 ADR-0003 §5 requires an adapter around project-file manipulation, because we will get
 it wrong on somebody's project and the failure has to be legible.
 
-**Format note.** A `project.pbxproj` is an OpenStep plist with a `// !$*UTF8*$!` header
-that `plutil` will not parse. Strip the header and `plutil` reads it fine, and
-`xcodebuild` accepts the file written back as an **XML** plist — verified 2026-08-31.
-So we read via JSON, edit in Python, and write XML.
+**Format note.** A `project.pbxproj` is an OpenStep plist. `xcodebuild` also accepts the
+file written back as an **XML** plist (verified 2026-08-31), so we parse OpenStep in,
+edit in Python, and write XML out with stdlib `plistlib`.
+
+The OpenStep reader is hand-written rather than shelling out to `plutil`. `plutil` works
+and was the first implementation, but it is macOS-only, which meant this module — the one
+doing the riskiest surgery in the codebase — could not be tested on the Linux job that
+runs on every PR. The format is small enough that a parser is cheaper than the coverage
+hole.
 
 Losing Xcode's formatting and comments would be unacceptable in a user's checkout. It is
 fine here because every edit happens in a scratch clone (see `injection.py`) and the
@@ -15,9 +20,8 @@ original is never touched. That constraint is what buys us the simple implementa
 
 from __future__ import annotations
 
-import json
 import plistlib
-import subprocess
+import re
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
@@ -49,6 +53,113 @@ class Target:
         return self.product_type == APP_PRODUCT_TYPE
 
 
+# --- OpenStep plist reading -----------------------------------------------------------
+
+_WS_OR_COMMENT = re.compile(r"(?:\s+|/\*.*?\*/|//[^\n]*)+", re.DOTALL)
+_BARE = re.compile(r"[A-Za-z0-9_$./:@~-]+")
+_ESCAPES = {"n": "\n", "t": "\t", "r": "\r", '"': '"', "\\": "\\", "'": "'"}
+
+
+class _Reader:
+    """Recursive-descent reader for the OpenStep plist subset Xcode emits.
+
+    Values are dicts, arrays, quoted strings, and bare strings. Every scalar comes back
+    as a string, which is how pbxproj treats them anyway — `objectVersion` is "56", not
+    56, and writing it back as a string is what Xcode expects.
+    """
+
+    def __init__(self, text: str) -> None:
+        self.text = text
+        self.pos = 0
+
+    def _skip(self) -> None:
+        if match := _WS_OR_COMMENT.match(self.text, self.pos):
+            self.pos = match.end()
+
+    def _peek(self) -> str:
+        self._skip()
+        if self.pos >= len(self.text):
+            raise ValueError("unexpected end of file")
+        return self.text[self.pos]
+
+    def parse(self) -> Any:
+        value = self.value()
+        self._skip()
+        if self.pos != len(self.text):
+            raise ValueError(f"trailing content at offset {self.pos}")
+        return value
+
+    def value(self) -> Any:
+        char = self._peek()
+        if char == "{":
+            return self.dictionary()
+        if char == "(":
+            return self.array()
+        if char == '"':
+            return self.quoted()
+        return self.bare()
+
+    def dictionary(self) -> dict[str, Any]:
+        self.pos += 1  # {
+        out: dict[str, Any] = {}
+        while self._peek() != "}":
+            key = self.quoted() if self._peek() == '"' else self.bare()
+            if self._peek() != "=":
+                raise ValueError(f"expected '=' after key {key!r} at {self.pos}")
+            self.pos += 1
+            out[key] = self.value()
+            if self._peek() == ";":
+                self.pos += 1
+        self.pos += 1  # }
+        return out
+
+    def array(self) -> list[Any]:
+        self.pos += 1  # (
+        out: list[Any] = []
+        while self._peek() != ")":
+            out.append(self.value())
+            if self._peek() == ",":
+                self.pos += 1
+        self.pos += 1  # )
+        return out
+
+    def quoted(self) -> str:
+        self.pos += 1  # opening quote
+        chars: list[str] = []
+        while True:
+            if self.pos >= len(self.text):
+                raise ValueError("unterminated string")
+            char = self.text[self.pos]
+            if char == "\\":
+                self.pos += 1
+                nxt = self.text[self.pos]
+                chars.append(_ESCAPES.get(nxt, nxt))
+            elif char == '"':
+                self.pos += 1
+                return "".join(chars)
+            else:
+                chars.append(char)
+            self.pos += 1
+
+    def bare(self) -> str:
+        self._skip()
+        match = _BARE.match(self.text, self.pos)
+        if not match:
+            raise ValueError(f"unexpected character {self.text[self.pos]!r} at {self.pos}")
+        self.pos = match.end()
+        return match.group(0)
+
+
+def parse_openstep(text: str) -> dict[str, Any]:
+    """Parse an OpenStep plist (the `project.pbxproj` format) into plain Python."""
+    value = _Reader(text).parse()
+    if not isinstance(value, dict):
+        # ValueError, not TypeError: this is malformed *input*, not a caller passing the
+        # wrong type. `_load` catches ValueError and reports it as a ProjectError.
+        raise ValueError("top-level value is not a dictionary")  # noqa: TRY004
+    return value
+
+
 def _new_id() -> str:
     """24 uppercase hex characters, the shape Xcode uses for object ids."""
     return uuid.uuid4().hex[:24].upper()
@@ -65,20 +176,18 @@ class PbxProject:
         self.data = self._load()
 
     def _load(self) -> dict[str, Any]:
-        text = self.pbxproj.read_text(encoding="utf-8")
+        raw = self.pbxproj.read_bytes()
+        if raw.lstrip().startswith((b"<?xml", b"bplist")):
+            return plistlib.loads(raw)
+        text = raw.decode("utf-8")
         body = text.split("\n", 1)[1] if text.startswith(HEADER) else text
-        proc = subprocess.run(
-            ["plutil", "-convert", "json", "-o", "-", "-"],
-            input=body.encode(),
-            capture_output=True,
-            check=False,
-        )
-        if proc.returncode != 0:
+        try:
+            return parse_openstep(body)
+        except ValueError as exc:
             raise ProjectError(
-                f"could not parse {self.pbxproj}: {proc.stderr.decode().strip()}. "
-                "Generated projects (XcodeGen, Tuist) may need to be generated first."
-            )
-        return json.loads(proc.stdout)
+                f"could not parse {self.pbxproj}: {exc}. Generated projects "
+                "(XcodeGen, Tuist) may need to be generated first."
+            ) from exc
 
     def save(self) -> None:
         """Write back as an XML plist. Only ever call this on a scratch clone."""
