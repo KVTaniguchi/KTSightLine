@@ -31,6 +31,12 @@ nothing.
 Not automatically wrong ≠ not worth a comment. The suppression checks follow
 `swarm-orchestrator`'s rule: name what was silenced, do not assert it was a mistake.
 
+**Do not assume an image-only button is missing a label.** Measured 2026-08-31:
+`square.and.arrow.up`, `ellipsis.circle`, and `line.3.horizontal.decrease` all carry
+built-in accessibility descriptions and produce no audit issue; `questionmark.circle`
+does not. A static check that flagged every `Image(systemName:)` inside a `Button` would
+false-positive on stock iconography. This is a runtime check for a reason.
+
 ## Tier 1 — build-time
 
 | Check | Verifier | Notes | Status |
@@ -46,7 +52,7 @@ The reason the project exists. Gated per ADR-0003.
 
 | Check | Verifier | Evidence | Status |
 |---|---|---|---|
-| **Accessibility audit** — `performAccessibilityAudit(for:)` across `contrast`, `elementDetection`, `hitRegion`, `sufficientElementDescription`, `dynamicType`, `textClipped`, `trait` (exact `XCUIAccessibilityAuditType` spellings, verified 2026-08-31; it is a bitmask, OR-folded). Structured output, but **not** zero false positives: severity lives in `compactDescription` ("failed" vs "nearly passed"), stock SwiftUI controls generate noise, and many issues carry `element = nil` | `structured_oracle` | `xcresult` + `screenshot` | **slice** |
+| **Accessibility audit** — `performAccessibilityAudit(for:)` across `contrast`, `elementDetection`, `hitRegion`, `sufficientElementDescription`, `dynamicType`, `textClipped`, `trait` (exact `XCUIAccessibilityAuditType` spellings, verified 2026-08-31; it is a bitmask, OR-folded). Structured output, but **not** zero false positives: severity lives in `compactDescription` ("failed" vs "nearly passed"), stock SwiftUI controls generate noise, and many issues carry `element = nil` | `structured_oracle` | `xcresult` + `screenshot` | **built** |
 | Dynamic Type matrix — render at AX5, compare against base-branch render for clipping, truncation, overlap. **Cannot use the audit**: `performAccessibilityAudit` reported no `textClipped` for a SwiftUI view visibly clipped mid-glyph at AX5 (measured 2026-08-31, four shapes). `differential_render` is the only path | `differential_render` | 2× `screenshot` + `render_diff` | planned, promoted |
 | Appearance matrix — `simctl ui <device> appearance dark`. Catches hardcoded colors that vanish or go unreadable. `simctl ui <device> increase_contrast enabled` is also available and unplanned | `differential_render` | 2× `screenshot` + `render_diff` | planned |
 | RTL and pseudolocalization — `-AppleLanguages "(ar)"` and `(en-XA)`. Unmirrored layouts, string-expansion overflow | `differential_render` | 2× `screenshot` | planned |

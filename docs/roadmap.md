@@ -113,12 +113,23 @@ audit issues into 1 comment**: 8 dropped as sub-threshold warnings, 2 dropped as
 pre-existing defects the PR did not introduce, and 1 posted — the tap target the PR
 actually added.
 
-## Then: eval
+## ~~Then: eval~~ — stood up 2026-08-31
 
-Three PRs against the vendored fixture — two with known real defects, one clean. Score
-precision and recall. Three is enough to keep us honest; the corpus grows from there.
+Three cases against the vendored fixture — two with known defects, one clean — each a
+committed patch plus its expected findings, so scoring is repeatable offline and runs as
+a gate on our own PRs. See [`eval/README.md`](../eval/README.md).
 
-The clean PR is the important one. It is the regression test for "posts nothing."
+```
+precision 1.00  recall 1.00  (tp 2 · fp 0 · fn 0)
+```
+
+Read that with the sample size in mind: three cases, one skill, one device, one content
+size. It says the pipeline works end to end and that the clean case stays quiet. It says
+nothing yet about a real app.
+
+The clean case is the important one, and it deliberately **touches a UI surface** — so
+the runtime tier fires and pays a full build and simulator run, and must still produce
+nothing. A no-op diff would not test that.
 
 ## Then: Tier 3 before more of Tier 2
 
