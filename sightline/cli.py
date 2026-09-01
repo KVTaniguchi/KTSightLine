@@ -10,6 +10,7 @@ from pathlib import Path
 import click
 
 from sightline.adapters.forge.github import GitHubAdapter
+from sightline.core.diff.models import ChangeType
 from sightline.core.impact.analyzer import analyze
 from sightline.core.skills.dispatch import RunPolicy, dispatch
 from sightline.core.skills.frontmatter import Tier
@@ -64,7 +65,20 @@ def review(
 
     pr = forge.get_pull_request(repo, number)
     diff = forge.get_diff(repo, number)
-    impact = analyze(diff)
+
+    # Impact analysis needs head-side contents, not just the diff: a change confined to
+    # an existing view's `body` matches no declaration in the added lines, and without
+    # the file we cannot tell the enclosing type is a View. Missing that means every
+    # runtime skill silently does not fire.
+    sources: dict[str, str] = {}
+    for changed in diff.files:
+        is_live_swift = (
+            changed.path.endswith(".swift") and changed.change_type is not ChangeType.DELETED
+        )
+        if is_live_swift and (content := forge.get_file(repo, changed.path, pr.head_sha)):
+            sources[changed.path] = content
+
+    impact = analyze(diff, sources=sources)
 
     trajectory = Trajectory(
         run_id=run_id,

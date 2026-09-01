@@ -67,3 +67,13 @@ class ForgeAdapter(ABC):
 
     @abstractmethod
     def existing_comment_bodies(self, repo: str, number: int) -> list[str]: ...
+
+    @abstractmethod
+    def get_file(self, repo: str, path: str, ref: str) -> str | None:
+        """Head-side contents of one file, or None if it is gone at that ref.
+
+        Impact analysis needs this: the common case is a diff that touches only lines
+        inside an existing view's body, which matches no declaration in the added text.
+        Without the file we cannot tell that the enclosing type is a View, and every
+        runtime skill silently fails to fire.
+        """
