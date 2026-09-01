@@ -70,8 +70,11 @@ Build order, each step independently testable:
    device, `freeze_status_bar` pinning every mutable element, content size / appearance /
    increase-contrast, screenshot, and a `revoke_privacy` that refuses `camera` with a
    message instead of silently pretending.
-6. UI test target discovery/injection into a **scratch clone**, never the checkout.
-   **Still to do — the last structural piece.**
+6. ~~UI test target discovery/injection~~ **done** — `project.py` reads and edits
+   `.xcodeproj` (JSON in via `plutil`, XML plist out — `xcodebuild` accepts it, and the
+   lost formatting is fine because we only ever edit a scratch clone). `injection.py`
+   discovers a UI test target, **generates one when the project has none**, or degrades
+   with a message naming the config key. Proven by building and running both paths.
 7. ~~`core/evidence/`~~ **done** — content-addressed store; redaction runs *before*
    addressing, so unmasked bytes never reach disk (asserted, not assumed). An
    undecodable capture is refused with a typed error rather than crashing the run.
@@ -99,10 +102,10 @@ correctly-positioned comment on the defect line — build → boot → audit →
 evidence → gate → anchor validation → post → ledger → trajectory
 ([sample](examples/trajectory-slice.json)).
 
-The caveat: the runtime half was driven by a script rather than by
-`sightline review --post`, because the CLI cannot yet build a branch and inject a UI
-test target (step 6). Every *component* is wired and tested; the CLI orchestration of
-them is the remaining work.
+The caveat from that first run is now closed: `sightline audit` orchestrates the whole
+runtime tier in one command — scratch clone, target discovery or generation, driver
+injection, deterministic simulator state, build, run, parse, gate. What remains is
+joining `audit` to `review` so a single invocation goes from PR URL to posted comment.
 
 ## Then: eval
 

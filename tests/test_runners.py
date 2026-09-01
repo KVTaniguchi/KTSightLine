@@ -297,3 +297,16 @@ def test_export_attachments_clears_a_stale_manifest(tmp_path, monkeypatch):
     monkeypatch.setattr(mod.subprocess, "run", fake_run)
     mod.XcresultTool(tmp_path / "b.xcresult").export_attachments(dest)
     assert seen["manifest_existed"] is False, "stale manifest should be removed first"
+
+
+def test_status_bar_time_is_a_bare_time_string():
+    """simctl rejects ISO date strings despite its help text saying otherwise.
+
+    Verified against iOS 26.5 on 2026-08-31: every ISO form returned
+    "Invalid, non-ISO date/time string". A regression here silently unpins the clock,
+    and a ticking clock produces a render diff on every run.
+    """
+    r = FakeRunner()
+    Simulator("UDID", run=r).freeze_status_bar()
+    argv = r.calls[0]
+    assert argv[argv.index("--time") + 1] == "9:41"

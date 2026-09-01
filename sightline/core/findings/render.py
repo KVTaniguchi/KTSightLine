@@ -37,9 +37,7 @@ def render_comment(finding: VerifiedFinding, *, evidence_base_url: str | None = 
     for ref in p.evidence:
         kind = str(ref.kind)
         label = (
-            f"[{kind}]({evidence_base_url.rstrip('/')}/{ref.sha256})"
-            if evidence_base_url
-            else kind
+            f"[{kind}]({evidence_base_url.rstrip('/')}/{ref.sha256})" if evidence_base_url else kind
         )
         if label not in kinds:
             kinds.append(label)

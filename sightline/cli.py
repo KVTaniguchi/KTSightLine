@@ -15,6 +15,11 @@ from sightline.core.impact.analyzer import analyze
 from sightline.core.skills.dispatch import RunPolicy, dispatch
 from sightline.core.skills.frontmatter import Tier
 from sightline.core.telemetry.trajectory import GateTrace, SkillTrace, Trajectory
+from sightline.runners.simulator.device import Appearance, ContentSize, Simulator
+from sightline.runners.xcode.build import Destination, XcodeBuild
+from sightline.runners.xcode.driver_template import Surface
+from sightline.runners.xcode.injection import InjectionUnavailable, prepare_workspace
+from sightline.runners.xcode.xcresult import XcresultTool, postable_issues
 from sightline.skills_builtin import load_all
 
 
@@ -185,3 +190,116 @@ def diff(target: str) -> None:
 
 if __name__ == "__main__":
     main()
+
+
+def _parse_surface(spec: str) -> Surface:
+    """`Name`, `Name:tap1,tap2`, or `Name:tap1,tap2@waitFor`."""
+    name, _, rest = spec.partition(":")
+    taps, _, wait = rest.partition("@")
+    return Surface(
+        name=name,
+        taps=tuple(t for t in taps.split(",") if t),
+        wait_for=wait or None,
+    )
+
+
+@main.command()
+@click.option("--path", type=click.Path(exists=True, path_type=Path), default=Path("."))
+@click.option("--project", "project_relpath", required=True, help="e.g. App.xcodeproj")
+@click.option("--udid", required=True, help="Simulator UDID.")
+@click.option(
+    "--surface",
+    "surface_specs",
+    multiple=True,
+    required=True,
+    help="Name[:tap1,tap2][@waitForIdentifier]. Repeatable.",
+)
+@click.option("--app-target", default=None)
+@click.option("--ui-test-target", default=None)
+@click.option("--content-size", default="large", show_default=True)
+@click.option("--appearance", type=click.Choice(["light", "dark"]), default="light")
+@click.option("--scratch", type=click.Path(path_type=Path), default=Path(".sightline/scratch"))
+@click.option("--out", type=click.Path(path_type=Path), default=Path(".sightline/run"))
+def audit(
+    path: Path,
+    project_relpath: str,
+    udid: str,
+    surface_specs: tuple[str, ...],
+    app_target: str | None,
+    ui_test_target: str | None,
+    content_size: str,
+    appearance: str,
+    scratch: Path,
+    out: Path,
+) -> None:
+    """Run the runtime accessibility audit against a local checkout.
+
+    The full runtime tier in one command: copy the repo to a scratch clone, ensure a UI
+    test target, inject the driver, put the simulator in a known state, build, run,
+    parse the result bundle, and apply the gate.
+
+    Nothing is posted and the checkout is never modified.
+    """
+    run_id = uuid.uuid4().hex[:12]
+    surfaces = [_parse_surface(s) for s in surface_specs]
+
+    try:
+        workspace = prepare_workspace(
+            Path(path),
+            scratch_dir=Path(scratch) / run_id,
+            project_relpath=project_relpath,
+            surfaces=surfaces,
+            app_target=app_target,
+            ui_test_target=ui_test_target,
+        )
+    except InjectionUnavailable as exc:
+        # ADR-0003 §7: degrade, never explode. The message names the fix.
+        click.echo(f"runtime tier unavailable: {exc}", err=True)
+        raise SystemExit(2) from exc
+
+    click.echo(f"workspace: {workspace.root} ({workspace.strategy} {workspace.ui_test_target})")
+
+    simulator = Simulator(udid)
+    context = simulator.prepare(
+        content_size=ContentSize(content_size), appearance=Appearance(appearance)
+    )
+    click.echo(f"simulator: {context}")
+
+    bundle = Path(out) / f"{run_id}.xcresult"
+    Path(out).mkdir(parents=True, exist_ok=True)
+    builder = XcodeBuild(workspace.project, workspace.scheme, workspace.root / "dd")
+    result = builder.test(
+        Destination(udid=udid),
+        result_bundle=bundle,
+        only_testing=workspace.test_identifiers,
+    )
+    if not result.succeeded and not bundle.exists():
+        click.echo("build failed before any test ran:", err=True)
+        for line in result.failure_lines[:5]:
+            click.echo(f"  {line}", err=True)
+        raise SystemExit(2)
+
+    tool = XcresultTool(bundle)
+    summary = tool.summary()
+    issues = tool.all_audit_issues()
+    postable = postable_issues(issues)
+
+    click.echo(
+        f"{summary.device.model_name if summary.device else '?'} · "
+        f"{len(issues)} audit issues · {len(postable)} postable"
+    )
+    for issue in postable:
+        click.echo(f"  {issue.audit_type}:{issue.identifier}  {issue.description}  {issue.frame}")
+
+    suppressed = len(issues) - len(postable)
+    trajectory = Trajectory(run_id=run_id, repo=str(path), budget_usd=0.0)
+    trajectory.skills = [
+        SkillTrace(
+            skill_id="accessibility-audit",
+            outcome="fired",
+            reason=f"{workspace.strategy} target {workspace.ui_test_target}",
+            proposed=len(postable),
+        )
+    ]
+    trajectory.notes.append(f"{suppressed} audit issues suppressed as warnings or unanchorable")
+    click.echo(f"trajectory: {trajectory.finish().write(Path(out) / f'trajectory-{run_id}.json')}")

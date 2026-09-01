@@ -12,6 +12,7 @@ build/
 # Sightline run output
 .sightline/run/
 .sightline/evidence/
+.sightline/scratch/
 .sightline/*.sqlite
 *.xcresult/
 DerivedData/
