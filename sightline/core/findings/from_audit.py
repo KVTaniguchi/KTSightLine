@@ -87,7 +87,12 @@ def build_findings(
     """Anchor each issue to a changed line of ``changed.path``."""
     lines = source.splitlines()
     outline = SwiftOutline(source)
-    commentable = changed.commentable_lines
+    # Scope is `added_lines`, not `commentable_lines`. Those answer different questions:
+    # commentable_lines is where GitHub will *accept* a comment (added plus surrounding
+    # context), while added_lines is what this PR actually changed. Anchoring to context
+    # would comment on pre-existing defects the author did not introduce — the fastest
+    # way to get a reviewer muted, and contrary to "we review the change, not the app".
+    in_scope = changed.added_lines
     findings: list[ProposedFinding] = []
     unmapped: list[Unmapped] = []
 
@@ -99,7 +104,7 @@ def build_findings(
         candidates = [
             number
             for number, text in enumerate(lines, start=1)
-            if issue.identifier in text and number in commentable
+            if issue.identifier in text and number in in_scope
         ]
         if not candidates:
             # The element exists, but this PR did not touch it. Out of scope.

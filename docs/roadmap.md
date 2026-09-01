@@ -102,10 +102,16 @@ correctly-positioned comment on the defect line — build → boot → audit →
 evidence → gate → anchor validation → post → ledger → trajectory
 ([sample](examples/trajectory-slice.json)).
 
-The caveat from that first run is now closed: `sightline audit` orchestrates the whole
-runtime tier in one command — scratch clone, target discovery or generation, driver
-injection, deterministic simulator state, build, run, parse, gate. What remains is
-joining `audit` to `review` so a single invocation goes from PR URL to posted comment.
+**Fully closed 2026-08-31.** `sightline review --runtime` now goes from a PR URL to
+posted comments in one call: diff → impact → dispatch → scratch clone → target injection
+→ deterministic simulator state → build → drive → capture → parse → gate → anchor
+validation → post → ledger → trajectory
+([sample](examples/trajectory-review.json)).
+
+On [PR #1](https://github.com/KVTaniguchi/KTSightLine/pull/1) that chain turns **11 raw
+audit issues into 1 comment**: 8 dropped as sub-threshold warnings, 2 dropped as
+pre-existing defects the PR did not introduce, and 1 posted — the tap target the PR
+actually added.
 
 ## Then: eval
 

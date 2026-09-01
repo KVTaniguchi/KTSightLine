@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "run_id": "8e4fd305b26e",
+  "repo": "KVTaniguchi/KTSightLine",
+  "pr_number": 1,
+  "base_sha": "8b1f36fa60255cfd1207d0e45465f34581a20674",
+  "head_sha": "000b68232603139ce69928349c8758310e2c100c",
+  "started_at": "2026-09-01T03:27:22.666002Z",
+  "finished_at": "2026-09-01T03:27:35.694755Z",
+  "triggers": [
+    "file_changed",
+    "ui_surface_changed",
+    "view_modified"
+  ],
+  "trigger_evidence": [
+    {
+      "trigger": "file_changed",
+      "path": "eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift",
+      "line": null,
+      "reason": "modified eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift"
+    },
+    {
+      "trigger": "view_modified",
+      "path": "eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift",
+      "line": null,
+      "reason": "body of an existing View changed"
+    },
+    {
+      "trigger": "ui_surface_changed",
+      "path": "eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift",
+      "line": null,
+      "reason": "file declares a rendered surface"
+    }
+  ],
+  "gate": {
+    "runtime_enabled": true,
+    "reason": "runtime tier enabled",
+    "stage": "ok"
+  },
+  "skills": [
+    {
+      "skill_id": "accessibility-audit",
+      "outcome": "fired",
+      "reason": "matched 1 path(s) on ['ui_surface_changed', 'view_modified']",
+      "matched_paths": [
+        "eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift"
+      ],
+      "matched_triggers": [
+        "ui_surface_changed",
+        "view_modified"
+      ],
+      "reserved_usd": 0.05,
+      "spent_usd": 0.0,
+      "duration_s": 0.0,
+      "proposed": 11,
+      "verified": 1,
+      "posted": 0,
+      "artifacts": [],
+      "error": null
+    },
+    {
+      "skill_id": "missing-usage-description",
+      "outcome": "no_trigger_match",
+      "reason": "trigger_mode=any; unmet ['info_plist_changed', 'permission_api_referenced']",
+      "matched_paths": [
+        "eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift"
+      ],
+      "matched_triggers": [],
+      "reserved_usd": 0.0,
+      "spent_usd": 0.0,
+      "duration_s": 0.0,
+      "proposed": 0,
+      "verified": 0,
+      "posted": 0,
+      "artifacts": [],
+      "error": null
+    }
+  ],
+  "suppressions": [
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "Hit area is too small",
+      "reason": "not_in_diff",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "Label not human-readable",
+      "reason": "not_in_diff",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    },
+    {
+      "skill_id": "accessibility-audit",
+      "fingerprint": null,
+      "claim": "",
+      "reason": "below_threshold",
+      "verifier": null,
+      "artifacts_present": []
+    }
+  ],
+  "tool_versions": {},
+  "budget_usd": 0.5,
+  "spent_usd": 0.0,
+  "notes": [
+    "runtime tier: discovered target CheckoutDemoUITests, 1 surface(s), 11 audit issues"
+  ]
+}
