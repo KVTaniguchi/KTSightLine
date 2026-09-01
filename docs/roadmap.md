@@ -93,6 +93,17 @@ Build order, each step independently testable:
 true-positive accessibility comment with a screenshot attached, and writes a trajectory
 JSON you can read.
 
+**Reached 2026-08-31**, with one caveat. The full chain ran against
+[PR #1](https://github.com/KVTaniguchi/KTSightLine/pull/1) and posted a verified,
+correctly-positioned comment on the defect line — build → boot → audit → parse →
+evidence → gate → anchor validation → post → ledger → trajectory
+([sample](examples/trajectory-slice.json)).
+
+The caveat: the runtime half was driven by a script rather than by
+`sightline review --post`, because the CLI cannot yet build a branch and inject a UI
+test target (step 6). Every *component* is wired and tested; the CLI orchestration of
+them is the remaining work.
+
 ## Then: eval
 
 Three PRs against the vendored fixture — two with known real defects, one clean. Score

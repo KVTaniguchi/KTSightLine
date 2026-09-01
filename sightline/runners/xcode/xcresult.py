@@ -301,6 +301,10 @@ class XcresultTool:
         """
         dest = Path(dest)
         dest.mkdir(parents=True, exist_ok=True)
+        # xcresulttool refuses to write a manifest over an existing one, which makes a
+        # re-run fail rather than repeat. Clear it so exporting is idempotent; the
+        # attachment files themselves are content-named and safe to overwrite.
+        (dest / "manifest.json").unlink(missing_ok=True)
         cmd = [
             "xcrun", "xcresulttool", "export", "attachments",
             "--path", str(self.bundle), "--output-path", str(dest),
