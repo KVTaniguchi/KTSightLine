@@ -56,10 +56,11 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
 - **GitHub account/org for the private repo** (D9). Needed before the first real PR.
 - **Camera and notification permission denial.** Not `simctl privacy` services (see the
   verification report). Needs another mechanism before that catalog row is implementable.
-- **OQ-FIXTURE-1 — anchoring unattributable audit issues.** Many issues arrive with
-  `element = nil`, so there is no identifier and no frame. A `Finding` needs a file and
-  a line. Fall back to the screen's entry-point symbol, or suppress? Blocks the
-  accessibility skill's anchoring logic.
+- ~~**OQ-FIXTURE-1**~~ — **resolved 2026-08-31 (D11): drop them.** Not posted as
+  file-level comments, not anchored to a guessed line. Costs ~3 of 5 real failures on
+  the fixture's Cart screen; every drop is counted under `unanchorable` so the cost is
+  measured rather than assumed. Revisit if the suppression log says the loss is worse
+  than the precision is worth.
 - **OQ-FIXTURE-2 — `textClipped` fires, but unattributably.** *Revised 2026-08-31
   after parsing a Cart-screen bundle:* the earlier claim that it never fires in SwiftUI
   was too strong. `textClipped | Text clipped` **does** fire on the Cart screen — it
