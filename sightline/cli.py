@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import uuid
 from pathlib import Path
@@ -10,8 +11,11 @@ from pathlib import Path
 import click
 
 from sightline.adapters.forge.github import GitHubAdapter
+from sightline.core.impact.analyzer import analyze
 from sightline.core.telemetry.trajectory import SkillTrace, Trajectory
 from sightline.eval_harness import run_corpus
+from sightline.gate import GateInputs
+from sightline.gate import decide as decide_gate
 from sightline.review import ReviewOptions
 from sightline.review import review as run_review
 from sightline.runners.simulator.device import Appearance, ContentSize, Simulator
@@ -19,6 +23,7 @@ from sightline.runners.xcode.build import Destination, XcodeBuild
 from sightline.runners.xcode.driver_template import Surface
 from sightline.runners.xcode.injection import InjectionUnavailable, prepare_workspace
 from sightline.runners.xcode.xcresult import XcresultTool, postable_issues
+from sightline.skills_builtin import load_all
 
 
 def _parse_pr(target: str) -> tuple[str, int]:
@@ -324,3 +329,54 @@ def eval_command(
     )
     if not score.passed:
         raise SystemExit(1)
+
+
+@main.command()
+@click.option("--pr", "target", required=True, help="owner/repo#123 or a PR URL.")
+@click.option("--path", "checkout", type=click.Path(exists=True, path_type=Path), default=Path("."))
+@click.option("--skills-dir", type=click.Path(path_type=Path), multiple=True)
+@click.option("--budget", type=float, default=0.50, show_default=True)
+def gate(target: str, checkout: Path, skills_dir: tuple[Path, ...], budget: float) -> None:
+    """Decide whether the runtime tier should run. Prints the reason; never fails a PR.
+
+    CI calls this on Linux so the expensive macOS job inherits a cheap job's analysis
+    instead of redoing it. Writes `runtime` and `reason` to $GITHUB_OUTPUT when set.
+
+    Exits 0 in every ordinary case, including "do not run". It also exits 0 when the
+    decision itself errors, admitting the run: ADR-0003 requires the gate to fail open,
+    and a gate that can block a merge by crashing is worse than no gate.
+    """
+    runtime, reason, stage = True, "gate errored; failing open", "ok"
+    try:
+        repo, number = _parse_pr(target)
+        forge = GitHubAdapter()
+        pr = forge.get_pull_request(repo, number)
+        diff = forge.get_diff(repo, number)
+        sources: dict[str, str] = {}
+        for changed in diff.files:
+            if changed.path.endswith(".swift") and (
+                content := forge.get_file(repo, changed.path, pr.head_sha)
+            ):
+                sources[changed.path] = content
+        impact = analyze(diff, sources=sources)
+        skills, _ = load_all([Path(d) for d in skills_dir])
+        trace = decide_gate(
+            GateInputs(
+                pr=pr,
+                impact=impact,
+                changed_paths=diff.paths,
+                skills=skills,
+                budget_remaining_usd=budget,
+            )
+        )
+        runtime, reason, stage = trace.runtime_enabled, trace.reason, trace.stage
+    except Exception as exc:  # noqa: BLE001 — fail open is the whole point
+        reason = f"gate errored ({exc}); failing open"
+
+    click.echo(f"runtime={'true' if runtime else 'false'} stage={stage}")
+    click.echo(f"reason: {reason}")
+    if output := os.environ.get("GITHUB_OUTPUT"):
+        with open(output, "a", encoding="utf-8") as handle:
+            handle.write(f"runtime={'true' if runtime else 'false'}\n")
+            handle.write(f"stage={stage}\n")
+            handle.write(f"reason={reason}\n")

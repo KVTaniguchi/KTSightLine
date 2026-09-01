@@ -140,6 +140,21 @@ model-assisted) and [`skills/missing-usage-description.md`](skills/missing-usage
 | [`docs/decisions.md`](docs/decisions.md) | Decisions taken outside an ADR, dated, with the reasoning. |
 | [`docs/open-questions.md`](docs/open-questions.md) | Unverified premises and unsettled decisions, with owners. |
 
+## Running it in CI
+
+[`.github/workflows/sightline.yml`](.github/workflows/sightline.yml) is the two-job
+split: `static` on `ubuntu-latest` for every PR, `runtime` on `macos-26` behind the gate.
+The static job emits the gate decision as a job output, so impact analysis runs once on
+cheap hardware and the expensive job inherits it.
+
+The runtime job carries `continue-on-error`, is never a required check, and skips fork
+PRs outright — no build cache, no credentials. The `report` job always runs and states
+plainly whether the runtime tier was *skipped* or *failed*; those mean different things
+to a reader and conflating them is what makes a bot's silence untrustworthy.
+
+Two labels override the gate in either direction: `sightline:full` forces the runtime
+tier on, `sightline:skip` forces it off, and skip wins.
+
 ## Requirements
 
 Python 3.12+, `uv`, Xcode 26+, macOS runners for the runtime tier. GitHub first; the

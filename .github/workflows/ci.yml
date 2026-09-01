@@ -1,0 +1,63 @@
+# Our own tests. Separate from sightline.yml, which is the reviewer running on PRs.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: lint and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff check sightline/ tests/
+      - run: uv run ruff format --check sightline/ tests/
+      # Everything except the Xcode-gated integration tests, which need a simulator.
+      - run: uv run pytest tests/ -q
+
+  eval:
+    name: eval corpus
+    # Only when something that could change the score changes. At 10.3x the Linux rate
+    # this job is not free, and running it on a docs-only PR buys nothing.
+    if: >-
+      github.event_name == 'push' ||
+      contains(github.event.pull_request.labels.*.name, 'sightline:full')
+    runs-on: macos-26
+    timeout-minutes: 45
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Create simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          RUNTIME=$(xcrun simctl list runtimes --json \
+            | python3 -c "import json,sys;r=[x for x in json.load(sys.stdin)['runtimes'] if x['isAvailable'] and 'iOS' in x['name']];print(sorted(r,key=lambda x:x['version'])[-1]['identifier'])")
+          for DT in iPhone-SE-3rd-generation iPhone-16e iPhone-17; do
+            if UDID=$(xcrun simctl create "Sightline" "com.apple.CoreSimulator.SimDeviceType.$DT" "$RUNTIME" 2>/dev/null); then break; fi
+          done
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl bootstatus "$UDID" -b
+      - name: Score the corpus
+        run: uv run sightline eval --udid "${{ steps.sim.outputs.udid }}"
+      - name: Integration tests
+        env:
+          SIGHTLINE_INTEGRATION: "1"
+          SIGHTLINE_SIM_UDID: ${{ steps.sim.outputs.udid }}
+        run: uv run pytest tests/test_injection.py -q

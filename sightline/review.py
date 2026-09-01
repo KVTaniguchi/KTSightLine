@@ -33,6 +33,8 @@ from sightline.core.telemetry.trajectory import (
     Trajectory,
 )
 from sightline.core.verify.gate import StructuredOracleVerifier, run_gate
+from sightline.gate import GateInputs
+from sightline.gate import decide as decide_gate
 from sightline.runners.simulator.device import Appearance, ContentSize, Simulator
 from sightline.runners.xcode.build import Destination, XcodeBuild
 from sightline.runners.xcode.injection import InjectionUnavailable, prepare_workspace
@@ -266,20 +268,26 @@ def review(forge: ForgeAdapter, repo: str, number: int, options: ReviewOptions) 
         budget_usd=options.budget_usd or config.budget_usd,
     )
 
-    runtime = options.runtime
-    if pr.is_fork and runtime:
-        runtime = False
-        trajectory.gate = GateTrace(
-            runtime_enabled=False, reason="fork PR — no build cache or credentials", stage="fork"
+    skills, errors = load_all([Path(d) for d in options.skills_dirs])
+    trajectory.notes.extend(f"skill failed to load: {e}" for e in errors)
+
+    # One gate, shared with the `sightline gate` command CI runs on Linux, so a local
+    # dry run and a CI run cannot disagree about why the runtime tier did or did not run.
+    if options.runtime:
+        trajectory.gate = decide_gate(
+            GateInputs(
+                pr=pr,
+                impact=impact,
+                changed_paths=diff.paths,
+                skills=skills,
+                budget_remaining_usd=trajectory.budget_usd,
+            )
         )
     else:
         trajectory.gate = GateTrace(
-            runtime_enabled=runtime,
-            reason="runtime tier enabled" if runtime else "runtime tier not requested",
+            runtime_enabled=False, reason="runtime tier not requested", stage="ok"
         )
-
-    skills, errors = load_all([Path(d) for d in options.skills_dirs])
-    trajectory.notes.extend(f"skill failed to load: {e}" for e in errors)
+    runtime = trajectory.gate.runtime_enabled
 
     policy = RunPolicy(
         enabled_tiers=frozenset(Tier) if runtime else frozenset({Tier.STATIC}),

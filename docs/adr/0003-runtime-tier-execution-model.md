@@ -53,6 +53,11 @@ on cheap hardware, and the expensive job inherits its conclusions.
 
 ### 2. The gate, in order, all deterministic
 
+Implemented in [`sightline/gate.py`](../../sightline/gate.py) and exposed as
+`sightline gate`, which CI runs on Linux and reads back through `$GITHUB_OUTPUT`.
+`sightline review` calls the same function, so a local dry run and a CI run cannot
+disagree about why the runtime tier did or did not run.
+
 1. **Path globs.** Union of `globs` across enabled runtime-tier skills. No match → skip.
    This alone eliminates the majority of PRs in a typical iOS repo (tests-only,
    strings-only, CI-config-only, backend-adjacent).

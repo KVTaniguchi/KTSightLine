@@ -1,0 +1,177 @@
+# The two-job split from ADR-0003.
+#
+#   static   ubuntu-latest, every PR, ungated, ~$0.006/min
+#   runtime  macos-26,      gated,     ~$0.062/min  (10.3x the Linux rate)
+#
+# The static job emits the gate decision as an output, so impact analysis runs once on
+# cheap hardware and the expensive job inherits its conclusion instead of redoing it.
+#
+# Nothing here is a required check. The runtime job carries continue-on-error so a
+# flake, a timeout, or an unavailable runner reports neutral and never blocks a merge.
+
+name: Sightline
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+# A force-push cancels the in-flight run. Paying twice for a superseded commit is pure
+# waste at the macOS rate.
+concurrency:
+  group: sightline-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  static:
+    name: static tier
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      runtime: ${{ steps.gate.outputs.runtime }}
+      reason: ${{ steps.gate.outputs.reason }}
+      stage: ${{ steps.gate.outputs.stage }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The head commit, not the merge commit: every line number we compute and
+          # every comment we post is relative to head.
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install
+        run: uv sync --frozen
+
+      - name: Review (static tier)
+        run: |
+          uv run sightline review \
+            --pr "${{ github.repository }}#${{ github.event.pull_request.number }}" \
+            --no-runtime --allow-experimental \
+            --out "$RUNNER_TEMP/sightline"
+
+      - name: Gate the runtime tier
+        id: gate
+        run: |
+          uv run sightline gate \
+            --pr "${{ github.repository }}#${{ github.event.pull_request.number }}"
+
+      - name: Upload trajectory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sightline-static-trajectory
+          path: ${{ runner.temp }}/sightline/*.json
+          if-no-files-found: ignore
+
+  runtime:
+    name: runtime tier
+    needs: static
+    # Two independent conditions, deliberately. The gate already refuses fork PRs (D7),
+    # but the repository check is a fact rather than a decision, and this job must not
+    # depend on the gate being correct about it.
+    if: >-
+      needs.static.outputs.runtime == 'true' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: macos-26
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install
+        run: uv sync --frozen
+
+      - name: Report toolchain
+        run: |
+          xcodebuild -version
+          xcrun xcresulttool version
+
+      # ADR-0003 §3 calls this the single largest avoidable cost. The key covers
+      # everything that changes the build product; a miss is a clean rebuild, never a
+      # partial one, because a partial would silently compare against the wrong baseline.
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: dd-${{ runner.os }}-${{ hashFiles('**/project.pbxproj', '**/Package.resolved') }}-${{ github.event.pull_request.base.sha }}
+          restore-keys: |
+            dd-${{ runner.os }}-${{ hashFiles('**/project.pbxproj', '**/Package.resolved') }}-
+
+      # Boot starts here rather than after the build so it overlaps compilation. Boot
+      # time and build time overlap almost perfectly and there is no reason to serialize.
+      - name: Create and pre-warm the simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          RUNTIME=$(xcrun simctl list runtimes --json \
+            | python3 -c "import json,sys;r=[x for x in json.load(sys.stdin)['runtimes'] if x['isAvailable'] and 'iOS' in x['name']];print(sorted(r,key=lambda x:x['version'])[-1]['identifier'])")
+          for DT in iPhone-SE-3rd-generation iPhone-16e iPhone-17; do
+            if UDID=$(xcrun simctl create "Sightline" "com.apple.CoreSimulator.SimDeviceType.$DT" "$RUNTIME" 2>/dev/null); then
+              echo "device type: $DT"; break
+            fi
+          done
+          test -n "${UDID:-}" || { echo "::warning::no simulator device type available"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          # bootstatus -b blocks on real readiness. Sleeping is how you get a 15% flake rate.
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Review (runtime tier)
+        run: |
+          uv run sightline review \
+            --pr "${{ github.repository }}#${{ github.event.pull_request.number }}" \
+            --path . --runtime --allow-experimental \
+            --udid "${{ steps.sim.outputs.udid }}" \
+            --out "$RUNNER_TEMP/sightline" \
+            --post
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sightline-evidence
+          path: |
+            ${{ runner.temp }}/sightline/**/*.json
+            ${{ runner.temp }}/sightline/evidence/**
+          if-no-files-found: ignore
+          retention-days: 14
+
+      # A leaked simulator poisons the next job on a self-hosted runner, and costs
+      # nothing to clean up on a hosted one.
+      - name: Tear down
+        if: always()
+        run: |
+          xcrun simctl shutdown "${{ steps.sim.outputs.udid }}" || true
+          xcrun simctl delete "${{ steps.sim.outputs.udid }}" || true
+
+  report:
+    name: report
+    needs: [static, runtime]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # "Skipped" and "failed" mean different things to a reader, and conflating them is
+      # what makes the bot's silence untrustworthy (ADR-0003 §7).
+      - name: Summarize
+        run: |
+          {
+            echo "### Sightline"
+            echo
+            echo "- static tier: \`${{ needs.static.result }}\`"
+            echo "- runtime tier: \`${{ needs.runtime.result }}\`"
+            echo "- gate: **${{ needs.static.outputs.stage }}** — ${{ needs.static.outputs.reason }}"
+          } >> "$GITHUB_STEP_SUMMARY"
