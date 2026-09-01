@@ -125,11 +125,7 @@ def test_audit_record_keeps_a_description_containing_pipes():
     data = {
         "testIdentifier": "T/t()",
         "testRuns": [
-            {
-                "activities": [
-                    {"title": "SIGHTLINE|Cart|contrast|id=a|label=b|frame=c|has | pipes"}
-                ]
-            }
+            {"activities": [{"title": "SIGHTLINE|Cart|contrast|id=a|label=b|frame=c|has | pipes"}]}
         ],
     }
     (issue,) = parse_audit_issues(data)
@@ -174,7 +170,10 @@ def test_attachment_manifest_links_screenshot_to_screen_and_device():
 # --- schema drift ---------------------------------------------------------------------
 
 _HAS_XCODE = shutil.which("xcrun") is not None and (
-    subprocess.run(["xcrun", "xcresulttool", "version"], capture_output=True).returncode == 0
+    subprocess.run(
+        ["xcrun", "xcresulttool", "version"], capture_output=True, check=False
+    ).returncode
+    == 0
 )
 
 
@@ -184,7 +183,7 @@ def test_pinned_schema_version_is_still_accepted():
     proc = subprocess.run(
         ["xcrun", "xcresulttool", "get", "test-results", "summary", "--schema",
          "--schema-version", SCHEMA_VERSION],
-        capture_output=True, text=True,
+        capture_output=True, text=True, check=False,
     )  # fmt: skip
     assert proc.returncode == 0, f"pinned schema {SCHEMA_VERSION} rejected: {proc.stderr}"
 
@@ -263,9 +262,7 @@ def test_revoke_privacy_allows_a_real_service():
 
 def test_prepare_returns_the_artifact_context():
     r = FakeRunner()
-    ctx = Simulator("UDID", run=r).prepare(
-        content_size=ContentSize.AX5, appearance=Appearance.DARK
-    )
+    ctx = Simulator("UDID", run=r).prepare(content_size=ContentSize.AX5, appearance=Appearance.DARK)
     assert ctx == {
         "udid": "UDID",
         "content_size": "accessibility-extra-extra-extra-large",

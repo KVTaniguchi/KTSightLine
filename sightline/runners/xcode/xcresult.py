@@ -20,9 +20,10 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 SCHEMA_VERSION = "0.1.0"
 """Pinned. Bumping this is a deliberate act with a fixture refresh, not a default."""
@@ -262,7 +263,7 @@ class XcresultTool:
             "--schema-version",
             self.schema_version,
         ]
-        proc = subprocess.run(cmd, capture_output=True, text=True)
+        proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
         if proc.returncode != 0:
             raise XcresultError(
                 f"{' '.join(cmd)} failed ({proc.returncode}). "
@@ -273,7 +274,7 @@ class XcresultTool:
     @staticmethod
     def tool_version() -> str:
         proc = subprocess.run(
-            ["xcrun", "xcresulttool", "version"], capture_output=True, text=True
+            ["xcrun", "xcresulttool", "version"], capture_output=True, text=True, check=False
         )
         return proc.stdout.strip()
 
@@ -304,7 +305,7 @@ class XcresultTool:
             "xcrun", "xcresulttool", "export", "attachments",
             "--path", str(self.bundle), "--output-path", str(dest),
         ]  # fmt: skip
-        proc = subprocess.run(cmd, capture_output=True, text=True)
+        proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
         if proc.returncode != 0:
             raise XcresultError(f"export attachments failed: {proc.stderr.strip()}")
         manifest = dest / "manifest.json"

@@ -12,10 +12,10 @@ afternoon.
 from __future__ import annotations
 
 import subprocess
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Callable, Sequence
 
 Runner = Callable[[Sequence[str]], subprocess.CompletedProcess]
 
@@ -59,7 +59,7 @@ PRIVACY_SERVICES = frozenset(
 
 
 def _default_runner(cmd: Sequence[str]) -> subprocess.CompletedProcess:
-    return subprocess.run(list(cmd), capture_output=True, text=True)
+    return subprocess.run(list(cmd), capture_output=True, text=True, check=False)
 
 
 @dataclass
