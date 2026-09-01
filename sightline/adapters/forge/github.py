@@ -143,6 +143,17 @@ class GitHubAdapter(ForgeAdapter):
         )  # fmt: skip
         return parse_diff(text)
 
+    def get_file(self, repo: str, path: str, ref: str) -> str | None:
+        proc = self.run(
+            [
+                "gh", "api", f"repos/{repo}/contents/{path}?ref={ref}",
+                "-H", "Accept: application/vnd.github.raw",
+            ]
+        )  # fmt: skip
+        if proc.returncode != 0:
+            return None  # deleted at this ref, or too large to serve raw
+        return proc.stdout or ""
+
     def existing_comment_bodies(self, repo: str, number: int) -> list[str]:
         data = self._api(f"repos/{repo}/pulls/{number}/comments?per_page=100") or []
         return [c.get("body", "") for c in data]

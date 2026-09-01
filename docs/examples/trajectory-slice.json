@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "run_id": "slice0001",
+  "repo": "KVTaniguchi/KTSightLine",
+  "pr_number": 1,
+  "base_sha": "a5e3fef96a597c9752da0a6ec73aa3bd0db8a6a4",
+  "head_sha": "b0af48c4910397c97344f9849f269f1c942cfa51",
+  "started_at": "2026-09-01T03:12:47.491840Z",
+  "finished_at": "2026-09-01T03:12:49.001428Z",
+  "triggers": [
+    "ui_surface_changed",
+    "view_modified"
+  ],
+  "trigger_evidence": [],
+  "gate": null,
+  "skills": [
+    {
+      "skill_id": "accessibility-audit",
+      "outcome": "fired",
+      "reason": "matched 1 path on ['ui_surface_changed']",
+      "matched_paths": [
+        "eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift"
+      ],
+      "matched_triggers": [],
+      "reserved_usd": 0.0,
+      "spent_usd": 0.0,
+      "duration_s": 0.0,
+      "proposed": 1,
+      "verified": 1,
+      "posted": 1,
+      "artifacts": [
+        "b21694f45910e8b7f090019df56ffc8b155d0f40db312734c81f77c527185bc9",
+        "b6f663ba644b27bec018e1faee6565dd811777ba0bf60735db686e0c36cff70b"
+      ],
+      "error": null
+    }
+  ],
+  "suppressions": [],
+  "tool_versions": {},
+  "budget_usd": 0.5,
+  "spent_usd": 0.0,
+  "notes": []
+}

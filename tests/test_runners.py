@@ -277,3 +277,36 @@ def test_failed_simctl_call_raises_with_the_stderr():
     r = FakeRunner(returncode=1, stderr="Invalid device")
     with pytest.raises(SimctlError, match="Invalid device"):
         Simulator("UDID", run=r).set_appearance(Appearance.DARK)
+
+
+def test_export_attachments_clears_a_stale_manifest(tmp_path, monkeypatch):
+    """xcresulttool refuses to overwrite manifest.json, so a re-run must clear it."""
+    from sightline.runners.xcode import xcresult as mod
+
+    dest = tmp_path / "out"
+    dest.mkdir()
+    stale = dest / "manifest.json"
+    stale.write_text("[]")
+    seen = {}
+
+    def fake_run(cmd, **kw):
+        seen["manifest_existed"] = stale.exists()
+        stale.write_text("[]")
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr(mod.subprocess, "run", fake_run)
+    mod.XcresultTool(tmp_path / "b.xcresult").export_attachments(dest)
+    assert seen["manifest_existed"] is False, "stale manifest should be removed first"
+
+
+def test_status_bar_time_is_a_bare_time_string():
+    """simctl rejects ISO date strings despite its help text saying otherwise.
+
+    Verified against iOS 26.5 on 2026-08-31: every ISO form returned
+    "Invalid, non-ISO date/time string". A regression here silently unpins the clock,
+    and a ticking clock produces a render diff on every run.
+    """
+    r = FakeRunner()
+    Simulator("UDID", run=r).freeze_status_bar()
+    argv = r.calls[0]
+    assert argv[argv.index("--time") + 1] == "9:41"

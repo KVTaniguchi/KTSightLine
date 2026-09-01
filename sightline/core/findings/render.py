@@ -31,15 +31,18 @@ def render_comment(finding: VerifiedFinding, *, evidence_base_url: str | None = 
     if p.detail:
         lines += ["", p.detail]
 
-    evidence = []
+    # Artifact kinds first, then the shared capture context once. Listing the device
+    # per artifact doubled the line for no information, and length costs adoption.
+    kinds = []
     for ref in p.evidence:
-        label = _evidence_label(ref.kind, ref.context)
-        evidence.append(
-            f"[{label}]({evidence_base_url.rstrip('/')}/{ref.sha256})"
-            if evidence_base_url
-            else label
+        kind = str(ref.kind)
+        label = (
+            f"[{kind}]({evidence_base_url.rstrip('/')}/{ref.sha256})" if evidence_base_url else kind
         )
-    lines += ["", "Evidence: " + " · ".join(evidence)]
+        if label not in kinds:
+            kinds.append(label)
+    context_bits = _context_bits(p.evidence[0].context) if p.evidence else []
+    lines += ["", " · ".join(["Evidence: " + ", ".join(kinds), *context_bits])]
 
     if p.suggestion:
         lines += ["", "```suggestion", p.suggestion.rstrip("\n"), "```"]
@@ -47,13 +50,21 @@ def render_comment(finding: VerifiedFinding, *, evidence_base_url: str | None = 
     return "\n".join(lines)
 
 
-def _evidence_label(kind: str, context: dict[str, str]) -> str:
-    """The context block is what makes a finding reproducible after the link expires."""
-    bits = [str(kind)]
-    for key in ("device", "os", "appearance", "content_size", "locale"):
+def _context_bits(context: dict[str, str]) -> list[str]:
+    """The context is what makes a finding reproducible after the artifact link expires.
+
+    Kept on the comment even though the links eventually 404, because the claim must
+    stand on its own once they do.
+    """
+    bits = []
+    if device := context.get("device"):
+        bits.append(device)
+    if os_version := context.get("os"):
+        bits.append(f"iOS {os_version}")
+    for key in ("appearance", "content_size", "locale"):
         if value := context.get(key):
             bits.append(value)
-    return " · ".join(bits)
+    return bits
 
 
 def render_summary(

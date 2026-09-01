@@ -132,7 +132,7 @@ class Simulator:
     def freeze_status_bar(
         self,
         *,
-        time: str = "2026-01-01T09:41:00+00:00",
+        time: str = "9:41",
         operator_name: str = "Sightline",
     ) -> None:
         """Pin every mutable status-bar element.
@@ -140,6 +140,11 @@ class Simulator:
         Non-determinism here is indistinguishable from a real regression to the
         differential verifier — a clock that ticks between the base and head renders
         produces a diff on every run.
+
+        ``--time`` takes a bare time string. `simctl help status_bar` claims "if the
+        string is a valid ISO date string it will also set the date", but every ISO form
+        tried was rejected on iOS 26.5 with "Invalid, non-ISO date/time string"
+        (2026-08-31). Use `9:41` — Apple's own marketing time, and what the docs use.
         """
         self._simctl(
             "status_bar", self.udid, "override",

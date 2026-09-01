@@ -244,3 +244,47 @@ and the cost is losing a capability we have no use for.
 
 **Still not verified:** that a comment we post lands where we intend. That requires
 actually posting one, which needs Kevin's authorization.
+
+---
+
+## P8 closed — a real comment, on a real PR, on the intended line (2026-08-31)
+
+Authorized by Kevin (D12). One PR, one comment.
+
+[KVTaniguchi/KTSightLine#1](https://github.com/KVTaniguchi/KTSightLine/pull/1) adds a
+share button to the fixture's cart toolbar with a 14×14 icon. The whole pipeline ran
+against it: build the branch → boot iPhone SE → run the UI test → parse the `.xcresult`
+→ export the screenshot → store both as redacted, content-addressed artifacts → propose
+one finding → pass the gate → validate the anchor against the real diff → post.
+
+**The comment GitHub stored:**
+
+```json
+{"line": 63, "side": "RIGHT", "start_line": null, "subject_type": "line",
+ "path": "eval/fixtures/CheckoutDemo/CheckoutDemo/CartView.swift"}
+```
+
+Line 63 of the head file is `.frame(width: 14, height: 14)` — the defect line, exactly
+where we aimed. [The comment.](https://github.com/KVTaniguchi/KTSightLine/pull/1#discussion_r3900456131)
+
+P8 is now verified on both halves: read-only against 25/26 real accepted comments, and
+on write against one we posted ourselves.
+
+### Two bugs the live run found that no unit test had
+
+1. **The CLI never fetched head-side file contents**, so impact analysis saw only the
+   diff. A change confined to an existing view's `body` matches no declaration in the
+   added lines, so `ui_surface_changed` never fired and **every runtime skill silently
+   did not run**. The unit test for this case existed; the CLI just did not wire it up.
+   That is the exact shape of failure the trajectory is meant to make visible.
+2. **`xcresulttool export attachments` refuses to overwrite `manifest.json`**, so any
+   re-run failed instead of repeating. Now cleared before export.
+
+### One thing the fixture taught us about SF Symbols
+
+The share button was originally seeded as an *unlabelled* image-only control, matching
+D-004. It did not fire: `square.and.arrow.up` carries a built-in accessibility
+description, unlike `questionmark.circle`. Not every image-only button is a defect, and
+a check that assumes otherwise would produce false positives on stock iconography. The
+seeded defect was changed to geometry (14×14), which the hit-region audit reports
+deterministically.
