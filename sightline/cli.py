@@ -11,6 +11,7 @@ import click
 
 from sightline.adapters.forge.github import GitHubAdapter
 from sightline.core.telemetry.trajectory import SkillTrace, Trajectory
+from sightline.eval_harness import run_corpus
 from sightline.review import ReviewOptions
 from sightline.review import review as run_review
 from sightline.runners.simulator.device import Appearance, ContentSize, Simulator
@@ -273,3 +274,53 @@ def audit(
     ]
     trajectory.notes.append(f"{suppressed} audit issues suppressed as warnings or unanchorable")
     click.echo(f"trajectory: {trajectory.finish().write(Path(out) / f'trajectory-{run_id}.json')}")
+
+
+@main.command("eval")
+@click.option("--corpus", type=click.Path(exists=True, path_type=Path), default=Path("eval/corpus"))
+@click.option(
+    "--fixture",
+    type=click.Path(exists=True, path_type=Path),
+    default=Path("eval/fixtures/CheckoutDemo"),
+)
+@click.option("--udid", required=True, help="Simulator UDID.")
+@click.option("--workdir", type=click.Path(path_type=Path), default=Path(".sightline/eval"))
+@click.option("--only", default=None, help="Substring filter on case id.")
+@click.option("--content-size", default="large", show_default=True)
+def eval_command(
+    corpus: Path, fixture: Path, udid: str, workdir: Path, only: str | None, content_size: str
+) -> None:
+    """Score the eval corpus for precision and recall.
+
+    Exits non-zero if any case has a false positive or a false negative, so this is
+    usable as a gate on our own PRs.
+    """
+    score = run_corpus(
+        Path(corpus), fixture=Path(fixture), udid=udid, workdir=Path(workdir), only=only
+    )
+    for result in score.results:
+        mark = "PASS" if result.passed else "FAIL"
+        click.echo(f"\n[{mark}] {result.case.id} ({result.case.kind})")
+        click.echo(f"       {result.case.title}")
+        if result.error:
+            click.echo(f"       error: {result.error}")
+            continue
+        click.echo(
+            f"       {result.audit_issue_count} audit issues → {len(result.produced)} finding(s)"
+        )
+        for key in result.true_positives:
+            click.echo(f"       ✔ true positive  {key}")
+        for key in result.false_positives:
+            click.echo(f"       ✘ FALSE POSITIVE {key}")
+        for key in result.false_negatives:
+            click.echo(f"       ✘ MISSED         {key}")
+        if result.suppressed:
+            detail = ", ".join(f"{n} {r}" for r, n in result.suppressed.items())
+            click.echo(f"       suppressed: {detail}")
+
+    click.echo(
+        f"\nprecision {score.precision:.2f}  recall {score.recall:.2f}  "
+        f"(tp {score.tp} · fp {score.fp} · fn {score.fn})"
+    )
+    if not score.passed:
+        raise SystemExit(1)

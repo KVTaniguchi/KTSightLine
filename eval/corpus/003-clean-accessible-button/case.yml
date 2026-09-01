@@ -1,0 +1,10 @@
+id: 003-clean-accessible-button
+title: Adds a correctly built button to the confirmation screen
+kind: clean
+patch: change.patch
+notes: >
+  The regression test for "posts nothing". This change TOUCHES a UI surface, so the
+  runtime tier fires and pays a full build and simulator run — and must still produce
+  nothing. A no-op diff would not test that; this does. Labelled via Label(), 44pt
+  minimum height, semantic colours inherited from the button style.
+expected: []

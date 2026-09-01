@@ -1,0 +1,28 @@
+# Makes the fixture self-describing: a copy of this directory is a complete, reviewable
+# iOS repo. The eval harness relies on that, and it doubles as the worked example of
+# what a real repo's .sightline/config.yml looks like.
+
+project: CheckoutDemo.xcodeproj
+app_target: CheckoutDemo
+ui_test_target: CheckoutDemoUITests
+
+surfaces:
+  Cart:
+    view: CartView
+    wait_for: cart.continue
+  CheckoutSummary:
+    view: CheckoutSummaryView
+    taps: [cart.continue]
+    wait_for: checkout.payment
+  PaymentMethod:
+    view: PaymentMethodView
+    taps: [cart.continue, checkout.payment]
+    wait_for: payment.disclosure
+  ScanCard:
+    view: ScanCardView
+    taps: [cart.continue, checkout.payment, payment.scanCard]
+    wait_for: scanCard.start
+  OrderConfirmation:
+    view: OrderConfirmationView
+    taps: [cart.continue, checkout.payment, payment.placeOrder]
+    wait_for: confirmation.viewHistory

@@ -1,0 +1,13 @@
+id: 002-undersized-tap-target
+title: Adds a 12x12 edit control, well under the 44x44 minimum
+kind: true_positive
+patch: change.patch
+notes: 'Geometry rather than labelling, so it exercises a different audit type and a different claim template.
+  The control is correctly labelled, which is the point: a check that only looks for missing labels would
+  call this clean.
+
+  '
+expected:
+- audit_type: hitRegion
+  identifier: payment.editCards
+  file: CheckoutDemo/PaymentMethodView.swift

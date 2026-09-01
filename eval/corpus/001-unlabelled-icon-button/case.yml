@@ -1,0 +1,16 @@
+id: 001-unlabelled-icon-button
+title: Adds an image-only toolbar button with no accessibility label
+kind: true_positive
+patch: change.patch
+notes: 'The canonical case. SwiftUI derives a label from the SF Symbol name, so VoiceOver reads ''questionmark.circle''.
+
+  Symbol choice is load-bearing and was determined empirically: square.and.arrow.up, ellipsis.circle,
+  and line.3.horizontal.decrease all carry built-in accessibility descriptions and do NOT fire. questionmark.circle
+  does. An image-only button is therefore not automatically a defect, and a check that assumes otherwise
+  would false-positive on stock iconography.
+
+  '
+expected:
+- audit_type: sufficientElementDescription
+  identifier: checkout.options
+  file: CheckoutDemo/CheckoutSummaryView.swift

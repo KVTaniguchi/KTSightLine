@@ -1,0 +1,156 @@
+# Ground truth for the CheckoutDemo fixture.
+#
+# Every defect below is deliberate. Do not fix them — `eval/` scores precision and
+# recall against this file, so "fixing" one silently breaks the corpus.
+#
+# Everything here is OBSERVED, not intended. Each entry was run on
+# iPhone SE (3rd generation) / iOS 26.5 / Xcode 26.6 on 2026-08-31 and records what
+# actually fired. Three of the five originally-designed defects behaved differently
+# from the design; those differences are the useful part of this file.
+
+fixture: CheckoutDemo
+app_target: CheckoutDemo
+ui_test_target: CheckoutDemoUITests
+scheme: CheckoutDemo
+verified_on:
+  device: iPhone SE (3rd generation)
+  runtime: iOS 26.5
+  xcode: "26.6 (17F113)"
+  date: 2026-08-31
+
+defects:
+  - id: D-001
+    file: CheckoutDemo/CheckoutSummaryView.swift
+    symbol: CheckoutSummaryView.body
+    element: checkout.estimatedDeliveryLabel
+    defect: >
+      fixedSize() then a 44pt max-height frame with .clipped(). Fits at default Dynamic
+      Type; at AX5 the content needs ~120pt and is cut off mid-glyph.
+    expected_rule: dynamic-type-clipping
+    verifier: differential_render
+    detectable_by: runtime
+    requires: content_size = accessibility-extra-extra-extra-large
+    observed: |
+      VISUALLY CONFIRMED and NOT reported by performAccessibilityAudit.
+      At AX5 "Estimated delivery" renders as "…timated deliver…" — clipped on both
+      sides mid-glyph — and the "Thursday, September 10" subtitle is clipped away
+      entirely. See reference-renders/CheckoutSummary-se-light-{default,ax5}.png.
+      The audit reported no textClipped issue for this element at AX5.
+    status: confirmed_visual_only
+
+  - id: D-002
+    file: CheckoutDemo/PaymentMethodView.swift
+    symbol: PaymentMethodView.body
+    element: payment.disclosure
+    defect: hardcoded rgb(0.78,0.78,0.80) text on hardcoded rgb(1,1,1) background
+    expected_rule: accessibility-audit
+    expected_audit_type: contrast
+    verifier: structured_oracle
+    detectable_by: runtime
+    requires: none
+    observed: |
+      FIRES at default size and at AX5: "Contrast failed".
+      CAVEAT: the audit reports element = nil for this issue, so there is no
+      identifier and no frame to anchor a comment to. Anchoring must fall back to the
+      screen plus a render diff. See open question OQ-FIXTURE-1.
+    status: confirmed
+
+  - id: D-003
+    file: CheckoutDemo/ScanCardView.swift
+    symbol: ScanCardView.requestCameraAccess
+    defect: AVCaptureDevice.requestAccess(for:.video) with no NSCameraUsageDescription
+    expected_rule: missing-usage-description
+    verifier: structured_oracle
+    detectable_by: static
+    requires: none
+    observed: |
+      Not yet exercised — the static tier does not exist. The defect is present and
+      the Info.plist deliberately omits the key. Hard crash on first tap.
+    status: present_not_yet_checked
+
+  - id: D-004
+    file: CheckoutDemo/CartView.swift
+    symbol: CartView.body
+    element: cart.help
+    defect: image-only Button whose derived label is the SF Symbol name
+    expected_rule: accessibility-audit
+    expected_audit_type: sufficientElementDescription
+    verifier: structured_oracle
+    detectable_by: runtime
+    requires: none
+    observed: |
+      FIRES at default size and at AX5:
+      "sufficientElementDescription | id=cart.help | label=questionmark.circle |
+       Label not human-readable"
+      Cleanly attributable — identifier and frame both present. This is the best
+      end-to-end candidate for the first vertical slice.
+    status: confirmed
+
+  - id: D-005
+    file: CheckoutDemo/CartView.swift
+    symbol: CartView.body
+    element: cart.removeItem
+    defect: 16x16 tap target, below the 44x44 minimum
+    expected_rule: accessibility-audit
+    expected_audit_type: hitRegion
+    verifier: structured_oracle
+    detectable_by: runtime
+    requires: none
+    observed: |
+      FIRES at default size, cleanly attributable:
+      "hitRegion | id=cart.removeItem | frame=(327.0, 259.0, 16.0, 16.0) |
+       Hit area is too small"
+      At AX5 the same class of issue fires but with element = nil (see OQ-FIXTURE-1).
+    status: confirmed
+
+clean_surfaces:
+  # A "Contrast failed" here is a false positive. "Contrast nearly passed" is NOT a
+  # failure — see severity_mapping below.
+  - file: CheckoutDemo/OrderConfirmationView.swift
+    symbol: OrderConfirmationView.body
+    observed: |
+      Zero audit FAILURES at default size and at AX5. Produces two
+      "Contrast nearly passed" warnings, which must not be posted.
+      This is the regression test for "posts nothing".
+  - file: CheckoutDemo/Model.swift
+    observed: No UI. Never produced a finding.
+
+# --- findings about the audit itself, discovered while building this fixture ---
+
+severity_mapping:
+  # compactDescription carries the severity; auditType does not. A harness that treats
+  # every reported issue as a finding posts warnings as defects and gets muted.
+  failed: post           # "Contrast failed"
+  nearly_passed: suppress  # "Contrast nearly passed" — sub-threshold warning
+  partially_unsupported: suppress  # "Dynamic Type font sizes are partially unsupported"
+  note: >
+    Filtering to "failed" is what makes OrderConfirmationView clean. Without the
+    filter every screen in the app, including the deliberately-correct one, reports
+    issues.
+
+environmental_noise:
+  # Fires on stock SwiftUI controls we did not author. Not defects; must be suppressed
+  # or the bot comments on Apple's own components.
+  - audit_type: dynamicType
+    description: "Dynamic Type font sizes are partially unsupported"
+    seen_on: NavigationLink labels ("Continue to checkout", "Place order")
+  - audit_type: contrast
+    description: "Contrast nearly passed"
+    seen_on: List section headers, .secondary foreground styles, bordered buttons
+
+open_questions:
+  - id: OQ-FIXTURE-1
+    question: >
+      Several audit issues arrive with element = nil, so there is no identifier and no
+      frame. A Finding needs a file and a line. How do we anchor an unattributable
+      issue — fall back to the screen's entry-point symbol, or suppress it?
+    blocks: the accessibility-audit skill's anchoring logic
+  - id: OQ-FIXTURE-2
+    question: >
+      REVISED 2026-08-31. textClipped is NOT SwiftUI-blind: "Text clipped" fires on the
+      Cart screen at default size. But it arrives with element = nil, so it collapses
+      into OQ-FIXTURE-1 and cannot be anchored. It still did not fire for D-001 on
+      CheckoutSummary across four clipping shapes. Open: can we ever get an
+      attributable textClipped, or is Dynamic Type clipping permanently a
+      differential_render job?
+    blocks: whether dynamic-type-clipping can ever use structured_oracle

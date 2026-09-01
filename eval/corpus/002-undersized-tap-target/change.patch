@@ -1,0 +1,24 @@
+diff --git a/CheckoutDemo/PaymentMethodView.swift b/CheckoutDemo/PaymentMethodView.swift
+index 678da79..ac58922 100644
+--- a/CheckoutDemo/PaymentMethodView.swift
++++ b/CheckoutDemo/PaymentMethodView.swift
+@@ -50,6 +50,19 @@ struct PaymentMethodView: View {
+         }
+         .navigationTitle("Payment")
+         .navigationBarTitleDisplayMode(.inline)
++        .toolbar {
++            ToolbarItem(placement: .topBarTrailing) {
++                Button {
++                    // edit saved cards
++                } label: {
++                    Image(systemName: "pencil")
++                        .resizable()
++                        .frame(width: 12, height: 12)
++                }
++                .accessibilityLabel("Edit saved cards")
++                .accessibilityIdentifier("payment.editCards")
++            }
++        }
+     }
+ }
+ 

@@ -1,0 +1,21 @@
+diff --git a/CheckoutDemo/CheckoutSummaryView.swift b/CheckoutDemo/CheckoutSummaryView.swift
+index 7ce8b9c..1968da9 100644
+--- a/CheckoutDemo/CheckoutSummaryView.swift
++++ b/CheckoutDemo/CheckoutSummaryView.swift
+@@ -54,6 +54,16 @@ struct CheckoutSummaryView: View {
+         }
+         .navigationTitle("Checkout")
+         .navigationBarTitleDisplayMode(.inline)
++        .toolbar {
++            ToolbarItem(placement: .topBarTrailing) {
++                Button {
++                    // open delivery options
++                } label: {
++                    Image(systemName: "questionmark.circle")
++                }
++                .accessibilityIdentifier("checkout.options")
++            }
++        }
+     }
+ }
+ 

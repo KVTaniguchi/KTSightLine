@@ -1,0 +1,371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FE000000000000000000000C /* CheckoutDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000004 /* CheckoutDemoApp.swift */; };
+		FE000000000000000000000D /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000005 /* Model.swift */; };
+		FE000000000000000000000E /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000006 /* CartView.swift */; };
+		FE000000000000000000000F /* CheckoutSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000007 /* CheckoutSummaryView.swift */; };
+		FE0000000000000000000010 /* PaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000008 /* PaymentMethodView.swift */; };
+		FE0000000000000000000011 /* ScanCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000009 /* ScanCardView.swift */; };
+		FE0000000000000000000012 /* OrderConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000A /* OrderConfirmationView.swift */; };
+		FE0000000000000000000013 /* CheckoutDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000B /* CheckoutDemoUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FE000000000000000000002A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE000000000000000000001A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FE0000000000000000000018;
+			remoteInfo = CheckoutDemo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		FE0000000000000000000001 /* CheckoutDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CheckoutDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE0000000000000000000002 /* CheckoutDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CheckoutDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE0000000000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FE0000000000000000000004 /* CheckoutDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutDemoApp.swift; sourceTree = "<group>"; };
+		FE0000000000000000000005 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		FE0000000000000000000006 /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
+		FE0000000000000000000007 /* CheckoutSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSummaryView.swift; sourceTree = "<group>"; };
+		FE0000000000000000000008 /* PaymentMethodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodView.swift; sourceTree = "<group>"; };
+		FE0000000000000000000009 /* ScanCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanCardView.swift; sourceTree = "<group>"; };
+		FE000000000000000000000A /* OrderConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderConfirmationView.swift; sourceTree = "<group>"; };
+		FE000000000000000000000B /* CheckoutDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutDemoUITests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FE000000000000000000001D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE000000000000000000001E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FE0000000000000000000014 = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000015 /* CheckoutDemo */,
+				FE0000000000000000000016 /* CheckoutDemoUITests */,
+				FE0000000000000000000017 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FE0000000000000000000015 /* CheckoutDemo */ = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000004 /* CheckoutDemoApp.swift */,
+				FE0000000000000000000005 /* Model.swift */,
+				FE0000000000000000000006 /* CartView.swift */,
+				FE0000000000000000000007 /* CheckoutSummaryView.swift */,
+				FE0000000000000000000008 /* PaymentMethodView.swift */,
+				FE0000000000000000000009 /* ScanCardView.swift */,
+				FE000000000000000000000A /* OrderConfirmationView.swift */,
+				FE0000000000000000000003 /* Info.plist */,
+			);
+			path = CheckoutDemo;
+			sourceTree = "<group>";
+		};
+		FE0000000000000000000016 /* CheckoutDemoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				FE000000000000000000000B /* CheckoutDemoUITests.swift */,
+			);
+			path = CheckoutDemoUITests;
+			sourceTree = "<group>";
+		};
+		FE0000000000000000000017 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000001 /* CheckoutDemo.app */,
+				FE0000000000000000000002 /* CheckoutDemoUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FE0000000000000000000018 /* CheckoutDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE0000000000000000000021 /* Build configuration list for PBXNativeTarget "CheckoutDemo" */;
+			buildPhases = (
+				FE000000000000000000001B /* Sources */,
+				FE000000000000000000001D /* Frameworks */,
+				FE000000000000000000001F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CheckoutDemo;
+			productName = CheckoutDemo;
+			productReference = FE0000000000000000000001 /* CheckoutDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FE0000000000000000000019 /* CheckoutDemoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE0000000000000000000022 /* Build configuration list for PBXNativeTarget "CheckoutDemoUITests" */;
+			buildPhases = (
+				FE000000000000000000001C /* Sources */,
+				FE000000000000000000001E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FE0000000000000000000029 /* PBXTargetDependency */,
+			);
+			name = CheckoutDemoUITests;
+			productName = CheckoutDemoUITests;
+			productReference = FE0000000000000000000002 /* CheckoutDemoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FE000000000000000000001A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					FE0000000000000000000018 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					FE0000000000000000000019 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = FE0000000000000000000018;
+					};
+				};
+			};
+			buildConfigurationList = FE0000000000000000000020 /* Build configuration list for PBXProject "CheckoutDemo" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FE0000000000000000000014;
+			productRefGroup = FE0000000000000000000017 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FE0000000000000000000018 /* CheckoutDemo */,
+				FE0000000000000000000019 /* CheckoutDemoUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FE000000000000000000001F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FE000000000000000000001B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FE000000000000000000000C /* CheckoutDemoApp.swift in Sources */,
+				FE000000000000000000000D /* Model.swift in Sources */,
+				FE000000000000000000000E /* CartView.swift in Sources */,
+				FE000000000000000000000F /* CheckoutSummaryView.swift in Sources */,
+				FE0000000000000000000010 /* PaymentMethodView.swift in Sources */,
+				FE0000000000000000000011 /* ScanCardView.swift in Sources */,
+				FE0000000000000000000012 /* OrderConfirmationView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE000000000000000000001C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FE0000000000000000000013 /* CheckoutDemoUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FE0000000000000000000029 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FE0000000000000000000018 /* CheckoutDemo */;
+			targetProxy = FE000000000000000000002A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FE0000000000000000000023 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FE0000000000000000000024 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FE0000000000000000000025 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CheckoutDemo/Info.plist;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sightline.fixtures.CheckoutDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FE0000000000000000000026 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CheckoutDemo/Info.plist;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sightline.fixtures.CheckoutDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FE0000000000000000000027 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sightline.fixtures.CheckoutDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CheckoutDemo;
+			};
+			name = Debug;
+		};
+		FE0000000000000000000028 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sightline.fixtures.CheckoutDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CheckoutDemo;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FE0000000000000000000020 /* Build configuration list for PBXProject "CheckoutDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE0000000000000000000023 /* Debug */,
+				FE0000000000000000000024 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE0000000000000000000021 /* Build configuration list for PBXNativeTarget "CheckoutDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE0000000000000000000025 /* Debug */,
+				FE0000000000000000000026 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE0000000000000000000022 /* Build configuration list for PBXNativeTarget "CheckoutDemoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE0000000000000000000027 /* Debug */,
+				FE0000000000000000000028 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FE000000000000000000001A /* Project object */;
+}

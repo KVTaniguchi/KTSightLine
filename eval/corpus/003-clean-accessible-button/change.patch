@@ -1,0 +1,20 @@
+diff --git a/CheckoutDemo/OrderConfirmationView.swift b/CheckoutDemo/OrderConfirmationView.swift
+index 0c4d965..82b465a 100644
+--- a/CheckoutDemo/OrderConfirmationView.swift
++++ b/CheckoutDemo/OrderConfirmationView.swift
+@@ -38,6 +38,15 @@ struct OrderConfirmationView: View {
+                 }
+                 .buttonStyle(.borderedProminent)
+                 .accessibilityIdentifier("confirmation.viewHistory")
++
++                Button {
++                    // contact support
++                } label: {
++                    Label("Contact support", systemImage: "bubble.left.and.bubble.right")
++                        .frame(maxWidth: .infinity, minHeight: 44)
++                }
++                .buttonStyle(.bordered)
++                .accessibilityIdentifier("confirmation.contactSupport")
+             }
+             .padding()
+         }
