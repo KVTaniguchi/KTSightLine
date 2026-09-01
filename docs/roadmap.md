@@ -62,10 +62,14 @@ Build order, each step independently testable:
    naming why it fired. Tested on what must *not* fire as hard as on what must.
 3. ~~`core/skills/`~~ **done** — `loader.py` plus `dispatch.py`, the three-stage filter.
    Every skill gets a `Decision` with a reason; budget denials name the numbers (D6).
-4. `runners/xcode/` — build; `xcresult.py` adapter tested against a committed real bundle.
-   Our own thin wrappers, not an MCP dependency (D4).
-5. `runners/simulator/` — boot with `bootstatus -b`, retry-with-erase, deterministic
-   device state, capture.
+4. ~~`runners/xcode/`~~ **done (parsing)** — `xcresult.py` splits shelling-out from pure
+   parsing, pins `--schema-version`, and is tested against JSON captured from real runs
+   (plus an Xcode-gated schema-drift test). `xcodebuild` build/test invocation is still
+   to come.
+5. ~~`runners/simulator/`~~ **done** — `bootstatus -b` (never sleep), retry-on-erased-
+   device, `freeze_status_bar` pinning every mutable element, content size / appearance /
+   increase-contrast, screenshot, and a `revoke_privacy` that refuses `camera` with a
+   message instead of silently pretending.
 6. UI test target discovery/injection into a **scratch clone**, never the checkout.
 7. `core/evidence/` — content-addressed store with the redaction pass in front of it.
 8. `core/verify/` — the `structured_oracle` verifier and the gate.

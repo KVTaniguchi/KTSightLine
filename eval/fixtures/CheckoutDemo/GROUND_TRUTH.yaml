@@ -147,8 +147,10 @@ open_questions:
     blocks: the accessibility-audit skill's anchoring logic
   - id: OQ-FIXTURE-2
     question: >
-      performAccessibilityAudit did not report textClipped for a SwiftUI view that is
-      visibly clipped mid-glyph at AX5 (D-001), across four different clipping shapes.
-      Is textClipped UIKit-only in practice? If so, every Dynamic Type clipping check
-      must go through differential_render, and the audit cannot be the cheap path.
+      REVISED 2026-08-31. textClipped is NOT SwiftUI-blind: "Text clipped" fires on the
+      Cart screen at default size. But it arrives with element = nil, so it collapses
+      into OQ-FIXTURE-1 and cannot be anchored. It still did not fire for D-001 on
+      CheckoutSummary across four clipping shapes. Open: can we ever get an
+      attributable textClipped, or is Dynamic Type clipping permanently a
+      differential_render job?
     blocks: whether dynamic-type-clipping can ever use structured_oracle

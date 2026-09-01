@@ -1,0 +1,17 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "EE997D72-7EC7-4F7D-A234-5934221CF862.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "SIGHTLINE-SCREENSHOT-CheckoutSummary_0_BC2DFE4C-0B89-4D67-A76B-5F9510F0F237.png",
+        "timestamp" : 1788220515.69
+      }
+    ],
+    "testIdentifier" : "CheckoutDemoUITests/testCheckoutSummaryScreen()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/CheckoutDemoUITests/testCheckoutSummaryScreen"
+  }
+]

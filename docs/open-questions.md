@@ -60,10 +60,13 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
   `element = nil`, so there is no identifier and no frame. A `Finding` needs a file and
   a line. Fall back to the screen's entry-point symbol, or suppress? Blocks the
   accessibility skill's anchoring logic.
-- **OQ-FIXTURE-2 — is `textClipped` UIKit-only in practice?** It did not fire on a
-  SwiftUI view clipped mid-glyph at AX5, across four clipping shapes. If it is
-  UIKit-only, every Dynamic Type clipping check must go through `differential_render`
-  and the audit can never be the cheap path for it.
+- **OQ-FIXTURE-2 — `textClipped` fires, but unattributably.** *Revised 2026-08-31
+  after parsing a Cart-screen bundle:* the earlier claim that it never fires in SwiftUI
+  was too strong. `textClipped | Text clipped` **does** fire on the Cart screen — it
+  just arrives with `element = nil`, so it collapses into OQ-FIXTURE-1. The narrower
+  and still-open question: can we get an attributable `textClipped`, or is Dynamic Type
+  clipping permanently a `differential_render` job? It did not fire at all for the
+  CheckoutSummary shapes, across four variants.
 
 ### Resolved — see [decisions.md](decisions.md)
 D1 verification scope · D2 fixture app · D3 license · D4 vendor vs MCP ·

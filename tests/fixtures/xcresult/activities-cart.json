@@ -1,0 +1,278 @@
+{
+  "testIdentifier" : "CheckoutDemoUITests/testCartScreen()",
+  "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/CheckoutDemoUITests/testCartScreen",
+  "testName" : "testCartScreen()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788221999.504,
+          "title" : "Start Test at 2026-08-31 20:19:59.504"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788221999.541,
+          "title" : "Set Up"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1788222000.112,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1788222000.55,
+                  "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788221999.543,
+              "title" : "Launch com.sightline.fixtures.CheckoutDemo"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788221999.543,
+          "title" : "Open com.sightline.fixtures.CheckoutDemo"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1788222002.902,
+                  "title" : "Checking existence of `\"cart.continue\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788222002.901,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.continue\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222001.855,
+          "title" : "Waiting 10.0s for \"cart.continue\" Any to exist"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222003.009,
+          "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "attachments" : [
+            {
+              "lifetime" : "keepAlways",
+              "name" : "SIGHTLINE-SCREENSHOT-Cart_0_11F51088-59B5-4275-A725-4B229AD97F17.png",
+              "payloadId" : "0~nyatsUc046moaZBXqXlIPnskKnucGsTofgbTVD8ylqcR_skvSdulTpWWh6iFuoN1IMbjbwAvl3PpJ1W-oIf6PA==",
+              "timestamp" : 1788222003.054,
+              "uuid" : "C42E2330-ED39-421A-9CCE-99B95636E0AD"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788222003.054,
+              "title" : "SIGHTLINE-SCREENSHOT-Cart"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222003.054,
+          "title" : "Added attachment named 'SIGHTLINE-SCREENSHOT-Cart'"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.782,
+          "title" : "SIGHTLINE|Cart|hitRegion|id=|label=|frame=nil|Hit area is too small"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.782,
+          "title" : "Find the Any (Descendant with identity binding to AX element pid: 7979, elementOrHash.elementID: 4336726720.67)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.799,
+          "title" : "Find the \"cart.removeItem\" Button"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.812,
+          "title" : "Find the \"cart.removeItem\" Button"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.825,
+          "title" : "Find the \"cart.removeItem\" Button"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.841,
+          "title" : "SIGHTLINE|Cart|hitRegion|id=cart.removeItem|label=Remove Selvedge Denim, 32x32|frame=(327.0, 259.0, 16.0, 16.0)|Hit area is too small"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.841,
+          "title" : "SIGHTLINE|Cart|hitRegion|id=|label=|frame=nil|Hit area is too small"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.841,
+          "title" : "Find the Any (Descendant with identity binding to AX element pid: 7979, elementOrHash.elementID: 4336807296.59)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.855,
+          "title" : "Find the \"Items\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.868,
+          "title" : "Find the \"Items\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.881,
+          "title" : "Find the \"Items\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.894,
+          "title" : "SIGHTLINE|Cart|contrast|id=|label=Items|frame=(16.0, 126.0, 343.0, 40.5)|Contrast nearly passed"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.894,
+          "title" : "SIGHTLINE|Cart|contrast|id=|label=|frame=nil|Contrast nearly passed"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.895,
+          "title" : "Find the Any (Descendant with identity binding to AX element pid: 7979, elementOrHash.elementID: 4336722688.65)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.907,
+          "title" : "Find the \"Qty 1\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.92,
+          "title" : "Find the \"Qty 1\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.933,
+          "title" : "Find the \"Qty 1\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.946,
+          "title" : "SIGHTLINE|Cart|contrast|id=|label=Qty 1|frame=(32.0, 271.0, 29.5, 14.5)|Contrast nearly passed"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.946,
+          "title" : "SIGHTLINE|Cart|contrast|id=|label=|frame=nil|Contrast nearly passed"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.946,
+          "title" : "Find the Any (Descendant with identity binding to AX element pid: 7979, elementOrHash.elementID: 4395944128.73)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.959,
+          "title" : "Find the \"Continue to checkout\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.973,
+          "title" : "Find the \"Continue to checkout\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.986,
+          "title" : "Find the \"Continue to checkout\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.999,
+          "title" : "SIGHTLINE|Cart|dynamicType|id=|label=Continue to checkout|frame=(32.0, 418.25, 163.0, 20.5)|Dynamic Type font sizes are partially unsupported"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222004.999,
+          "title" : "Find the Any (Descendant with identity binding to AX element pid: 7979, elementOrHash.elementID: 4336724480.66)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.011,
+          "title" : "Find the \"Price $185.00\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.024,
+          "title" : "Find the \"Price $185.00\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.037,
+          "title" : "Find the \"Price $185.00\" StaticText"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.05,
+          "title" : "SIGHTLINE|Cart|textClipped|id=|label=Price $185.00|frame=(252.5, 256.75, 66.5, 20.5)|Text clipped"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.05,
+          "title" : "Find the Any (Descendant with identity binding to AX element pid: 7979, elementOrHash.elementID: 4336805504.19)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.063,
+          "title" : "Find the \"cart.help\" Button"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.076,
+          "title" : "Find the \"cart.help\" Button"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.089,
+          "title" : "Find the \"cart.help\" Button"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.101,
+          "title" : "SIGHTLINE|Cart|sufficientElementDescription|id=cart.help|label=questionmark.circle|frame=(322.0, 24.0, 30.0, 36.0)|Label not human-readable"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788222005.102,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}

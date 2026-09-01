@@ -1,0 +1,165 @@
+{
+  "testIdentifier" : "CheckoutDemoUITests/testCheckoutSummaryScreen()",
+  "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/CheckoutDemoUITests/testCheckoutSummaryScreen",
+  "testName" : "testCheckoutSummaryScreen()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220511.112,
+          "title" : "Start Test at 2026-08-31 19:55:11.112"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220511.13,
+          "title" : "Set Up"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1788220511.569,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1788220511.98,
+                  "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220511.131,
+              "title" : "Launch com.sightline.fixtures.CheckoutDemo"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220511.131,
+          "title" : "Open com.sightline.fixtures.CheckoutDemo"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220513.2,
+          "title" : "Checking existence of `\"cart.continue\" Any`"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220513.302,
+          "title" : "Find the \"cart.continue\" Any"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220513.356,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220513.357,
+              "title" : "Find the \"cart.continue\" Button"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220513.403,
+              "title" : "Check for interrupting elements affecting \"cart.continue\" Button"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220513.43,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220513.718,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220513.356,
+          "title" : "Tap \"cart.continue\" Button"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1788220515.571,
+                  "title" : "Checking existence of `\"checkout.estimatedDeliveryLabel\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220515.569,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"checkout.estimatedDeliveryLabel\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220514.53,
+          "title" : "Waiting 10.0s for \"checkout.estimatedDeliveryLabel\" Any to exist"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220515.653,
+          "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "attachments" : [
+            {
+              "lifetime" : "keepAlways",
+              "name" : "SIGHTLINE-SCREENSHOT-CheckoutSummary_0_BC2DFE4C-0B89-4D67-A76B-5F9510F0F237.png",
+              "payloadId" : "0~NzM_Nl4oAMBUy7BtVF7rIWZzQW1_rLDVCOs9GMbQB_Heu0Xria8g_k70ymr3vNYOsaTofUblx4k1AGByXvmM2A==",
+              "timestamp" : 1788220515.69,
+              "uuid" : "EE997D72-7EC7-4F7D-A234-5934221CF862"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1788220515.69,
+              "title" : "SIGHTLINE-SCREENSHOT-CheckoutSummary"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220515.69,
+          "title" : "Added attachment named 'SIGHTLINE-SCREENSHOT-CheckoutSummary'"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220517.366,
+          "title" : "SIGHTLINE|CheckoutSummary|contrast|id=|label=|frame=nil|Contrast failed"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220517.366,
+          "title" : "SIGHTLINE|CheckoutSummary|contrast|id=|label=|frame=nil|Contrast nearly passed"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220517.367,
+          "title" : "SIGHTLINE|CheckoutSummary|contrast|id=|label=|frame=nil|Contrast nearly passed"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1788220517.367,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}
