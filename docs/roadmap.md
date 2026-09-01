@@ -23,7 +23,10 @@ One thing end to end before ten things halfway.
       5 seeded defects, 1 clean control, hand-maintained `.xcodeproj`, builds and runs
       its UI tests on iPhone SE / iOS 26.5. Ground truth is **observed**, not intended
 - [x] Pushed to [KVTaniguchi/KTSightLine](https://github.com/KVTaniguchi/KTSightLine) (D9, public per D10)
-- [ ] Re-scope the first slice around D-004, not D-001 — see below
+- [x] Re-scoped the first slice around D-004, not D-001 — see below
+- [x] **Deterministic layer built and tested** — 68 tests. `diff → symbols → triggers →
+      dispatch` runs end to end on the committed fixture PR: `accessibility-audit`
+      fires, `missing-usage-description` correctly stays quiet
 
 ## Next: the vertical slice
 
@@ -50,11 +53,15 @@ D-004 is the one defect that is detected, attributable, and mechanically fixable
 
 Build order, each step independently testable:
 
-1. `core/diff/` — PR diff → changed files, symbols, targets. Fixture-driven.
-2. `core/impact/` — changed symbols → trigger set. **Its own eval fixtures**, separate
-   from the end-to-end corpus: the impact layer's precision *is* the product's precision.
-3. `core/skills/` — ~~load, validate~~ (done: `loader.py`), then dispatch. Assert
-   fired/not-fired with a reason.
+1. ~~`core/diff/`~~ **done** — unified-diff parser with per-side line arithmetic, plus
+   `swift.py`, a brace-tracking outline answering "what declaration encloses line N" for
+   ADR-0002 fingerprints. Handles adds, deletes, renames, multi-hunk, `\ No newline`.
+   `commentable_lines` is the P8 positioning contract.
+2. ~~`core/impact/`~~ **done** — `analyze(diff) -> ImpactReport`. Emits the closed
+   trigger vocabulary from paths and **added lines only**, each with `TriggerEvidence`
+   naming why it fired. Tested on what must *not* fire as hard as on what must.
+3. ~~`core/skills/`~~ **done** — `loader.py` plus `dispatch.py`, the three-stage filter.
+   Every skill gets a `Decision` with a reason; budget denials name the numbers (D6).
 4. `runners/xcode/` — build; `xcresult.py` adapter tested against a committed real bundle.
    Our own thin wrappers, not an MCP dependency (D4).
 5. `runners/simulator/` — boot with `bootstatus -b`, retry-with-erase, deterministic
