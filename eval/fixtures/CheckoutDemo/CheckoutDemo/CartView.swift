@@ -54,6 +54,17 @@ struct CartView: View {
                     }
                     .accessibilityIdentifier("cart.help")
                 }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        // share cart
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                    }
+                    .accessibilityLabel("Share cart")
+                    .accessibilityIdentifier("cart.share")
+                }
             }
         }
     }
