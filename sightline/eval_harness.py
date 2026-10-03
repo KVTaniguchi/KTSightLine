@@ -21,6 +21,8 @@ from pathlib import Path
 
 import yaml
 
+from sightline.adapters.forge.base import ForgeError
+from sightline.adapters.forge.local_git import LocalGitAdapter
 from sightline.config import RepoConfig
 from sightline.core.diff.models import ChangeType
 from sightline.core.diff.parser import parse_diff
@@ -55,6 +57,11 @@ class Case:
     patch: Path
     expected: tuple[Expectation, ...]
     notes: str = ""
+    base: str | None = None
+    """Commit of an external target repo the patch applies to (`--target-repo`).
+    Unset for cases against the vendored fixture."""
+    config: Path | None = None
+    """Sightline config for the target, when it is not committed in the target repo."""
 
     @classmethod
     def load(cls, directory: Path) -> Case:
@@ -67,6 +74,8 @@ class Case:
             patch=Path(directory) / data.get("patch", "change.patch"),
             expected=tuple(Expectation(**e) for e in data.get("expected") or []),
             notes=data.get("notes", ""),
+            base=data.get("base"),
+            config=Path(directory) / data["config"] if data.get("config") else None,
         )
 
 
@@ -169,15 +178,25 @@ def run_case(
     udid: str,
     workdir: Path,
     content_size: str = "large",
+    target_repo: Path | None = None,
 ) -> CaseResult:
-    """Apply the patch to a fresh copy of the fixture and run the runtime tier."""
+    """Apply the patch to a fresh copy of the fixture and run the runtime tier.
+
+    With ``target_repo``, the tree is that repo exported at the case's ``base`` commit
+    instead — a real app rather than the vendored fixture, still reproducible offline.
+    """
     result = CaseResult(case=case)
     root = Path(workdir) / case.id
     if root.exists():
         shutil.rmtree(root)
-    shutil.copytree(fixture, root)
 
     try:
+        if target_repo:
+            if not case.base:
+                raise RuntimeError("--target-repo needs `base:` in case.yml")
+            LocalGitAdapter(target_repo, case.base, case.base).materialize(root)
+        else:
+            shutil.copytree(fixture, root)
         _apply_patch(root, case.patch)
         diff = parse_diff(case.patch.read_text())
         sources = {
@@ -186,7 +205,7 @@ def run_case(
             if f.path.endswith(".swift") and f.change_type is not ChangeType.DELETED
         }
         impact = analyze(diff, sources=sources)
-        config = RepoConfig.load(root)
+        config = RepoConfig.load(root, override=case.config)
         surfaces = config.surfaces_for(impact.ui_surfaces)
         if not surfaces:
             raise RuntimeError(
@@ -200,6 +219,7 @@ def run_case(
             surfaces=surfaces,
             app_target=config.app_target,
             ui_test_target=config.ui_test_target,
+            dismiss_alerts=tuple(config.dismiss_alerts),
         )
         Simulator(udid).prepare(content_size=ContentSize(content_size), appearance=Appearance.LIGHT)
         bundle = Path(workdir) / f"{case.id}.xcresult"
@@ -214,7 +234,12 @@ def run_case(
             raise RuntimeError(f"build failed: {build.failure_lines[:2]}")
 
         tool = XcresultTool(bundle)
-        issues = tool.all_audit_issues()
+        issues, audited = tool.audit_results()
+        if missing := sorted({s.name for s in surfaces} - audited):
+            # Otherwise a thrown audit scores as a perfectly quiet clean case.
+            raise RuntimeError(
+                f"audit did not complete on {missing}: {list(tool.summary().failures)}"
+            )
         postable = postable_issues(issues)
         result.audit_issue_count = len(issues)
 
@@ -240,7 +265,7 @@ def run_case(
         gated = run_gate(proposed, StructuredOracleVerifier(oracle), skill_id="accessibility-audit")
         result.suppressed = gated.counts
         result.produced = [f.proposed.oracle_key or "" for f in gated.verified]
-    except (RuntimeError, InjectionUnavailable, OSError) as exc:
+    except (RuntimeError, InjectionUnavailable, OSError, ForgeError) as exc:
         result.error = str(exc)
         return result
 
@@ -253,7 +278,18 @@ def run_case(
 
 
 def run_corpus(
-    corpus: Path, *, fixture: Path, udid: str, workdir: Path, only: str | None = None
+    corpus: Path,
+    *,
+    fixture: Path,
+    udid: str,
+    workdir: Path,
+    only: str | None = None,
+    target_repo: Path | None = None,
 ) -> Score:
     cases = [c for c in discover_cases(corpus) if not only or only in c.id]
-    return Score([run_case(c, fixture=fixture, udid=udid, workdir=workdir) for c in cases])
+    return Score(
+        [
+            run_case(c, fixture=fixture, udid=udid, workdir=workdir, target_repo=target_repo)
+            for c in cases
+        ]
+    )

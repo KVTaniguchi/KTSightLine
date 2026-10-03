@@ -1,0 +1,23 @@
+# Sightline config for Nearby Meows (github.com/KVTaniguchi/KTCatPokemon), the first
+# real app the runtime tier has been pointed at.
+#
+# Kept here rather than in the app's repo, and passed with `--config`, because we do
+# not commit a `.sightline/` directory to an app just to evaluate against it.
+#
+# Nearby Meows has no accessibility identifiers, so surfaces are reached with the
+# app's own launch-argument overrides instead of taps: `-hasCompletedOnboarding YES`
+# skips the @AppStorage onboarding gate, and `-initialTab` picks the shell tab.
+
+project: KTCatPokemon.xcodeproj
+app_target: KTCatPokemon
+ui_test_target: KTCatPokemonUITests
+
+# The shell starts location updates on first appear, so a fresh simulator shows the
+# location prompt over every screen. `simctl privacy grant location` does not suppress
+# it (measured 2026-10-03), so the driver answers it instead.
+dismiss_alerts: ["Allow While Using App"]
+
+surfaces:
+  Dex:
+    view: DexView
+    launch_arguments: [-hasCompletedOnboarding, "YES", -initialTab, Dex]
