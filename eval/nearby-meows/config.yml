@@ -14,10 +14,14 @@ ui_test_target: KTCatPokemonUITests
 
 # The shell starts location updates on first appear, so a fresh simulator shows the
 # location prompt over every screen. `simctl privacy grant location` does not suppress
-# it (measured 2026-10-03), so the driver answers it instead.
-dismiss_alerts: ["Allow While Using App"]
+# it (measured 2026-10-03), so the driver answers it instead. The Camera surface adds
+# the camera prompt ("Don't Allow" / "Allow"); `simctl privacy` has no camera service.
+dismiss_alerts: ["Allow While Using App", "Allow"]
 
 surfaces:
   Dex:
     view: DexView
     launch_arguments: [-hasCompletedOnboarding, "YES", -initialTab, Dex]
+  Camera:
+    view: CameraView
+    launch_arguments: [-hasCompletedOnboarding, "YES", -initialTab, Map]

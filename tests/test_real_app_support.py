@@ -149,7 +149,7 @@ def test_config_override_is_used_instead_of_the_repo_file(tmp_path):
     config = RepoConfig.load(tmp_path, override=NEARBY_MEOWS / "config.yml")
     (dex,) = config.surfaces_for(frozenset({"DexView"}))
     assert dex.launch_arguments == ("-hasCompletedOnboarding", "YES", "-initialTab", "Dex")
-    assert config.dismiss_alerts == ["Allow While Using App"]
+    assert config.dismiss_alerts == ["Allow While Using App", "Allow"]
 
 
 def test_missing_override_is_an_error_not_an_empty_config(tmp_path):
