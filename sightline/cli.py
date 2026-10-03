@@ -360,7 +360,7 @@ def audit(
     default=Path("eval/fixtures/CheckoutDemo"),
 )
 @click.option("--udid", required=True, help="Simulator UDID.")
-@click.option("--workdir", type=click.Path(path_type=Path), default=Path(".sightline/eval"))
+@click.option("--workdir", type=click.Path(path_type=Path), default=Path(".sightline/run/eval"))
 @click.option("--only", default=None, help="Substring filter on case id.")
 @click.option("--content-size", default="large", show_default=True)
 @click.option(

@@ -59,10 +59,6 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
 - **Does `simctl privacy revoke` actually take effect?** D14 found `grant location` is
   a no-op on the iOS 26.5 simulator. The catalog's permission-denied row assumes
   `revoke` works for nine services; that was also verified from `--help` only.
-- **`.sightline/eval/` is tracked in git.** Commit `7ebc5f8` checked in ~6,700 scratch
-  and DerivedData files because the directory is not in `.gitignore`; every
-  `sightline eval` rewrites them. Needs untracking plus an ignore rule (or a default
-  `--workdir` under `.sightline/run/`). The Nearby Meows script already uses the latter.
 - **Model routing config format.** The tier→model/effort mapping is decided (D5); it
   lives in config and still has no schema.
 - **GitHub account/org for the private repo** (D9). Needed before the first real PR.
