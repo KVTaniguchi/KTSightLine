@@ -269,6 +269,9 @@ wrong, the cost section needs rewriting.
   during the P6/P7 checks — the service list is calendar, contacts, location, photos,
   media-library, microphone, motion, reminders, siri). The catalog's permission-denied
   check needs another mechanism for those two, which are the two that matter most.
+  **2026-10-03 (D14):** `grant location` was then observed to have no effect on the iOS
+  26.5 simulator. Permission *prompts* are now answered by the injected driver from
+  configured button titles; whether `simctl privacy revoke` works is unverified.
 - ~~Cache scoping across forks~~ — **resolved 2026-08-31 (D7): the runtime tier does not
   run on fork PRs.** No base-build cache, no credentials. Reported as policy, not
   failure. This keeps us off `pull_request_target` and its privilege-escalation
