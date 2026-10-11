@@ -153,6 +153,22 @@ What the real app broke that the fixture never could:
 - **A permission alert over every screen**, which `simctl privacy grant` does not
   suppress (D14), and a thrown audit that read as a clean screen (D15).
 
+## The acceptance tier — reached 2026-10-11
+
+Brief: [`docs/briefs/0002-acceptance-tier.md`](briefs/0002-acceptance-tier.md). ADR-0004.
+`sightline accept` checks a spec's given/when/then criteria against the running app, one
+verdict per criterion, `$0` and no model call. A Claude Code skill
+(`integrations/claude-code/sightline-accept/`) authors the criteria and proposes log
+instrumentation upstream of lint.
+
+- Verified premises first (`verification-2026-10-11.md`): app output is one file per
+  run, `.debug` never reaches the bundle, `fr_FR` changes the subtotal's text.
+- Acceptance corpus (`eval/acceptance/`, `sightline eval --suite acceptance`): 7 cases,
+  16 criteria, 0 false passes, 0 false fails, every reason matching. Includes the
+  liveness negative control (an app that silences its own stderr).
+- Next for this tier: run it once by hand against Nearby Meows; executors for
+  `network_call`; matrices. See open questions.
+
 ## Then: Tier 3 before more of Tier 2
 
 The before/after screenshot table is the only thing in the catalog that produces value on

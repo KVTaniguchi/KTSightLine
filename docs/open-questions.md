@@ -50,6 +50,19 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
 - Nightly full-matrix + PR-time single-device is probably the right end state. Blocked on
   having addressal data to justify the matrix.
 
+### From ADR-0004 (acceptance tier)
+- Executors for `network_call` and `persisted_state` evidence. `network_call` likely
+  wants an app-side hook, which raises the same instrumentation-trust question as logs.
+- Device, appearance and Dynamic Type matrices for acceptance runs (one simulator, one
+  configuration in v1).
+- Posting verdicts to a PR — needs a `ForgeAdapter` method and authorization (D12).
+- Discovering criteria from a PR body or commit trailers; wiring into `sightline review`
+  and `.sightline/config.yml`.
+- Fallback log capture (`simctl spawn … log show`) if a future Xcode drops the stderr
+  mirror (verification V1). Liveness fails closed meanwhile.
+- Does CI's Xcode (26.4.1) emit the same diagnostics layout and XCTest agent lines as
+  27.1? Unverified (verification V7).
+
 ### Not yet assigned to an ADR
 - **OQ-REAL-1 — anchoring without identifiers.** Findings anchor by finding the audited
   element's `accessibilityIdentifier` on an added line. Nearby Meows has none, so on its
@@ -80,4 +93,5 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
 
 ### Resolved — see [decisions.md](decisions.md)
 D1 verification scope · D2 fixture app · D3 license · D4 vendor vs MCP ·
-D5 model routing · D6 budgets · D7 fork PRs · D8 suppression visibility · D9 eval PRs
+D5 model routing · D6 budgets · D7 fork PRs · D8 suppression visibility · D9 eval PRs ·
+D16 acceptance mode and exit codes · D17 log evidence · D18 crash, unreachable and absent verdicts

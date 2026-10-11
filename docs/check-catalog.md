@@ -67,6 +67,19 @@ The reason the project exists. Gated per ADR-0003.
 | Backgrounding and state restoration — background, terminate, relaunch. Is state lost? | `differential_render` | `screenshot` ×2 | planned |
 | Deep link replay — if routing changed, replay a configured corpus of universal links | `reexecution` | `console_log` + `screenshot` | planned |
 
+## Acceptance mode — what the spec promised
+
+Not a check: `sightline accept` executes an author's criteria and reports a verdict for
+every one, `pass` included ([ADR-0004](adr/0004-acceptance-tier.md)). Listed here because
+it shares the runtime tier's runners and evidence rules.
+
+| Evidence | Verifier | Evidence | Status |
+|---|---|---|---|
+| `ui_state` — element by accessibility identifier; `exists`, `label`, `label_contains`, `value`, `enabled` after `tap` / `type` / `wait_for` steps | records in the `.xcresult` (`derive.py`) | `xcresult` + `screenshot` | **built** |
+| `log_event` — `SIGHTLINE-AC\|<event>` lines the app logs at `.notice`, counted per launch | records + attributed app output | `xcresult` + `console_log` | **built** |
+| `network_call` | — | — | parses; `not_verifiable` |
+| `persisted_state` | — | — | parses; `not_verifiable` |
+
 ## Tier 3 — evidence a human reviewer normally has to go get
 
 | Deliverable | Notes | Status |

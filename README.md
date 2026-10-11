@@ -10,8 +10,10 @@ posted.
 That constraint is the product, not a slogan. The type that the GitHub adapter accepts
 cannot be constructed without a passing verification.
 
-> **Status: pre-alpha.** This repo currently contains the plan — three ADRs, the two
-> schemas everything hangs off, and the check catalog. No harness yet. Start with
+> **Status: pre-alpha.** Two modes run end to end against the vendored fixture and one
+> real app: `sightline review` (an accessibility-audit runtime check, scored 1.00 / 1.00
+> on a three-case corpus) and `sightline accept` (acceptance criteria, zero false passes
+> or fails on a seven-case corpus). One simulator, one configuration. Start with
 > [`PROMPT.md`](PROMPT.md), then [`docs/adr/`](docs/adr/).
 
 ---
@@ -117,6 +119,74 @@ Worked examples: [`skills/accessibility-audit.md`](skills/accessibility-audit.md
 model-assisted) and [`skills/missing-usage-description.md`](skills/missing-usage-description.md)
 (static, `model_tier: none`, spends nothing).
 
+## Checking acceptance criteria
+
+`sightline review` looks for defects nobody asked about. `sightline accept` checks what
+a spec *promised*: given a file of given/when/then acceptance criteria, it builds the
+branch, drives the app on a simulator, and reports `pass`, `fail`, or `not_verifiable`
+per criterion — each backed by a record in the `.xcresult`. No PR, no forge, no model
+call; it runs in a worktree before a PR exists. See
+[ADR-0004](docs/adr/0004-acceptance-tier.md).
+
+### With Claude Code
+
+Install the skill once:
+
+```bash
+ln -s "$(pwd)/integrations/claude-code/sightline-accept" ~/.claude/skills/sightline-accept
+```
+
+Then, in the app's repo, ask Claude Code to check the AC (or run `/sightline-accept`).
+It asks for the criteria if you have not given them, finds the real accessibility
+identifiers in your code (it never invents one), and proposes `SIGHTLINE-AC|` log lines
+for promises the screen cannot show — "submitted exactly once" — as a diff you approve,
+left staged for you to commit. It writes the criteria file, lints it until clean, runs
+`sightline accept`, and summarizes the report: crashes and unreachable steps first,
+every `not_verifiable` by ID, and log-backed verdicts labelled as such.
+
+### By hand
+
+```yaml
+acceptance_schema: 1
+spec_id: CHK-7
+criteria:
+  - id: CHK-7.AC1
+    given: a cart holding the sample order
+    when: the shopper continues to checkout
+    then: the subtotal covers every line item times its quantity
+    surface: CheckoutSummary            # key into `surfaces:` in .sightline/config.yml
+    expect:
+      - id: checkout.subtotal           # accessibility identifier
+        exists: true
+        label: "Subtotal $441.00"
+  - id: CHK-7.AC3
+    given: an order was placed
+    when: the confirmation screen appears
+    then: the order was submitted exactly once
+    surface: PaymentMethod
+    steps:
+      - tap: payment.placeOrder
+    evidence: log_event                 # the app logs SIGHTLINE-AC|order_submitted|...
+    expect_log:
+      - event: order_submitted
+        count: 1
+```
+
+```bash
+sightline lint --criteria acceptance/CHK-7.yml --path .
+```
+
+```bash
+sightline accept --criteria acceptance/CHK-7.yml --path . --udid <simulator-udid>
+```
+
+Prose is never parsed; `surface`, `fixture`, `steps`, `expect` and `expect_log` are
+what runs, and both vocabularies are closed — lint names any word they lack. Log lines
+must be `Logger(...).notice("SIGHTLINE-AC|<event>|...")`: `.debug` never reaches the
+result bundle. Exit code is 0 unless `--strict` (1 on any fail, 2 if nothing could
+run); a file that fails lint never runs and exits 2. The JSON report is a versioned
+public contract keyed on criterion ID.
+
 ## What it will not do
 
 - It is not a general-purpose code reviewer. If a finding would apply equally to a Django
@@ -139,6 +209,8 @@ model-assisted) and [`skills/missing-usage-description.md`](skills/missing-usage
 | [`docs/prior-art.md`](docs/prior-art.md) | What we borrowed and from where. |
 | [`docs/decisions.md`](docs/decisions.md) | Decisions taken outside an ADR, dated, with the reasoning. |
 | [`docs/open-questions.md`](docs/open-questions.md) | Unverified premises and unsettled decisions, with owners. |
+| [`docs/briefs/`](docs/briefs/) | Later briefs that add to `PROMPT.md` — the acceptance tier. |
+| [`docs/verification-2026-10-11.md`](docs/verification-2026-10-11.md) | What the acceptance tier's premises turned out to be on Xcode 27.1. |
 
 ## Running it in CI
 
@@ -157,7 +229,7 @@ tier on, `sightline:skip` forces it off, and skip wins.
 
 ## Requirements
 
-Python 3.12+, `uv`, Xcode 26+, macOS runners for the runtime tier. GitHub first; the
+Python 3.12+, `uv`, Xcode 26+ (acceptance tier verified on 27.1), macOS runners for the runtime tier. GitHub first; the
 review engine never imports a GitHub type, so other forges are an adapter away.
 
 The runtime tier does not run on PRs from forks — no build cache, no credentials. Outside
