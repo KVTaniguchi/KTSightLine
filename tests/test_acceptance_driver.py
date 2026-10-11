@@ -208,3 +208,62 @@ def test_hostile_driver_typechecks(tmp_path):
         check=False,
     )  # fmt: skip
     assert proc.returncode == 0, proc.stderr
+
+
+# --- §6: injection, generalized ----------------------------------------------------------
+
+
+def _tree_digest(root: Path) -> dict[str, bytes]:
+    return {
+        str(p.relative_to(root)): p.read_bytes() for p in sorted(root.rglob("*")) if p.is_file()
+    }
+
+
+def test_acceptance_driver_injects_into_a_scratch_clone(tmp_path):
+    from sightline.runners.xcode.injection import prepare_acceptance_workspace
+
+    source = tmp_path / "src"
+    shutil.copytree(FIXTURE, source)
+    before = _tree_digest(source)
+    rendered = render_acceptance_driver(CriteriaFile.load(EXAMPLE), _config())
+    workspace = prepare_acceptance_workspace(
+        source,
+        scratch_dir=tmp_path / "scratch",
+        project_relpath="CheckoutDemo.xcodeproj",
+        rendered=rendered,
+        ui_test_target="CheckoutDemoUITests",
+    )
+    assert workspace.driver_path.name == "SightlineAcceptance.swift"
+    assert workspace.driver_path.read_text() == rendered.source
+    assert workspace.test_identifiers == (
+        "CheckoutDemoUITests/SightlineAcceptance/test_AC_CHK_7_AC1",
+        "CheckoutDemoUITests/SightlineAcceptance/test_AC_CHK_7_AC2",
+        "CheckoutDemoUITests/SightlineAcceptance/test_AC_CHK_7_AC3",
+    )
+    pbx = (workspace.project / "project.pbxproj").read_text()
+    assert "SightlineAcceptance.swift" in pbx
+    assert _tree_digest(source) == before, "the checkout we were handed must stay pristine"
+
+
+def test_no_executable_criteria_is_unavailable_not_a_crash(tmp_path):
+    from sightline.runners.xcode.injection import (
+        InjectionUnavailable,
+        prepare_acceptance_workspace,
+    )
+
+    manual_only = CriteriaFile.model_validate(
+        {
+            "acceptance_schema": 1,
+            "spec_id": "M",
+            "criteria": [
+                {"id": "A1", "given": "g", "when": "w", "then": "t", "manual": True, "reason": "r"}
+            ],
+        }
+    )
+    with pytest.raises(InjectionUnavailable, match="no executable criteria"):
+        prepare_acceptance_workspace(
+            FIXTURE,
+            scratch_dir=tmp_path / "scratch",
+            project_relpath="CheckoutDemo.xcodeproj",
+            rendered=render_acceptance_driver(manual_only, _config()),
+        )
