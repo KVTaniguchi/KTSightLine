@@ -31,6 +31,8 @@ SCHEMA_VERSION = "0.1.0"
 # The audit record the UI-test driver writes into activity titles.
 # SIGHTLINE|<screen>|<auditType>|id=<id>|label=<label>|frame=<frame>|<compactDescription>
 _AUDIT_RECORD = re.compile(r"^SIGHTLINE\|")
+# Written by the driver after performAccessibilityAudit returns: SIGHTLINE-AUDITED|<screen>
+_AUDITED_RECORD = re.compile(r"^SIGHTLINE-AUDITED\|(?P<screen>.+)$")
 _SCREENSHOT_NAME = re.compile(r"^SIGHTLINE-SCREENSHOT-(?P<screen>[^_]+)")
 
 # Severity lives in compactDescription, not auditType (measured on the fixture,
@@ -76,6 +78,7 @@ class TestSummary:
     skipped: int
     devices: tuple[Device, ...]
     environment: str = ""
+    failures: tuple[str, ...] = ()
 
     @property
     def device(self) -> Device | None:
@@ -165,6 +168,10 @@ def parse_summary(data: dict[str, Any]) -> TestSummary:
         skipped=data.get("skippedTests", 0),
         devices=devices,
         environment=data.get("environmentDescription", ""),
+        failures=tuple(
+            f"{f.get('testName', '?')}: {f.get('failureText', '')}"
+            for f in data.get("testFailures", [])
+        ),
     )
 
 
@@ -215,6 +222,16 @@ def parse_audit_issues(data: dict[str, Any]) -> tuple[AuditIssue, ...]:
                 )
             )
     return tuple(issues)
+
+
+def parse_audited_screens(data: dict[str, Any]) -> frozenset[str]:
+    """Screens whose audit ran to completion, from the driver's SIGHTLINE-AUDITED marker."""
+    return frozenset(
+        m["screen"]
+        for run in data.get("testRuns", [])
+        for activity in _walk_activities(run.get("activities", []))
+        if (m := _AUDITED_RECORD.match(activity.get("title", "")))
+    )
 
 
 def parse_attachments_manifest(data: list[dict[str, Any]]) -> tuple[Attachment, ...]:
@@ -288,11 +305,22 @@ class XcresultTool:
         return parse_audit_issues(self._get("activities", "--test-id", test_id))
 
     def all_audit_issues(self) -> tuple[AuditIssue, ...]:
-        out: list[AuditIssue] = []
+        return self.audit_results()[0]
+
+    def audit_results(self) -> tuple[tuple[AuditIssue, ...], frozenset[str]]:
+        """Every audit issue, plus the screens whose audit actually completed.
+
+        Read together: an empty issue list means "clean" only for a screen in the
+        second set. For any other screen it means the audit never ran.
+        """
+        issues: list[AuditIssue] = []
+        audited: set[str] = set()
         for root in self.tests():
             for case in root.test_cases():
-                out.extend(self.audit_issues(case.identifier or ""))
-        return tuple(out)
+                data = self._get("activities", "--test-id", case.identifier or "")
+                issues.extend(parse_audit_issues(data))
+                audited |= parse_audited_screens(data)
+        return tuple(issues), frozenset(audited)
 
     def export_attachments(self, dest: Path) -> tuple[Attachment, ...]:
         """Export every attachment and return the manifest.

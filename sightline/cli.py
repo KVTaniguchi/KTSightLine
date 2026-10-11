@@ -10,7 +10,9 @@ from pathlib import Path
 
 import click
 
+from sightline.adapters.forge.base import ForgeAdapter
 from sightline.adapters.forge.github import GitHubAdapter
+from sightline.adapters.forge.local_git import LocalGitAdapter
 from sightline.core.findings.render import render_preview
 from sightline.core.impact.analyzer import analyze
 from sightline.core.telemetry.trajectory import SkillTrace, Trajectory
@@ -46,13 +48,30 @@ def main() -> None:
 
 
 @main.command()
-@click.option("--pr", "target", required=True, help="owner/repo#123 or a PR URL.")
+@click.option("--pr", "target", default=None, help="owner/repo#123 or a PR URL.")
+@click.option(
+    "--local",
+    "local_repo",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=None,
+    help="Review two refs of a local git repo instead of a PR. Never posts.",
+)
+@click.option("--base", default=None, help="With --local: the base ref.")
+@click.option("--head", default=None, help="With --local: the head ref.")
 @click.option(
     "--path",
     "checkout",
     type=click.Path(exists=True, path_type=Path),
     default=Path("."),
-    help="Local checkout of the PR head. Needed for the runtime tier.",
+    help="Local checkout of the PR head. Needed for the runtime tier. "
+    "Ignored with --local, which exports the head ref itself.",
+)
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help="Use this config instead of <checkout>/.sightline/config.yml.",
 )
 @click.option("--skills-dir", type=click.Path(path_type=Path), multiple=True)
 @click.option("--runtime/--no-runtime", default=False, help="Enable the macOS runtime tier.")
@@ -71,8 +90,12 @@ def main() -> None:
     "Point at $GITHUB_STEP_SUMMARY in CI.",
 )
 def review(
-    target: str,
+    target: str | None,
+    local_repo: Path | None,
+    base: str | None,
+    head: str | None,
     checkout: Path,
+    config_path: Path | None,
     skills_dir: tuple[Path, ...],
     runtime: bool,
     udid: str | None,
@@ -90,9 +113,24 @@ def review(
     prints what it would say. A reviewer that comments the first time someone tries it
     is a reviewer people uninstall.
     """
-    repo, number = _parse_pr(target)
+    forge: ForgeAdapter
+    if local_repo:
+        if target or post:
+            raise click.UsageError("--local reviews two local refs; it takes no --pr or --post")
+        if not (base and head):
+            raise click.UsageError("--local needs --base and --head")
+        local = LocalGitAdapter(local_repo, base, head)
+        repo, number, forge = local.name, 0, local
+        checkout = local.materialize(Path(out) / "checkouts" / local.head_sha[:12])
+    elif target:
+        repo, number = _parse_pr(target)
+        forge = GitHubAdapter()
+    else:
+        raise click.UsageError("pass --pr, or --local with --base and --head")
+
     options = ReviewOptions(
         checkout=Path(checkout),
+        config_path=config_path,
         runtime=runtime,
         allow_experimental=allow_experimental,
         post=post,
@@ -103,10 +141,11 @@ def review(
         skills_dirs=list(skills_dir),
         udid=udid,
     )
-    result = run_review(GitHubAdapter(), repo, number, options)
+    result = run_review(forge, repo, number, options)
     t = result.trajectory
 
-    click.echo(f"{repo}#{number}  {t.head_sha[:8]}")
+    where = f"{repo} {base}...{head}" if local_repo else f"{repo}#{number}"
+    click.echo(f"{where}  {t.head_sha[:8]}")
     click.echo(f"triggers: {', '.join(t.triggers) or 'none'}")
     for d in result.decisions:
         click.echo(f"  {'✔' if d.fired else '·'} {d.skill_id}: {d.outcome.value} — {d.reason}")
@@ -140,7 +179,18 @@ def review(
         if not result.verified:
             click.echo("nothing to post")
     else:
-        click.echo(f"dry run — {len(result.verified)} finding(s) would post (use --post)")
+        # The exact bodies, so a dry run shows what would land, not just a count.
+        click.echo("")
+        click.echo(
+            render_preview(
+                result.verified,
+                suppressed=t.suppression_summary(),
+                notes=result.notes,
+                posted=False,
+            )
+        )
+        hint = "" if local_repo else " (use --post)"
+        click.echo(f"dry run — {len(result.verified)} finding(s) would post{hint}")
 
 
 @main.command("check-anchors")
@@ -310,11 +360,24 @@ def audit(
     default=Path("eval/fixtures/CheckoutDemo"),
 )
 @click.option("--udid", required=True, help="Simulator UDID.")
-@click.option("--workdir", type=click.Path(path_type=Path), default=Path(".sightline/eval"))
+@click.option("--workdir", type=click.Path(path_type=Path), default=Path(".sightline/run/eval"))
 @click.option("--only", default=None, help="Substring filter on case id.")
 @click.option("--content-size", default="large", show_default=True)
+@click.option(
+    "--target-repo",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=None,
+    help="Run cases against this git repo at each case's `base:` commit, "
+    "instead of the vendored fixture.",
+)
 def eval_command(
-    corpus: Path, fixture: Path, udid: str, workdir: Path, only: str | None, content_size: str
+    corpus: Path,
+    fixture: Path,
+    udid: str,
+    workdir: Path,
+    only: str | None,
+    content_size: str,
+    target_repo: Path | None,
 ) -> None:
     """Score the eval corpus for precision and recall.
 
@@ -322,7 +385,12 @@ def eval_command(
     usable as a gate on our own PRs.
     """
     score = run_corpus(
-        Path(corpus), fixture=Path(fixture), udid=udid, workdir=Path(workdir), only=only
+        Path(corpus),
+        fixture=Path(fixture),
+        udid=udid,
+        workdir=Path(workdir),
+        only=only,
+        target_repo=target_repo,
     )
     for result in score.results:
         mark = "PASS" if result.passed else "FAIL"

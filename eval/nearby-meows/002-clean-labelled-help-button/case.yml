@@ -1,0 +1,12 @@
+id: 002-clean-labelled-help-button
+title: Adds the same help button, correctly labelled
+kind: clean
+patch: change.patch
+config: ../config.yml
+# Patch is `git diff origin/main...clean` from Nearby Meows' local `clean` branch.
+base: 61a9a740980714ac4d3e0428e9abb9377ede0626
+expected: []
+notes: >
+  Identical to 001 except for .accessibilityLabel("How the dex works"). It touches
+  DexView, so the runtime tier builds and audits the real app, and must stay silent
+  over the screen's 13 pre-existing sub-threshold warnings.

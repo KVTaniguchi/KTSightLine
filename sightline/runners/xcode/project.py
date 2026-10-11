@@ -215,6 +215,20 @@ class PbxProject:
     def target_named(self, name: str) -> Target | None:
         return next((t for t in self.targets() if t.name == name), None)
 
+    def synchronized_folder(self, target: Target) -> str | None:
+        """The folder an Xcode 16+ synchronized group compiles for ``target``, if any.
+
+        Such a target has no per-file references: every source in the folder is
+        compiled. Registering a file explicitly as well is wrong, not just redundant —
+        the reference resolves against the main group and fails the build with "Build
+        input file cannot be found" (found on the first real app, Nearby Meows).
+        """
+        for group_id in self.objects[target.object_id].get("fileSystemSynchronizedGroups", []):
+            group = self.objects.get(group_id, {})
+            if group.get("isa") == "PBXFileSystemSynchronizedRootGroup" and group.get("path"):
+                return str(group["path"])
+        return None
+
     # --- writes ---
 
     def _sources_phase(self, target: Target) -> str:

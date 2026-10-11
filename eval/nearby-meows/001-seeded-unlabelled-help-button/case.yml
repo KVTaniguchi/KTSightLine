@@ -1,0 +1,16 @@
+id: 001-seeded-unlabelled-help-button
+title: Adds an icon-only help button to the Dex header with no accessibility label
+kind: true_positive
+patch: change.patch
+config: ../config.yml
+# Nearby Meows (KVTaniguchi/KTCatPokemon) origin/main when the case was cut. The patch
+# is `git diff origin/main...seeded` from that repo's local `seeded` branch.
+base: 61a9a740980714ac4d3e0428e9abb9377ede0626
+expected:
+  - audit_type: sufficientElementDescription
+    identifier: dex.help
+    file: KTCatPokemon/Views/DexView.swift
+notes: >
+  questionmark.circle is one of the SF Symbols whose derived label is its own name
+  (see eval/README.md), so VoiceOver reads "questionmark.circle". The button carries
+  an identifier because Sightline anchors by identifier, and Nearby Meows has none.
