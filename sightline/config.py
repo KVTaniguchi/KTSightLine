@@ -34,6 +34,34 @@ class SurfaceConfig(BaseModel):
     """
 
 
+class FixtureConfig(BaseModel):
+    """Per-criterion app state for the acceptance tier (ADR-0004 §2).
+
+    Sightline passes these at launch and does not know what they mean; honouring them is
+    the app's job. Navigation belongs in `surfaces:`, not here.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    launch_arguments: list[str] = Field(default_factory=list)
+    launch_environment: dict[str, str] = Field(default_factory=dict)
+
+
+class AcceptanceConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    language: str = "en"
+    locale: str = "en_US"
+    """Pinned at every launch. `fr_FR` renders `$441.00` as `US$441,00`
+    (verification-2026-10-11 V6), so an unpinned simulator changes verdicts."""
+    log_subsystem: str | None = None
+    """The `Logger` subsystem the app uses for `SIGHTLINE-AC|` lines. Read by the Claude
+    Code skill when it proposes instrumentation; the parser keys on the prefix, because
+    the subsystem does not appear in the captured output."""
+    timeout_s: float = 10.0
+    """Bound on every wait the driver makes. There is no sleep anywhere."""
+
+
 class SimulatorConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -71,6 +99,8 @@ class RepoConfig(BaseModel):
     mechanism regardless. Titles are locale-dependent; the simulator runs in English.
     """
     redaction: RedactionConfig = Field(default_factory=RedactionConfig)
+    fixtures: dict[str, FixtureConfig] = Field(default_factory=dict)
+    acceptance: AcceptanceConfig = Field(default_factory=AcceptanceConfig)
     budget_usd: float = 0.50
     skills_dirs: list[str] = Field(default_factory=lambda: [".sightline/skills"])
 
