@@ -5,8 +5,8 @@
 #     --path eval/fixtures/CheckoutDemo --udid <udid>
 #
 # AC3 needs the app to log `SIGHTLINE-AC|order_submitted|...`. The base fixture does
-# not, so against it AC3 is not_verifiable(log_unavailable) or a fail; the acceptance
-# corpus case 004-order-logged-once adds the line and expects a pass.
+# not, so against it AC3 is a fail (expected 1, saw 0 — capture was live, the event never
+# came); the acceptance corpus case 004-order-logged-once adds the line and passes.
 acceptance_schema: 1
 spec_id: CHK-7
 provenance:
