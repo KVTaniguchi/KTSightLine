@@ -10,6 +10,7 @@ the most useful thing in the file.
 | [0001](0001-skill-format-and-dispatch.md) | Skill format and dispatch | Proposed |
 | [0002](0002-evidence-and-verification.md) | Evidence and the falsifiability gate | Proposed |
 | [0003](0003-runtime-tier-execution-model.md) | Runtime tier execution model | Proposed |
+| [0004](0004-acceptance-tier.md) | The acceptance tier | Proposed |
 
 ## Template
 
