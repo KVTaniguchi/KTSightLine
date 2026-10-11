@@ -19,7 +19,7 @@ from sightline.core.acceptance.lint import lint_file
 from sightline.core.findings.render import render_preview
 from sightline.core.impact.analyzer import analyze
 from sightline.core.telemetry.trajectory import SkillTrace, Trajectory
-from sightline.eval_harness import run_corpus
+from sightline.eval_harness import ACCEPTANCE_VERDICTS, run_acceptance_corpus, run_corpus
 from sightline.gate import GateInputs
 from sightline.gate import decide as decide_gate
 from sightline.review import ReviewOptions
@@ -507,6 +507,19 @@ def lint(criteria_path: Path, checkout: Path, config_path: Path | None) -> None:
     help="Run cases against this git repo at each case's `base:` commit, "
     "instead of the vendored fixture.",
 )
+@click.option(
+    "--suite",
+    type=click.Choice(["review", "acceptance"]),
+    default="review",
+    show_default=True,
+    help="review: findings scored for precision/recall. acceptance: verdicts scored "
+    "as a confusion matrix.",
+)
+@click.option(
+    "--acceptance-corpus",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=Path("eval/acceptance"),
+)
 def eval_command(
     corpus: Path,
     fixture: Path,
@@ -515,12 +528,19 @@ def eval_command(
     only: str | None,
     content_size: str,
     target_repo: Path | None,
+    suite: str,
+    acceptance_corpus: Path,
 ) -> None:
-    """Score the eval corpus for precision and recall.
+    """Score an eval corpus.
 
-    Exits non-zero if any case has a false positive or a false negative, so this is
-    usable as a gate on our own PRs.
+    The review suite scores precision and recall and exits non-zero on any false
+    positive or false negative. The acceptance suite scores verdicts and exits non-zero
+    on any false pass, false fail, wrong reason, or case that did not run. Both are
+    usable as gates on our own PRs.
     """
+    if suite == "acceptance":
+        _eval_acceptance(acceptance_corpus, fixture, udid, workdir / "acceptance", only)
+        return
     score = run_corpus(
         Path(corpus),
         fixture=Path(fixture),
@@ -553,6 +573,37 @@ def eval_command(
         f"\nprecision {score.precision:.2f}  recall {score.recall:.2f}  "
         f"(tp {score.tp} · fp {score.fp} · fn {score.fn})"
     )
+    if not score.passed:
+        raise SystemExit(1)
+
+
+def _eval_acceptance(
+    corpus: Path, fixture: Path, udid: str, workdir: Path, only: str | None
+) -> None:
+    score = run_acceptance_corpus(corpus, fixture=fixture, udid=udid, workdir=workdir, only=only)
+    for result in score.results:
+        click.echo(f"\n[{'PASS' if result.passed else 'FAIL'}] {result.case.id}")
+        click.echo(f"       {result.case.title}")
+        if result.error:
+            click.echo(f"       error: {result.error}")
+        for cid, (verdict, reason) in result.observed.items():
+            want = result.case.expected[cid]
+            got = verdict + (f" ({reason})" if reason else "")
+            mark = "✔" if (verdict, reason or want.reason) == (want.verdict, want.reason) else "✘"
+            click.echo(f"       {mark} {cid:<20} {got}")
+        for cid in result.false_passes:
+            click.echo(f"       ✘ FALSE PASS {cid}")
+        for cid in result.false_fails:
+            click.echo(f"       ✘ FALSE FAIL {cid}")
+        for line in result.mismatches:
+            click.echo(f"       ✘ {line}")
+
+    matrix = score.matrix
+    click.echo("\nexpected \\ observed   pass   fail   not_verifiable")
+    for expected in ACCEPTANCE_VERDICTS:
+        row = "".join(f"{matrix[(expected, o)]:>7}" for o in ACCEPTANCE_VERDICTS)
+        click.echo(f"{expected:<20}{row}")
+    click.echo(f"\nfalse passes {score.false_passes} · false fails {score.false_fails}")
     if not score.passed:
         raise SystemExit(1)
 

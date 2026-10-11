@@ -1,0 +1,60 @@
+# Criteria for 001-checkout-baseline: the brief's ui_state criteria plus one criterion
+# for each way a criterion can be not_verifiable without anything being wrong with the app.
+acceptance_schema: 1
+spec_id: BASE
+criteria:
+  - id: CHK-7.AC1
+    given: a cart holding the sample order
+    when: the shopper continues to checkout
+    then: the subtotal covers every line item times its quantity
+    surface: CheckoutSummary
+    expect:
+      - id: checkout.subtotal
+        exists: true
+        label: "Subtotal $441.00"
+
+  - id: CHK-7.AC2
+    given: the shopper is on the payment screen
+    when: they place the order
+    then: the confirmation screen offers order history
+    surface: PaymentMethod
+    steps:
+      - tap: payment.placeOrder
+    expect:
+      - id: confirmation.viewHistory
+        exists: true
+        enabled: true
+
+  - id: CHK-7.AC4
+    given: an order was placed
+    when: a minute passes
+    then: a confirmation email arrives
+    manual: true
+    reason: outside the app
+
+  - id: BASE.network
+    given: an order was placed
+    when: the confirmation screen appears
+    then: the order was submitted exactly once
+    evidence: network_call
+
+  - id: BASE.unreachable
+    given: a cart holding the sample order
+    when: the shopper applies a coupon
+    then: the coupon field is offered
+    surface: Cart
+    steps:
+      - tap: cart.applyCoupon
+    expect:
+      - id: cart.couponField
+        exists: true
+
+  - id: BASE.ambiguous
+    given: a cart holding the sample order
+    when: the shopper looks at the cart
+    then: an item can be removed
+    surface: Cart
+    expect:
+      - id: cart.removeItem
+        exists: true
+        enabled: true

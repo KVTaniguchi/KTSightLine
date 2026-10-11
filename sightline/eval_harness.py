@@ -293,3 +293,191 @@ def run_corpus(
             for c in cases
         ]
     )
+
+
+# --- the acceptance corpus (ADR-0004) ------------------------------------------------------
+#
+# Separate from the review corpus so the review score keeps its meaning. A case is a
+# criteria file, an optional patch to the fixture, and the verdict expected for every
+# criterion. Scored as a verdict confusion matrix: a false pass or a false fail is the
+# disqualifying error; a not_verifiable with the wrong reason fails the case without
+# being either.
+
+ACCEPTANCE_VERDICTS = ("pass", "fail", "not_verifiable")
+
+
+@dataclass(frozen=True)
+class AcceptanceExpectation:
+    verdict: str
+    reason: str | None = None
+    actual: dict[str, object] | None = None
+    """Observed values the report must carry, e.g. ``{label: "Subtotal $377.00"}``."""
+
+
+@dataclass(frozen=True)
+class AcceptanceCase:
+    id: str
+    title: str
+    directory: Path
+    criteria: Path
+    expected: dict[str, AcceptanceExpectation]
+    patch: Path | None = None
+    config: Path | None = None
+    notes: str = ""
+
+    @classmethod
+    def load(cls, directory: Path) -> AcceptanceCase:
+        directory = Path(directory)
+        data = yaml.safe_load((directory / "case.yml").read_text())
+        expected = {
+            cid: AcceptanceExpectation(
+                verdict=e["verdict"], reason=e.get("reason"), actual=e.get("actual")
+            )
+            for cid, e in (data.get("expected") or {}).items()
+        }
+        for cid, e in expected.items():
+            if e.verdict not in ACCEPTANCE_VERDICTS:
+                raise ValueError(f"{directory.name}: {cid} expects unknown verdict {e.verdict!r}")
+        return cls(
+            id=data["id"],
+            title=data["title"],
+            directory=directory,
+            criteria=(directory / data["criteria"]).resolve(),
+            expected=expected,
+            patch=directory / data["patch"] if data.get("patch") else None,
+            config=directory / data["config"] if data.get("config") else None,
+            notes=data.get("notes", ""),
+        )
+
+
+@dataclass
+class AcceptanceCaseResult:
+    case: AcceptanceCase
+    observed: dict[str, tuple[str, str | None]] = field(default_factory=dict)
+    """criterion id → (verdict, reason)."""
+    false_passes: list[str] = field(default_factory=list)
+    false_fails: list[str] = field(default_factory=list)
+    mismatches: list[str] = field(default_factory=list)
+    """Wrong reason, wrong recorded actual, or a criterion the case does not score."""
+    report_path: Path | None = None
+    error: str | None = None
+
+    @property
+    def passed(self) -> bool:
+        return not (self.error or self.false_passes or self.false_fails or self.mismatches)
+
+
+@dataclass
+class AcceptanceScore:
+    results: list[AcceptanceCaseResult]
+
+    @property
+    def matrix(self) -> dict[tuple[str, str], int]:
+        """(expected, observed) → count, over every scored criterion."""
+        out = {(e, o): 0 for e in ACCEPTANCE_VERDICTS for o in ACCEPTANCE_VERDICTS}
+        for r in self.results:
+            for cid, (verdict, _) in r.observed.items():
+                if cid in r.case.expected:
+                    out[(r.case.expected[cid].verdict, verdict)] += 1
+        return out
+
+    @property
+    def false_passes(self) -> int:
+        return sum(len(r.false_passes) for r in self.results)
+
+    @property
+    def false_fails(self) -> int:
+        return sum(len(r.false_fails) for r in self.results)
+
+    @property
+    def passed(self) -> bool:
+        return all(r.passed for r in self.results)
+
+
+def discover_acceptance_cases(corpus: Path) -> list[AcceptanceCase]:
+    return [
+        AcceptanceCase.load(d)
+        for d in sorted(Path(corpus).iterdir())
+        if d.is_dir() and (d / "case.yml").exists()
+    ]
+
+
+def _actual_recorded(want: dict[str, object], observations: list) -> bool:
+    return any(
+        o.actual is not None and all(o.actual.get(k) == v for k, v in want.items())
+        for o in observations
+    )
+
+
+def score_acceptance(case: AcceptanceCase, report) -> AcceptanceCaseResult:
+    """Compare a report against the case's expectations. Pure; no Xcode."""
+    result = AcceptanceCaseResult(case=case)
+    by_id = {c.id: c for c in report.criteria}
+    for cid in sorted(set(by_id) - set(case.expected)):
+        result.mismatches.append(f"{cid}: in the report but not scored by the case")
+    for cid, want in case.expected.items():
+        got = by_id.get(cid)
+        if got is None:
+            result.mismatches.append(f"{cid}: expected {want.verdict}, missing from the report")
+            continue
+        verdict, reason = got.verdict.value, got.reason.value if got.reason else None
+        result.observed[cid] = (verdict, reason)
+        if verdict == "pass" and want.verdict != "pass":
+            result.false_passes.append(cid)
+        elif verdict == "fail" and want.verdict != "fail":
+            result.false_fails.append(cid)
+        elif verdict != want.verdict:
+            result.mismatches.append(f"{cid}: expected {want.verdict}, got {verdict} ({reason})")
+        elif want.reason and reason != want.reason:
+            result.mismatches.append(f"{cid}: expected reason {want.reason}, got {reason}")
+        if (
+            want.actual
+            and verdict == want.verdict
+            and not _actual_recorded(want.actual, got.observations)
+        ):
+            result.mismatches.append(f"{cid}: the report does not record actual {want.actual}")
+    return result
+
+
+def run_acceptance_case(
+    case: AcceptanceCase, *, fixture: Path, udid: str, workdir: Path
+) -> AcceptanceCaseResult:
+    from sightline.acceptance import AcceptOptions, CriteriaInvalid, run_accept
+
+    root = Path(workdir) / case.id
+    if root.exists():
+        shutil.rmtree(root)
+    try:
+        shutil.copytree(fixture, root)
+        if case.patch:
+            _apply_patch(root, case.patch)
+        accepted = run_accept(
+            AcceptOptions(
+                criteria=case.criteria,
+                checkout=root,
+                udid=udid,
+                config_path=case.config,
+                out_dir=Path(workdir) / "reports",
+                scratch_dir=Path(workdir) / f"{case.id}-scratch",
+            )
+        )
+    except CriteriaInvalid as exc:
+        return AcceptanceCaseResult(
+            case=case, error="criteria failed lint: " + "; ".join(map(str, exc.issues))
+        )
+    except (RuntimeError, OSError) as exc:
+        return AcceptanceCaseResult(case=case, error=str(exc))
+    result = score_acceptance(case, accepted.report)
+    result.report_path = accepted.report_path
+    if accepted.report.status != "completed":
+        result.error = f"run {accepted.report.status}: {'; '.join(accepted.report.notes)}"
+    return result
+
+
+def run_acceptance_corpus(
+    corpus: Path, *, fixture: Path, udid: str, workdir: Path, only: str | None = None
+) -> AcceptanceScore:
+    cases = [c for c in discover_acceptance_cases(corpus) if not only or only in c.id]
+    return AcceptanceScore(
+        [run_acceptance_case(c, fixture=fixture, udid=udid, workdir=workdir) for c in cases]
+    )

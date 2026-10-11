@@ -1,0 +1,9 @@
+id: 006-order-log-missing
+title: The app logs a different event, never order_submitted
+criteria: ../criteria/order-logged.yml
+patch: change.patch
+notes: >
+  Capture is live (the app logs confirmation_viewed and XCTest's agent logs from the same
+  process), so zero order_submitted lines is an observation: fail, not log_unavailable.
+expected:
+  CHK-7.AC3: {verdict: fail, actual: {count: 0}}

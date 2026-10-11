@@ -1,0 +1,23 @@
+acceptance_schema: 1
+spec_id: FIX
+criteria:
+  - id: FIX.single
+    given: a cart holding one line, two leather belts
+    when: the shopper continues to checkout
+    then: the subtotal is the line total
+    surface: CheckoutSummary
+    fixture: single_item_cart
+    expect:
+      - id: checkout.subtotal
+        exists: true
+        label: "Subtotal $128.00"
+
+  - id: FIX.default
+    given: the default cart
+    when: the shopper continues to checkout
+    then: the subtotal covers the sample order
+    surface: CheckoutSummary
+    expect:
+      - id: checkout.subtotal
+        exists: true
+        label: "Subtotal $441.00"
