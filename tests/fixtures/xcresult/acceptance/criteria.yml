@@ -1,0 +1,84 @@
+acceptance_schema: 1
+spec_id: CAPTURE
+criteria:
+  - id: CAP.pass
+    given: g
+    when: w
+    then: subtotal matches
+    surface: CheckoutSummary
+    expect:
+      - id: checkout.subtotal
+        exists: true
+        label: "Subtotal $441.00"
+        label_contains: "441"
+  - id: CAP.fail
+    given: g
+    when: w
+    then: subtotal ignores quantity
+    surface: CheckoutSummary
+    expect:
+      - id: checkout.subtotal
+        label: "Subtotal $377.00"
+  - id: CAP.steps
+    given: g
+    when: w
+    then: confirmation offers history, place order gone
+    surface: PaymentMethod
+    steps:
+      - tap: payment.placeOrder
+      - wait_for: confirmation.viewHistory
+    expect:
+      - id: confirmation.viewHistory
+        exists: true
+        enabled: true
+      - id: payment.placeOrder
+        exists: false
+  - id: CAP.log
+    given: g
+    when: w
+    then: submitted once
+    surface: PaymentMethod
+    steps:
+      - tap: payment.placeOrder
+      - wait_for: confirmation.viewHistory
+    evidence: log_event
+    expect_log:
+      - event: order_submitted
+        count: 1
+  - id: CAP.ambiguous
+    given: g
+    when: w
+    then: remove item
+    surface: Cart
+    expect:
+      - id: cart.removeItem
+        exists: true
+  - id: CAP.unreachable
+    given: g
+    when: w
+    then: missing control
+    surface: Cart
+    steps:
+      - tap: cart.doesNotExist
+    expect:
+      - id: cart.continue
+        exists: true
+  - id: CAP.absent
+    given: g
+    when: w
+    then: ghost
+    surface: Cart
+    expect:
+      - id: cart.ghost
+        label: "boo | pipe\nnewline 🐱"
+  - id: CAP.crash
+    given: g
+    when: w
+    then: crash on confirmation
+    surface: PaymentMethod
+    fixture: crash
+    steps:
+      - tap: payment.placeOrder
+    expect:
+      - id: confirmation.viewHistory
+        exists: true

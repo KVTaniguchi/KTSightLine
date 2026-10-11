@@ -1,0 +1,20 @@
+Standard output and standard error from com.sightline.fixtures.CheckoutDemo with process ID 20701 beginning at 2026-10-11 17:36:12 +0000
+2026-10-11 13:36:13.038971-0400 CheckoutDemo[20701:987146] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x106a89240>: {
+2026-10-11 13:36:25.776601-0400 CheckoutDemo[20701:987147] [Default] Replying with attribute values: {
+2026-10-11 13:36:27.781663-0400 CheckoutDemo[20707:987416] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x103e8d2b0>: {
+2026-10-11 13:36:31.235378-0400 CheckoutDemo[20707:987417] [Default] Replying with attribute values: {
+2026-10-11 13:36:33.194422-0400 CheckoutDemo[20721:987566] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x10267d2c0>: {
+2026-10-11 13:36:41.040485-0400 CheckoutDemo[20721:987546] [acceptance] SIGHTLINE-AC|order_submitted|total=$441.00
+2026-10-11 13:36:41.040800-0400 CheckoutDemo[20721:987546] CheckoutDemo/OrderConfirmationView.swift:50: Fatal error: capture crash
+2026-10-11 13:36:56.081317-0400 CheckoutDemo[20748:988320] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x102279350>: {
+2026-10-11 13:37:10.972529-0400 CheckoutDemo[20748:988338] [Default] Replying with attribute values: {
+2026-10-11 13:37:12.975257-0400 CheckoutDemo[20777:988680] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x105aa4ff0>: {
+2026-10-11 13:37:20.751733-0400 CheckoutDemo[20777:988662] [acceptance] SIGHTLINE-AC|order_submitted|total=$441.00
+2026-10-11 13:37:22.342707-0400 CheckoutDemo[20777:988674] [Default] Replying with attribute values: {
+2026-10-11 13:37:24.347338-0400 CheckoutDemo[20786:989025] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x105e99180>: {
+2026-10-11 13:37:30.148651-0400 CheckoutDemo[20786:989035] [Default] Replying with attribute values: {
+2026-10-11 13:37:32.137822-0400 CheckoutDemo[20789:989288] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x1042752e0>: {
+2026-10-11 13:37:39.838408-0400 CheckoutDemo[20789:989268] [acceptance] SIGHTLINE-AC|order_submitted|total=$441.00
+2026-10-11 13:37:43.596457-0400 CheckoutDemo[20789:989283] [Default] Replying with attribute values: {
+2026-10-11 13:37:45.571910-0400 CheckoutDemo[20803:989572] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x1046852e0>: {
+2026-10-11 13:38:15.296335-0400 CheckoutDemo[20803:989578] [Default] Replying to query ↪︎ Descendants matching type Any
