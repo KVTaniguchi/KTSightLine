@@ -22,6 +22,7 @@ import json
 import subprocess
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from sightline.adapters.forge.base import (
@@ -31,12 +32,18 @@ from sightline.adapters.forge.base import (
     PostedComment,
     PullRequest,
 )
+from sightline.adapters.forge.local_git import LocalGitAdapter
 from sightline.core.diff.models import Diff
 from sightline.core.diff.parser import parse_diff
 from sightline.core.findings.models import Side, VerifiedFinding
 from sightline.core.findings.render import render_comment
 
 Runner = Callable[[Sequence[str]], subprocess.CompletedProcess]
+
+# GitHub refuses the .diff of a PR touching more than 300 files (HTTP 406). The "list
+# pull request files" API is no way around it: it stops at 3,000 files, in path order,
+# so a big deletion under a dot-directory crowds every real change out of the listing.
+_TOO_MANY_FILES = "exceeded the maximum number of files"
 
 
 def _default_runner(cmd: Sequence[str]) -> subprocess.CompletedProcess:
@@ -91,6 +98,9 @@ class GitHubAdapter(ForgeAdapter):
     run: Runner = _default_runner
     evidence_base_url: str | None = None
     extra_headers: tuple[str, ...] = field(default_factory=tuple)
+    # A clone holding both the PR's base and head commits. When GitHub will not serve
+    # the diff, we compute the same three-dot diff from it instead of failing the run.
+    local_checkout: Path | None = None
 
     # --- plumbing ---
 
@@ -137,10 +147,17 @@ class GitHubAdapter(ForgeAdapter):
         )
 
     def get_diff(self, repo: str, number: int) -> Diff:
-        text = self._gh(
-            "api", f"repos/{repo}/pulls/{number}", "-H", "Accept: application/vnd.github.diff",
-            raw=True,
-        )  # fmt: skip
+        try:
+            text = self._gh(
+                "api", f"repos/{repo}/pulls/{number}", "-H", "Accept: application/vnd.github.diff",
+                raw=True,
+            )  # fmt: skip
+        except ForgeError as exc:
+            if _TOO_MANY_FILES not in str(exc) or self.local_checkout is None:
+                raise
+            pr = self.get_pull_request(repo, number)
+            local = LocalGitAdapter(self.local_checkout, pr.base_sha, pr.head_sha)
+            return local.get_diff(repo, number)
         return parse_diff(text)
 
     def get_file(self, repo: str, path: str, ref: str) -> str | None:

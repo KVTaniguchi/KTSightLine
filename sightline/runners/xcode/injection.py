@@ -145,6 +145,7 @@ def prepare_workspace(
     app_target: str | None = None,
     ui_test_target: str | None = None,
     audit_types: tuple[str, ...] = DEFAULT_AUDIT_TYPES,
+    dismiss_alerts: tuple[str, ...] = (),
 ) -> PreparedWorkspace:
     """Copy the repo, ensure a UI test target, and inject the driver into it."""
     if not surfaces:
@@ -165,15 +166,24 @@ def prepare_workspace(
     app = _resolve_app_target(project, app_target)
     ui_test, strategy = _resolve_ui_test_target(project, ui_test_target, app)
 
-    group_dir = project_path.parent / (project.group_path(ui_test) or ui_test.name)
+    synchronized = project.synchronized_folder(ui_test)
+    folder = synchronized or project.group_path(ui_test) or ui_test.name
+    group_dir = project_path.parent / folder
     group_dir.mkdir(parents=True, exist_ok=True)
     driver_path = group_dir / DRIVER_FILENAME
     driver_path.write_text(
-        render_driver(surfaces, audit_types=audit_types, class_name=DRIVER_CLASS)
+        render_driver(
+            surfaces,
+            audit_types=audit_types,
+            class_name=DRIVER_CLASS,
+            dismiss_alerts=dismiss_alerts,
+        )
     )
 
-    project.add_source_file(ui_test, DRIVER_FILENAME)
-    project.save()
+    # A synchronized folder compiles whatever is in it; writing the file is enough.
+    if not synchronized:
+        project.add_source_file(ui_test, DRIVER_FILENAME)
+        project.save()
 
     write_scheme(project_path, GENERATED_SCHEME_NAME, app, ui_test)
 

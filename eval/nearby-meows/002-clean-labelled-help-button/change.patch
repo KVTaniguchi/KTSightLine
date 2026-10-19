@@ -1,0 +1,47 @@
+diff --git a/KTCatPokemon/Views/DexView.swift b/KTCatPokemon/Views/DexView.swift
+index 52df54f..4415058 100644
+--- a/KTCatPokemon/Views/DexView.swift
++++ b/KTCatPokemon/Views/DexView.swift
+@@ -26,6 +26,7 @@ struct DexView: View {
+ 
+     @State private var mode: DexMode = .cats
+     @State private var selectedCapture: CapturedCat?
++    @State private var showingHelp = false
+     @Namespace private var segmentNamespace
+ 
+     private let columns = [
+@@ -58,8 +59,20 @@ struct DexView: View {
+     var body: some View {
+         ScrollView {
+             VStack(spacing: 18) {
+-                Theme.header("MY CAT DEX")
+-                    .frame(maxWidth: .infinity, alignment: .leading)
++                HStack(alignment: .firstTextBaseline) {
++                    Theme.header("MY CAT DEX")
++                    Spacer()
++                    Button {
++                        showingHelp = true
++                    } label: {
++                        Image(systemName: "questionmark.circle")
++                            .font(.system(size: 24, weight: .semibold))
++                            .foregroundStyle(Theme.creamMuted)
++                    }
++                    .frame(minWidth: 44, minHeight: 44)
++                    .accessibilityLabel("How the dex works")
++                    .accessibilityIdentifier("dex.help")
++                }
+ 
+                 modePicker
+ 
+@@ -75,6 +88,11 @@ struct DexView: View {
+             .padding(20)
+         }
+         .themeBackground()
++        .alert("Your Cat Dex", isPresented: $showingHelp) {
++            Button("OK", role: .cancel) {}
++        } message: {
++            Text("Cats lists every capture. Breeds tracks which breeds you've found.")
++        }
+         .sheet(item: $selectedCapture) { capture in
+             CaptureDetailView(capture: capture)
+         }

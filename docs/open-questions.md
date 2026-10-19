@@ -51,10 +51,19 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
   having addressal data to justify the matrix.
 
 ### Not yet assigned to an ADR
+- **OQ-REAL-1 — anchoring without identifiers.** Findings anchor by finding the audited
+  element's `accessibilityIdentifier` on an added line. Nearby Meows has none, so on its
+  real PRs every issue is `unanchorable` or `not_in_diff`; the eval cases add one to the
+  new control. Is that an acceptable ask of adopting repos, or does anchoring need
+  another key (label text, the view's `body` span, a source-location attribute)?
+- **Does `simctl privacy revoke` actually take effect?** D14 found `grant location` is
+  a no-op on the iOS 26.5 simulator. The catalog's permission-denied row assumes
+  `revoke` works for nine services; that was also verified from `--help` only.
 - **Model routing config format.** The tier→model/effort mapping is decided (D5); it
   lives in config and still has no schema.
 - **GitHub account/org for the private repo** (D9). Needed before the first real PR.
-- **Camera and notification permission denial.** Not `simctl privacy` services (see the
+- **Camera and notification permission denial.** Not `simctl privacy` services; the
+  driver's `dismiss_alerts` (D14) answers prompts but does not yet *deny* them (see the
   verification report). Needs another mechanism before that catalog row is implementable.
 - ~~**OQ-FIXTURE-1**~~ — **resolved 2026-08-31 (D11): drop them.** Not posted as
   file-level comments, not anchored to a guessed line. Costs ~3 of 5 real failures on

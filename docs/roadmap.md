@@ -131,6 +131,28 @@ The clean case is the important one, and it deliberately **touches a UI surface*
 the runtime tier fires and pays a full build and simulator run, and must still produce
 nothing. A no-op diff would not test that.
 
+## Target #2: a real app — reached 2026-10-03
+
+D2 said the fixture proves nothing about a real build graph. The slice now runs against
+Nearby Meows (`KVTaniguchi/KTCatPokemon`), locally, nothing posted (D13):
+
+```
+eval/run-nearby-meows.sh
+[PASS] 001-seeded-unlabelled-help-button   14 audit issues → 1 finding  ✔ sufficientElementDescription:dex.help
+[PASS] 002-clean-labelled-help-button      13 audit issues → 0 findings
+precision 1.00  recall 1.00  (tp 1 · fp 0 · fn 0)
+```
+
+What the real app broke that the fixture never could:
+
+- **Xcode 16+ synchronized folders.** Injection added a file reference that failed the
+  build. Fixed: a synchronized UI-test folder just gets the file.
+- **No accessibility identifiers anywhere.** Navigation now also works by launch
+  arguments (`-initialTab Dex`). Anchoring still needs an identifier on an added line,
+  so on a typical Nearby Meows PR every audit issue is dropped — see OQ-REAL-1.
+- **A permission alert over every screen**, which `simctl privacy grant` does not
+  suppress (D14), and a thrown audit that read as a clean screen (D15).
+
 ## Then: Tier 3 before more of Tier 2
 
 The before/after screenshot table is the only thing in the catalog that produces value on

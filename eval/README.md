@@ -25,6 +25,27 @@ content size. It says the pipeline works end to end and that the clean case stay
 It says nothing yet about behaviour on a real app. The corpus grows from here; the number
 only starts meaning something in the dozens.
 
+## A real app: Nearby Meows
+
+`eval/nearby-meows/` holds two cases against
+[KTCatPokemon](https://github.com/KVTaniguchi/KTCatPokemon) rather than the vendored
+fixture. Each `case.yml` names a `base:` commit; the harness exports the target repo at
+that commit with `git archive`, applies the patch, and reads the Sightline config from
+`config.yml` next to the cases (the app's repo carries none).
+
+```bash
+eval/run-nearby-meows.sh [path/to/KTCatPokemon] [simulator-udid]
+```
+
+```
+[PASS] 001-seeded-unlabelled-help-button   14 audit issues → 1 finding  ✔ sufficientElementDescription:dex.help
+[PASS] 002-clean-labelled-help-button      13 audit issues → 0 findings
+precision 1.00  recall 1.00  (tp 1 · fp 0 · fn 0)
+```
+
+The two patches are identical except for one `.accessibilityLabel` line. The 13 issues
+both share are the Dex screen's pre-existing sub-threshold warnings.
+
 ## What each case is for
 
 | Case | Why it exists |

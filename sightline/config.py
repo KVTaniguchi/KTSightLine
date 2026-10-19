@@ -25,6 +25,7 @@ class SurfaceConfig(BaseModel):
 
     taps: list[str] = Field(default_factory=list)
     wait_for: str | None = None
+    launch_arguments: list[str] = Field(default_factory=list)
     view: str | None = None
     """The Swift type that renders this surface.
 
@@ -59,15 +60,31 @@ class RepoConfig(BaseModel):
     scheme: str | None = None
     simulator: SimulatorConfig = Field(default_factory=SimulatorConfig)
     surfaces: dict[str, SurfaceConfig] = Field(default_factory=dict)
+    dismiss_alerts: list[str] = Field(default_factory=list)
+    """Button titles the driver may tap on a *system* alert (a permission prompt) that
+    covers the app after launch. With an alert up, the audit throws "Invalid target
+    app" instead of auditing anything.
+
+    Not `simctl privacy grant`: on the iOS 26.5 simulator it exits 0 for `location`
+    and the prompt still appears (measured on Nearby Meows, 2026-10-03). It also has
+    no camera or notifications service, so the catalog's permission checks need this
+    mechanism regardless. Titles are locale-dependent; the simulator runs in English.
+    """
     redaction: RedactionConfig = Field(default_factory=RedactionConfig)
     budget_usd: float = 0.50
     skills_dirs: list[str] = Field(default_factory=lambda: [".sightline/skills"])
 
     @classmethod
-    def load(cls, root: Path) -> RepoConfig:
-        """Load from `<root>/.sightline/config.yml`. A missing file is a valid state."""
-        path = Path(root) / CONFIG_DIR / CONFIG_RELPATH
+    def load(cls, root: Path, *, override: Path | None = None) -> RepoConfig:
+        """Load from `<root>/.sightline/config.yml`. A missing file is a valid state.
+
+        ``override`` points at a config kept outside the repo — for reviewing an app
+        whose repository we may not commit a `.sightline/` directory to.
+        """
+        path = Path(override) if override else Path(root) / CONFIG_DIR / CONFIG_RELPATH
         if not path.exists():
+            if override:
+                raise FileNotFoundError(f"config {override} does not exist")
             return cls()
         data = yaml.safe_load(path.read_text()) or {}
         return cls.model_validate(data)
@@ -82,11 +99,17 @@ class RepoConfig(BaseModel):
         out = []
         for name, surface in self.surfaces.items():
             if (surface.view or name) in views:
-                out.append(Surface(name=name, taps=tuple(surface.taps), wait_for=surface.wait_for))
+                out.append(_surface(name, surface))
         return out
 
     def all_surfaces(self) -> list[Surface]:
-        return [
-            Surface(name=name, taps=tuple(s.taps), wait_for=s.wait_for)
-            for name, s in self.surfaces.items()
-        ]
+        return [_surface(name, s) for name, s in self.surfaces.items()]
+
+
+def _surface(name: str, config: SurfaceConfig) -> Surface:
+    return Surface(
+        name=name,
+        taps=tuple(config.taps),
+        wait_for=config.wait_for,
+        launch_arguments=tuple(config.launch_arguments),
+    )

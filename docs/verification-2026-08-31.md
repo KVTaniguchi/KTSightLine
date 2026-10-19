@@ -191,6 +191,10 @@ comment. That is a concrete target for our format, not a vibe.
 `all`, `calendar`, `contacts-limited`, `contacts`, `location`, `location-always`,
 `photos-add`, `photos`, `media-library`, `microphone`, `motion`, `reminders`, `siri`.
 
+> **Correction, 2026-10-03 (D14):** this list came from `--help`, not from observing the
+> effect. `grant location` exits 0 on the iOS 26.5 simulator and the prompt still
+> appears. Treat every service here as unverified until shown to work.
+
 The catalog's permission-denied check named camera and notifications specifically. Photos
 and microphone are reachable via `simctl privacy revoke`; **camera and notification
 denial need another mechanism** — new open question.

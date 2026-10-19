@@ -57,6 +57,7 @@ class ReviewOptions:
     scratch_dir: Path = Path(".sightline/scratch")
     skills_dirs: list[Path] = field(default_factory=list)
     udid: str | None = None
+    config_path: Path | None = None
 
 
 @dataclass
@@ -126,6 +127,7 @@ def _run_runtime_tier(
             surfaces=surfaces,
             app_target=config.app_target,
             ui_test_target=config.ui_test_target,
+            dismiss_alerts=tuple(config.dismiss_alerts),
         )
     except InjectionUnavailable as exc:
         # ADR-0003 §7: degrade with an actionable message; never block the merge.
@@ -151,8 +153,15 @@ def _run_runtime_tier(
 
     tool = XcresultTool(bundle)
     summary = tool.summary()
-    issues = tool.all_audit_issues()
+    issues, audited = tool.audit_results()
     postable = postable_issues(issues)
+
+    # A surface whose audit threw reports zero issues, exactly like a clean one. Say
+    # so loudly instead of letting "found nothing" stand in for "looked at nothing".
+    for surface in surfaces:
+        if surface.name not in audited:
+            reason = next((f for f in summary.failures if surface.method_name in f), "")
+            notes.append(f"runtime tier: audit of {surface.name} did not complete — {reason}")
     context = {
         **(summary.device.as_context() if summary.device else {}),
         **device_context,
@@ -238,7 +247,7 @@ def _run_runtime_tier(
 
 def review(forge: ForgeAdapter, repo: str, number: int, options: ReviewOptions) -> ReviewResult:
     run_id = uuid.uuid4().hex[:12]
-    config = RepoConfig.load(options.checkout)
+    config = RepoConfig.load(options.checkout, override=options.config_path)
 
     pr: PullRequest = forge.get_pull_request(repo, number)
     diff = forge.get_diff(repo, number)
