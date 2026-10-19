@@ -124,7 +124,7 @@ def review(
         checkout = local.materialize(Path(out) / "checkouts" / local.head_sha[:12])
     elif target:
         repo, number = _parse_pr(target)
-        forge = GitHubAdapter()
+        forge = GitHubAdapter(local_checkout=Path(checkout))
     else:
         raise click.UsageError("pass --pr, or --local with --base and --head")
 
@@ -438,7 +438,7 @@ def gate(target: str, checkout: Path, skills_dir: tuple[Path, ...], budget: floa
     runtime, reason, stage = True, "gate errored; failing open", "ok"
     try:
         repo, number = _parse_pr(target)
-        forge = GitHubAdapter()
+        forge = GitHubAdapter(local_checkout=checkout)
         pr = forge.get_pull_request(repo, number)
         diff = forge.get_diff(repo, number)
         sources: dict[str, str] = {}

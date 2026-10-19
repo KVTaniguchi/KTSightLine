@@ -46,6 +46,9 @@ jobs:
           # The head commit, not the merge commit: every line number we compute and
           # every comment we post is relative to head.
           ref: ${{ github.event.pull_request.head.sha }}
+          # Full history: a PR over GitHub's 300-file diff limit is diffed locally,
+          # which needs the base commit and the merge-base.
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@v6
         with:
@@ -92,6 +95,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@v6
         with:

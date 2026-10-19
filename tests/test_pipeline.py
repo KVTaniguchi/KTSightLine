@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from sightline.adapters.forge.base import AnchorRejected, PullRequest
+from sightline.adapters.forge.base import AnchorRejected, ForgeError, PullRequest
 from sightline.adapters.forge.github import GitHubAdapter, comment_payload, validate_anchor
 from sightline.core.diff.parser import parse_diff
 from sightline.core.evidence.models import ArtifactKind
@@ -429,6 +429,62 @@ def test_get_pull_request_detects_a_fork():
     adapter = GitHubAdapter(run=FakeRunner(stdout=json.dumps(payload)))
     pr = adapter.get_pull_request("owner/repo", 7)
     assert pr.is_fork and pr.labels == ("sightline:full",)
+
+
+_TOO_BIG = (
+    "gh: Sorry, the diff exceeded the maximum number of files (300). Consider using "
+    "'List pull requests files' API or locally cloning the repository instead. (HTTP 406)"
+)
+
+
+class TooBigDiffRunner:
+    """GitHub that serves the PR but refuses its diff, as it does past 300 files."""
+
+    def __init__(self, base_sha, head_sha):
+        self.pr = {
+            "head": {"sha": head_sha, "repo": {"full_name": "o/r"}},
+            "base": {"sha": base_sha},
+        }
+
+    def __call__(self, cmd, *rest):
+        if "Accept: application/vnd.github.diff" in cmd:
+            return subprocess.CompletedProcess(cmd, 1, "", _TOO_BIG)
+        return subprocess.CompletedProcess(cmd, 0, json.dumps(self.pr), "")
+
+
+def _git_repo(path):
+    def git(*args):
+        out = subprocess.run(
+            ["git", "-C", str(path), *args], capture_output=True, text=True, check=False
+        )
+        assert out.returncode == 0, out.stderr
+        return out.stdout.strip()
+
+    git("init", "-q", "-b", "main")
+    git("config", "user.email", "t@example.com")
+    git("config", "user.name", "t")
+    return git
+
+
+def test_oversized_pr_diff_falls_back_to_the_local_checkout(tmp_path):
+    git = _git_repo(tmp_path)
+    (tmp_path / "View.swift").write_text("a\n")
+    git("add", ".")
+    git("commit", "-qm", "base")
+    base = git("rev-parse", "HEAD")
+    (tmp_path / "View.swift").write_text("a\nb\n")
+    git("commit", "-qam", "head")
+    head = git("rev-parse", "HEAD")
+
+    adapter = GitHubAdapter(run=TooBigDiffRunner(base, head), local_checkout=tmp_path)
+    (changed,) = adapter.get_diff("o/r", 2).files
+    assert changed.path == "View.swift" and changed.added_lines == {2}
+
+
+def test_oversized_pr_diff_without_a_checkout_still_fails():
+    adapter = GitHubAdapter(run=TooBigDiffRunner("b", "h"))
+    with pytest.raises(ForgeError, match="maximum number of files"):
+        adapter.get_diff("o/r", 2)
 
 
 def test_dry_run_posts_nothing(tmp_path):
