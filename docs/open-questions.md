@@ -19,7 +19,7 @@ Corrections are applied; the ADRs no longer carry `[UNVERIFIED]` markers.
 | P4 | ✅ throws, `@MainActor`, test-target only |
 | P5 | ❌ `textClipped` not `clippedText`; `trait` not `traits`; `sufficientElementDescription` not `elementDescription` |
 | P6 | ✅ verbatim correct. Bonus: `increase_contrast` |
-| P7 | ✅ mechanism confirmed; byte-stability still empirical |
+| P7 | ✅ mechanism confirmed. **Byte-stability measured 2026-10-20 (D22): stable; no masking needed** |
 | P8 | ⚠️ confirmed, but `start_side` was missing from our schema; `position` is deprecated, not a fallback |
 | P9 | ✅ 54,713 comments, 10.9pp. Caveat: corpus is 341 **Python** repos |
 

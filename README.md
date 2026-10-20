@@ -211,6 +211,7 @@ public contract keyed on criterion ID.
 | [`docs/open-questions.md`](docs/open-questions.md) | Unverified premises and unsettled decisions, with owners. |
 | [`docs/briefs/`](docs/briefs/) | Later briefs that add to `PROMPT.md` — the acceptance tier. |
 | [`docs/verification-2026-10-11.md`](docs/verification-2026-10-11.md) | What the acceptance tier's premises turned out to be on Xcode 27.1. |
+| [`docs/verification-2026-10-20.md`](docs/verification-2026-10-20.md) | The sensor loop: what `textClipped` actually reports, and whether renders are byte-stable. |
 
 ## Running it in CI
 

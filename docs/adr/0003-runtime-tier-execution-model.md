@@ -260,11 +260,15 @@ wrong, the cost section needs rewriting.
 
 - Measure actual cold/warm build times on `macos-26` for a representative app before
   committing to the 30-minute timeout.
-- Is `simctl status_bar override` sufficient to make renders byte-stable across boots, or
-  do we also need to mask the status bar region? The mechanism is confirmed to cover every
-  mutable status-bar element (P7), so region masking is now a known fallback rather than
-  the plan. Still needs an empirical answer; it changes the masking config every repo
-  writes.
+- ~~Is `simctl status_bar override` sufficient to make renders byte-stable across boots,
+  or do we also need to mask the status bar region?~~ — **answered 2026-10-20 (D22):
+  sufficient. Masking is not needed.** Three runs of the review corpus, each on its own
+  boot and spanning two `simctl erase`s and 17 days, produced byte-identical screenshot
+  attachments on all three screens. Measured on the artifact the verifier actually
+  compares, not a `simctl io screenshot`. Same host, same Xcode, same device and
+  runtime — which is the only condition `differential_*` runs in, since ADR-0002 forbids
+  cross-runner comparison. See
+  [verification-2026-10-20.md](../verification-2026-10-20.md) §W2.
 - **Camera and notification permission denial have no `simctl privacy` service** (found
   during the P6/P7 checks — the service list is calendar, contacts, location, photos,
   media-library, microphone, motion, reminders, siri). The catalog's permission-denied
