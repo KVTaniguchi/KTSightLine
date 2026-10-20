@@ -27,7 +27,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from sightline.config import RepoConfig
+from sightline.config import PermissionAnswer, RepoConfig
 from sightline.core.acceptance.criteria import CriteriaFile, Criterion
 
 DRIVER_FILENAME = "SightlineAcceptance.swift"
@@ -85,14 +85,18 @@ def _spec(criterion: Criterion, config: RepoConfig) -> dict[str, Any]:
 
 
 def build_payload(
-    criteria: list[Criterion], config: RepoConfig, *, dismiss_alerts: tuple[str, ...] = ()
+    criteria: list[Criterion],
+    config: RepoConfig,
+    *,
+    dismiss_alerts: tuple[str, ...] = (),
+    permission_answer: PermissionAnswer = "allow",
 ) -> dict[str, Any]:
     """The interpreter's whole input. Linux-testable; Swift only decodes it."""
     return {
         "v": PAYLOAD_VERSION,
         "timeout": config.acceptance.timeout_s,
         "maxSwipes": MAX_SWIPES,
-        "alertButtons": list(dismiss_alerts or config.dismiss_alerts),
+        "alertButtons": list(dismiss_alerts or config.alert_titles(answer=permission_answer)),
         "criteria": [_spec(c, config) for c in criteria],
     }
 

@@ -54,6 +54,24 @@ _APP_LOG_LINE = re.compile(
 _AC_EVENT = re.compile(r"SIGHTLINE-AC\|(?P<event>[a-z][a-z0-9_]*)(?:\||$)")
 APP_OUTPUT_GLOB = "StandardOutputAndStandardError-*.txt"
 
+LABEL_ANCHORABLE_AUDIT_TYPES = frozenset({"textClipped"})
+"""Audit types allowed to anchor by label when the element has no identifier.
+
+An allowlist, not a general capability, and the reasoning is precision. `textClipped`
+is the type OQ-FIXTURE-2 was about: it reports the clipped text element itself, which
+in SwiftUI is routinely identifier-less, so without this it is unanchorable in
+practice.
+
+`contrast` is deliberately absent. Measured on eval case 003 (2026-10-20): the audit
+reports `Contrast failed` against the inner label of a stock
+`.buttonStyle(.bordered)` button — tinted text on a near-white fill, about 3.5:1
+against a 4.5:1 threshold. The finding is *correct*, but it is a property of a system
+button style rather than of the diff, so anchoring it by label would comment on
+`.bordered` buttons across every adopting repo. Same reasoning as case 001's note
+about stock SF Symbols. Admitting `contrast` needs a way to tell author-chosen colours
+from inherited ones first; see the open question.
+"""
+
 # Severity lives in compactDescription, not auditType (measured on the fixture,
 # 2026-08-31). Anything not "failed" is a sub-threshold warning and must not be posted,
 # or the bot comments on every screen in the app including the correct ones.
@@ -123,12 +141,53 @@ class AuditIssue:
         return not any(s in low for s in _SUPPRESSED_DESCRIPTIONS)
 
     @property
-    def is_attributable(self) -> bool:
-        """An issue with no element has no identifier and no frame to anchor to.
+    def has_element(self) -> bool:
+        """Whether the audit attached an element at all.
 
-        ADR-0002 forbids inventing one. See OQ-FIXTURE-1.
+        The driver writes ``frame=nil`` exactly when ``issue.element`` was nil, so this
+        is the one signal that separates "the audit could not say what it was about"
+        from "it said, but the view carries no identifier".
         """
-        return bool(self.identifier) and self.frame != "nil"
+        return self.frame != "nil"
+
+    @property
+    def is_attributable(self) -> bool:
+        """Whether anything in this record can anchor a comment to a line.
+
+        Two distinct cases, collapsed into one before 2026-10-20 (see OQ-FIXTURE-2):
+
+        * ``identifier`` set — anchor by searching the head source for it.
+        * no identifier, but an element with a ``label`` — anchor by matching the
+          label against the string literals on the changed lines. The Cart screen's
+          ``textClipped`` is this case: ``id=`` empty, ``label=Price $185.00``,
+          ``frame=(252.5, 256.75, 66.5, 20.5)``.
+
+        An issue with no element at all stays unanchorable; ADR-0002 forbids inventing
+        a line for it.
+        """
+        return bool(self.identifier) or self.anchors_by_label
+
+    @property
+    def anchors_by_label(self) -> bool:
+        """Whether this issue must be anchored by matching its label to the source."""
+        return (
+            not self.identifier
+            and self.has_element
+            and bool(self.label)
+            and self.audit_type in LABEL_ANCHORABLE_AUDIT_TYPES
+        )
+
+    @property
+    def oracle_key(self) -> str:
+        """The key ``structured_oracle`` looks this issue up by.
+
+        Lives here rather than at each call site because the oracle set and the
+        finding's key must be built by the same code or the verifier rejects every
+        label-anchored finding for a mismatch it invented itself.
+        """
+        if self.identifier:
+            return f"{self.audit_type}:{self.identifier}"
+        return f"{self.audit_type}:label={self.label}"
 
 
 @dataclass(frozen=True)

@@ -10,6 +10,7 @@ navigation.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
@@ -62,6 +63,10 @@ class AcceptanceConfig(BaseModel):
     """Bound on every wait the driver makes. There is no sleep anywhere."""
 
 
+PermissionAnswer = Literal["allow", "deny"]
+"""How a run answers every system permission prompt it meets."""
+
+
 class SimulatorConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -98,11 +103,36 @@ class RepoConfig(BaseModel):
     no camera or notifications service, so the catalog's permission checks need this
     mechanism regardless. Titles are locale-dependent; the simulator runs in English.
     """
+    deny_alerts: list[str] = Field(default_factory=list)
+    """Button titles that *deny* a system permission prompt — "Don't Allow" and its
+    per-service variants.
+
+    Separate from `dismiss_alerts` rather than appended to it because the driver taps
+    the first title it finds: one merged list would answer whichever button the alert
+    happens to show first, which is the opposite of a controlled condition. A run asks
+    for one answer or the other through `alert_titles()`, and a prompt carrying neither
+    title is still `SIGHTLINE-UNDISMISSED-ALERT`.
+
+    This is the only mechanism available for camera and notifications: neither is a
+    `simctl privacy` service (re-confirmed on Xcode 27.1, 2026-10-20 — the list is
+    calendar, contacts, contacts-limited, location, location-always, photos, photos-add,
+    media-library, microphone, motion, reminders, siri).
+    """
     redaction: RedactionConfig = Field(default_factory=RedactionConfig)
     fixtures: dict[str, FixtureConfig] = Field(default_factory=dict)
     acceptance: AcceptanceConfig = Field(default_factory=AcceptanceConfig)
     budget_usd: float = 0.50
     skills_dirs: list[str] = Field(default_factory=lambda: [".sightline/skills"])
+
+    def alert_titles(self, *, answer: PermissionAnswer = "allow") -> tuple[str, ...]:
+        """The button titles this run permits the driver to tap.
+
+        Deliberately not a union. Under `answer="deny"` only denying titles are
+        permitted, so a prompt whose deny button we have no title for fails the run
+        loudly instead of being quietly granted — a silently granted permission makes a
+        permission-denied check pass for the wrong reason, which is worse than no check.
+        """
+        return tuple(self.deny_alerts if answer == "deny" else self.dismiss_alerts)
 
     @classmethod
     def load(cls, root: Path, *, override: Path | None = None) -> RepoConfig:

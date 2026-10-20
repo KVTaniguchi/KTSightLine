@@ -1,14 +1,26 @@
-"""Turning an `.xcresult` audit issue into an anchored, proposable finding.
+r"""Turning an `.xcresult` audit issue into an anchored, proposable finding.
 
-Deterministic: no model is involved in choosing the line. The identifier the audit
-reports is searched for in the head-side source, and the line is accepted only if it
-falls inside the diff — because we review the change, not the app. An issue on an
-element the PR did not touch is dropped as out of scope, not posted.
+Deterministic: no model is involved in choosing the line. Two anchoring strategies, in
+order, and both are searches of the head-side source rather than inferences:
+
+1. **By identifier.** The identifier the audit reports is searched for literally.
+2. **By label literal.** For an element that exists but carries no
+   ``accessibilityIdentifier``, the runtime label is matched against the Swift string
+   literals on the changed lines, with ``\(...)`` interpolations treated as wildcards.
+   ``.accessibilityLabel("Price \(item.formattedPrice)")`` anchors the observed label
+   ``Price $185.00``; the literal segments must match verbatim.
+
+A line is accepted only if it falls inside the diff — because we review the change, not
+the app. An issue on an element the PR did not touch is dropped as out of scope, not
+posted. Strategy 2 additionally requires the match to be *unique*: two changed lines
+whose literals both fit the label is an ambiguity, and ADR-0002 resolves ambiguity by
+dropping the finding rather than picking one.
 """
 
 from __future__ import annotations
 
 import re
+from collections.abc import Set as AbstractSet
 from dataclasses import dataclass
 
 from sightline.core.diff.models import ChangedFile
@@ -65,6 +77,51 @@ def _indent_of(line: str) -> str:
     return line[: len(line) - len(line.lstrip())]
 
 
+_STRING_LITERAL = re.compile(r'"((?:[^"\\]|\\.)*)"')
+_INTERPOLATION = re.compile(r"\\\((?:[^()]|\([^()]*\))*\)")
+_MIN_LITERAL_CHARS = 4
+r"""Below this, a literal carries too little text to identify one element.
+
+``Text("\(total)")`` yields no literal text at all and would otherwise match every
+observed label; ``"$"`` would match most of them. The floor is what keeps strategy 2
+from anchoring on coincidence.
+"""
+
+
+def _unescape(literal: str) -> str:
+    """Swift escapes that change the characters a label is compared against."""
+    return (
+        literal.replace('\\"', '"').replace("\\n", "\n").replace("\\t", "\t").replace("\\\\", "\\")
+    )
+
+
+def _label_pattern(literal: str) -> re.Pattern[str] | None:
+    """A matcher for the runtime label a Swift string literal produces.
+
+    Interpolations become wildcards because their value is only known at runtime;
+    every literal segment must appear verbatim and in order. Returns ``None`` when the
+    literal is too thin to identify anything.
+    """
+    segments = [_unescape(seg) for seg in _INTERPOLATION.split(literal)]
+    if len("".join(segments)) < _MIN_LITERAL_CHARS:
+        return None
+    return re.compile("^" + ".*".join(re.escape(seg) for seg in segments) + "$", re.DOTALL)
+
+
+def _lines_matching_label(label: str, lines: list[str], in_scope: AbstractSet[int]) -> list[int]:
+    """Every changed line carrying a string literal consistent with ``label``."""
+    out: list[int] = []
+    for number in sorted(in_scope):
+        if number > len(lines):
+            continue
+        for match in _STRING_LITERAL.finditer(lines[number - 1]):
+            pattern = _label_pattern(match.group(1))
+            if pattern is not None and pattern.match(label):
+                out.append(number)
+                break
+    return out
+
+
 def _suggestion(issue: AuditIssue, source_line: str) -> str | None:
     """Only where the fix is mechanically derivable from the audit type.
 
@@ -97,26 +154,43 @@ def build_findings(
     unmapped: list[Unmapped] = []
 
     for issue in issues:
-        if not issue.identifier:
+        if issue.identifier:
+            candidates = [
+                number
+                for number, text in enumerate(lines, start=1)
+                if issue.identifier in text and number in in_scope
+            ]
+            if not candidates:
+                # The element exists, but this PR did not touch it. Out of scope.
+                unmapped.append(Unmapped(issue, "not_in_diff"))
+                continue
+        elif issue.anchors_by_label:
+            candidates = _lines_matching_label(issue.label, lines, in_scope)
+            if len(candidates) > 1:
+                # Two changed lines could have produced this label. Picking one would be
+                # a guess, and a comment on the wrong line is worse than no comment.
+                unmapped.append(Unmapped(issue, "ambiguous_label"))
+                continue
+            if not candidates:
+                # Nothing on a changed line produces this label: either the element is
+                # pre-existing, or its label is built somewhere we cannot see.
+                unmapped.append(Unmapped(issue, "unanchorable"))
+                continue
+        else:
+            # No element at all — no identifier, no label, no frame. Nothing to anchor to.
             unmapped.append(Unmapped(issue, "unanchorable"))
-            continue
-
-        candidates = [
-            number
-            for number, text in enumerate(lines, start=1)
-            if issue.identifier in text and number in in_scope
-        ]
-        if not candidates:
-            # The element exists, but this PR did not touch it. Out of scope.
-            unmapped.append(Unmapped(issue, "not_in_diff"))
             continue
 
         line_number = candidates[0]
         source_line = lines[line_number - 1]
         width, height = _frame_size(issue.frame)
         template = _CLAIM.get(issue.audit_type, "`{identifier}`: {description}")
+        # A label-anchored issue has no identifier to name, so the claim names the label
+        # it was observed under. `normalize_claim` strips quoted literals, so the
+        # fingerprint of "Price $185.00" survives the price changing.
+        display = issue.identifier or f'"{issue.label}"'
         claim = template.format(
-            identifier=issue.identifier,
+            identifier=display,
             label=issue.label,
             description=issue.description,
             w=width,
@@ -132,7 +206,7 @@ def build_findings(
                 claim=claim,
                 evidence=evidence,
                 suggestion=_suggestion(issue, source_line),
-                oracle_key=f"{issue.audit_type}:{issue.identifier}",
+                oracle_key=issue.oracle_key,
             )
         )
 

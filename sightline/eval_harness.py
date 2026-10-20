@@ -219,7 +219,7 @@ def run_case(
             surfaces=surfaces,
             app_target=config.app_target,
             ui_test_target=config.ui_test_target,
-            dismiss_alerts=tuple(config.dismiss_alerts),
+            dismiss_alerts=config.alert_titles(answer="allow"),
         )
         Simulator(udid).prepare(content_size=ContentSize(content_size), appearance=Appearance.LIGHT)
         bundle = Path(workdir) / f"{case.id}.xcresult"
@@ -261,7 +261,7 @@ def run_case(
                 )
                 proposed.extend(found)
 
-        oracle = frozenset(f"{i.audit_type}:{i.identifier}" for i in postable)
+        oracle = frozenset(i.oracle_key for i in postable)
         gated = run_gate(proposed, StructuredOracleVerifier(oracle), skill_id="accessibility-audit")
         result.suppressed = gated.counts
         result.produced = [f.proposed.oracle_key or "" for f in gated.verified]

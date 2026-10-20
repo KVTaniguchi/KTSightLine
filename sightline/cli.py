@@ -14,7 +14,7 @@ from sightline.acceptance import AcceptOptions, CriteriaInvalid, run_accept
 from sightline.adapters.forge.base import ForgeAdapter
 from sightline.adapters.forge.github import GitHubAdapter
 from sightline.adapters.forge.local_git import LocalGitAdapter
-from sightline.config import RepoConfig
+from sightline.config import PermissionAnswer, RepoConfig
 from sightline.core.acceptance.lint import lint_file
 from sightline.core.findings.render import render_preview
 from sightline.core.impact.analyzer import analyze
@@ -238,9 +238,6 @@ def diff(target: str) -> None:
         click.echo(f"  commentable(RIGHT): {sorted(f.commentable_lines)}")
 
 
-if __name__ == "__main__":
-    main()
-
 
 def _parse_surface(spec: str) -> Surface:
     """`Name`, `Name:tap1,tap2`, or `Name:tap1,tap2@waitFor`."""
@@ -270,6 +267,11 @@ def _parse_surface(spec: str) -> Surface:
 @click.option("--appearance", type=click.Choice(["light", "dark"]), default="light")
 @click.option("--scratch", type=click.Path(path_type=Path), default=Path(".sightline/scratch"))
 @click.option("--out", type=click.Path(path_type=Path), default=Path(".sightline/run"))
+@click.option(
+    "--deny-permissions",
+    is_flag=True,
+    help="Answer every system permission prompt with its deny button (needs `deny_alerts:`).",
+)
 def audit(
     path: Path,
     project_relpath: str,
@@ -281,6 +283,7 @@ def audit(
     appearance: str,
     scratch: Path,
     out: Path,
+    deny_permissions: bool,
 ) -> None:
     """Run the runtime accessibility audit against a local checkout.
 
@@ -292,6 +295,17 @@ def audit(
     """
     run_id = uuid.uuid4().hex[:12]
     surfaces = [_parse_surface(s) for s in surface_specs]
+    answer: PermissionAnswer = "deny" if deny_permissions else "allow"
+    # Config is read for the alert titles alone: with a permission prompt covering the
+    # app, `performAccessibilityAudit` throws "Invalid target app" and audits nothing.
+    alert_titles = RepoConfig.load(Path(path)).alert_titles(answer=answer)
+    if deny_permissions and not alert_titles:
+        click.echo(
+            "--deny-permissions needs `deny_alerts:` in .sightline/config.yml; "
+            "without a deny title the prompt would be left up, not denied.",
+            err=True,
+        )
+        raise SystemExit(2)
 
     try:
         workspace = prepare_workspace(
@@ -301,6 +315,7 @@ def audit(
             surfaces=surfaces,
             app_target=app_target,
             ui_test_target=ui_test_target,
+            dismiss_alerts=alert_titles,
         )
     except InjectionUnavailable as exc:
         # ADR-0003 §7: degrade, never explode. The message names the fix.
@@ -657,3 +672,9 @@ def gate(target: str, checkout: Path, skills_dir: tuple[Path, ...], budget: floa
             handle.write(f"runtime={'true' if runtime else 'false'}\n")
             handle.write(f"stage={stage}\n")
             handle.write(f"reason={reason}\n")
+
+
+if __name__ == "__main__":
+    # Must stay last: every command below this line is invisible to
+    # `python -m sightline.cli` if main() runs before its decorator does.
+    main()
