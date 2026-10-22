@@ -1,0 +1,190 @@
+{
+  "testIdentifier" : "SightlineAcceptance/test_AC_CAP_ambiguous()",
+  "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_ambiguous",
+  "testName" : "test_AC_CAP_ambiguous()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740186.052,
+          "title" : "Start Test at 2026-10-11 13:36:26.052"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740186.076,
+          "title" : "Set Up"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740186.08,
+                  "title" : "Terminate com.sightline.fixtures.CheckoutDemo:20701"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740187.355,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740187.783,
+                  "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740186.079,
+              "title" : "Launch com.sightline.fixtures.CheckoutDemo"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740186.078,
+          "title" : "Open com.sightline.fixtures.CheckoutDemo"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740188.985,
+          "title" : "SIGHTLINE-ACC|eyJpIjo0LCJpZCI6IkNBUC5hbWJpZ3VvdXMiLCJwaGFzZSI6ImxhdW5jaGVkIiwidiI6MX0"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740190.028,
+                  "title" : "Checking existence of `\"cart.continue\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740190.027,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.continue\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740188.987,
+          "title" : "Waiting 10.0s for \"cart.continue\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740190.1,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.continue\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740190.119,
+          "title" : "SIGHTLINE-ACC|eyJpIjo0LCJpZCI6IkNBUC5hbWJpZ3VvdXMiLCJwaGFzZSI6InN1cmZhY2UiLCJzdGF0dXMiOiJvayIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740191.159,
+                  "title" : "Checking existence of `Any (First Match)`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740191.157,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740190.119,
+          "title" : "Waiting 10.0s for Any (First Match) to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740191.205,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.removeItem\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740191.223,
+          "title" : "SIGHTLINE-ACC|eyJjb3VudCI6MywiaSI6NCwiaWQiOiJDQVAuYW1iaWd1b3VzIiwibiI6MCwicGhhc2UiOiJleHBlY3QiLCJzdGF0dXMiOiJhbWJpZ3VvdXMiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740191.223,
+          "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.attachmentContainer",
+          "attachments" : [
+            {
+              "lifetime" : "keepAlways",
+              "name" : "SIGHTLINE-ACC-SHOT-4_0_5EB2B340-CF25-42B1-8996-A3514C3EAD72.png",
+              "payloadId" : "0~jKw70N6FEionHx2LBkJ8ynZRQ9hf-d1Q9nx2bOHW5IEuqjzTeqoweZDkv5XCMVMYvtB-CFVYuFtBXH1JhSSMZw==",
+              "timestamp" : 1791740191.26,
+              "uuid" : "960A8097-114B-4826-A2FE-2C0021240B7D"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740191.26,
+              "title" : "SIGHTLINE-ACC-SHOT-4"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740191.26,
+          "title" : "Added attachment named 'SIGHTLINE-ACC-SHOT-4'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740191.26,
+          "title" : "SIGHTLINE-ACC|eyJpIjo0LCJpZCI6IkNBUC5hbWJpZ3VvdXMiLCJuYW1lIjoiU0lHSFRMSU5FLUFDQy1TSE9ULTQiLCJwaGFzZSI6InNob3QiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740191.261,
+          "title" : "SIGHTLINE-ACC|eyJpIjo0LCJpZCI6IkNBUC5hbWJpZ3VvdXMiLCJwaGFzZSI6ImRvbmUiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740191.261,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}

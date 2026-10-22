@@ -17,11 +17,14 @@ so the pure tests exercise real shapes without needing a Mac.
 
 from __future__ import annotations
 
+import base64
 import json
 import re
+import shutil
 import subprocess
 from collections.abc import Iterator
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +37,40 @@ _AUDIT_RECORD = re.compile(r"^SIGHTLINE\|")
 # Written by the driver after performAccessibilityAudit returns: SIGHTLINE-AUDITED|<screen>
 _AUDITED_RECORD = re.compile(r"^SIGHTLINE-AUDITED\|(?P<screen>.+)$")
 _SCREENSHOT_NAME = re.compile(r"^SIGHTLINE-SCREENSHOT-(?P<screen>[^_]+)")
+
+# The acceptance driver's records (ADR-0004 §4): SIGHTLINE-ACC|<base64url(JSON)>.
+_ACCEPTANCE_RECORD = re.compile(r"^SIGHTLINE-ACC\|(?P<body>[A-Za-z0-9_-]*)$")
+_ACCEPTANCE_SHOT = re.compile(r"^SIGHTLINE-ACC-SHOT-(?P<index>\d+)")
+# XCTest's own activities, measured on Xcode 27.1 (verification-2026-10-11 V3, V4).
+_LAUNCH_ACTIVITY = re.compile(r"^Launch (?P<bundle>\S+)$")
+_CRASH_ACTIVITY = re.compile(r"^(?P<bundle>\S+) crashed$")
+_CRASH_LOG_ATTACHMENT = re.compile(r"^Crash Log .*\.ips$")
+# One unified-log line mirrored into the app's stdout/stderr capture:
+# 2026-10-11 13:13:27.764809-0400 CheckoutDemo[18307:951164] [acceptance] SIGHTLINE-AC|...
+_APP_LOG_LINE = re.compile(
+    r"^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+[+-]\d{4}) "
+    r"(?P<process>[^\[\n]+)\[(?P<pid>\d+):(?P<tid>[0-9a-fA-Fx]+)\] (?P<message>.*)$"
+)
+_AC_EVENT = re.compile(r"SIGHTLINE-AC\|(?P<event>[a-z][a-z0-9_]*)(?:\||$)")
+APP_OUTPUT_GLOB = "StandardOutputAndStandardError-*.txt"
+
+LABEL_ANCHORABLE_AUDIT_TYPES = frozenset({"textClipped"})
+"""Audit types allowed to anchor by label when the element has no identifier.
+
+An allowlist, not a general capability, and the reasoning is precision. `textClipped`
+is the type OQ-FIXTURE-2 was about: it reports the clipped text element itself, which
+in SwiftUI is routinely identifier-less, so without this it is unanchorable in
+practice.
+
+`contrast` is deliberately absent. Measured on eval case 003 (2026-10-20): the audit
+reports `Contrast failed` against the inner label of a stock
+`.buttonStyle(.bordered)` button — tinted text on a near-white fill, about 3.5:1
+against a 4.5:1 threshold. The finding is *correct*, but it is a property of a system
+button style rather than of the diff, so anchoring it by label would comment on
+`.bordered` buttons across every adopting repo. Same reasoning as case 001's note
+about stock SF Symbols. Admitting `contrast` needs a way to tell author-chosen colours
+from inherited ones first; see the open question.
+"""
 
 # Severity lives in compactDescription, not auditType (measured on the fixture,
 # 2026-08-31). Anything not "failed" is a sub-threshold warning and must not be posted,
@@ -104,12 +141,53 @@ class AuditIssue:
         return not any(s in low for s in _SUPPRESSED_DESCRIPTIONS)
 
     @property
-    def is_attributable(self) -> bool:
-        """An issue with no element has no identifier and no frame to anchor to.
+    def has_element(self) -> bool:
+        """Whether the audit attached an element at all.
 
-        ADR-0002 forbids inventing one. See OQ-FIXTURE-1.
+        The driver writes ``frame=nil`` exactly when ``issue.element`` was nil, so this
+        is the one signal that separates "the audit could not say what it was about"
+        from "it said, but the view carries no identifier".
         """
-        return bool(self.identifier) and self.frame != "nil"
+        return self.frame != "nil"
+
+    @property
+    def is_attributable(self) -> bool:
+        """Whether anything in this record can anchor a comment to a line.
+
+        Two distinct cases, collapsed into one before 2026-10-20 (see OQ-FIXTURE-2):
+
+        * ``identifier`` set — anchor by searching the head source for it.
+        * no identifier, but an element with a ``label`` — anchor by matching the
+          label against the string literals on the changed lines. The Cart screen's
+          ``textClipped`` is this case: ``id=`` empty, ``label=Price $185.00``,
+          ``frame=(252.5, 256.75, 66.5, 20.5)``.
+
+        An issue with no element at all stays unanchorable; ADR-0002 forbids inventing
+        a line for it.
+        """
+        return bool(self.identifier) or self.anchors_by_label
+
+    @property
+    def anchors_by_label(self) -> bool:
+        """Whether this issue must be anchored by matching its label to the source."""
+        return (
+            not self.identifier
+            and self.has_element
+            and bool(self.label)
+            and self.audit_type in LABEL_ANCHORABLE_AUDIT_TYPES
+        )
+
+    @property
+    def oracle_key(self) -> str:
+        """The key ``structured_oracle`` looks this issue up by.
+
+        Lives here rather than at each call site because the oracle set and the
+        finding's key must be built by the same code or the verifier rejects every
+        label-anchored finding for a mismatch it invented itself.
+        """
+        if self.identifier:
+            return f"{self.audit_type}:{self.identifier}"
+        return f"{self.audit_type}:label={self.label}"
 
 
 @dataclass(frozen=True)
@@ -258,6 +336,151 @@ def postable_issues(issues: tuple[AuditIssue, ...]) -> tuple[AuditIssue, ...]:
     return tuple(i for i in issues if i.is_failure and i.is_attributable)
 
 
+# --- acceptance records (ADR-0004) -----------------------------------------------------
+
+
+@dataclass(frozen=True)
+class AcceptanceRecord:
+    """One record the acceptance driver wrote, with the activity's own timestamp."""
+
+    index: int
+    criterion_id: str
+    phase: str
+    fields: dict[str, Any]
+    time: float
+
+
+@dataclass(frozen=True)
+class CriterionRun:
+    """Everything one acceptance test method left in the bundle."""
+
+    test_id: str
+    records: tuple[AcceptanceRecord, ...]
+    launch_time: float | None = None
+    """``startTime`` of XCTest's ``Launch <bundle id>`` activity. Log attribution's start."""
+    teardown_time: float | None = None
+    crashed: bool = False
+    crash_detail: str = ""
+    crash_attachments: tuple[str, ...] = ()
+    """Attachment names of the crash logs (``Crash Log <date>.ips``), to find in the export."""
+
+    def phase(self, name: str) -> tuple[AcceptanceRecord, ...]:
+        return tuple(r for r in self.records if r.phase == name)
+
+    @property
+    def done_time(self) -> float | None:
+        done = self.phase("done")
+        return done[-1].time if done else None
+
+
+def decode_acceptance_title(title: str) -> dict[str, Any] | None:
+    """The JSON body of a ``SIGHTLINE-ACC|`` activity title, or None for any other title.
+
+    A malformed body is None too: a record we cannot read is a record we do not have,
+    and derivation turns that into ``no_record`` rather than guessing.
+    """
+    m = _ACCEPTANCE_RECORD.match(title)
+    if not m:
+        return None
+    body = m["body"]
+    try:
+        raw = base64.urlsafe_b64decode(body + "=" * (-len(body) % 4))
+        data = json.loads(raw.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def parse_acceptance_activities(data: dict[str, Any]) -> CriterionRun:
+    """Recover one criterion's run from `get test-results activities` JSON."""
+    test_id = data.get("testIdentifier", "")
+    records: list[AcceptanceRecord] = []
+    launch_time: float | None = None
+    teardown_time: float | None = None
+    crashed, crash_detail, crash_logs = False, "", []
+    for run in data.get("testRuns", []):
+        for activity in _walk_activities(run.get("activities", [])):
+            title = activity.get("title", "")
+            start = float(activity.get("startTime", 0.0))
+            if (body := decode_acceptance_title(title)) is not None:
+                try:
+                    records.append(
+                        AcceptanceRecord(
+                            index=int(body["i"]),
+                            criterion_id=str(body["id"]),
+                            phase=str(body["phase"]),
+                            fields=body,
+                            time=start,
+                        )
+                    )
+                except (KeyError, TypeError, ValueError):
+                    continue
+            elif _LAUNCH_ACTIVITY.match(title) and launch_time is None:
+                launch_time = start
+            elif title == "Tear Down" and teardown_time is None:
+                teardown_time = start
+            elif _CRASH_ACTIVITY.match(title):
+                crashed, crash_detail = True, title
+            for attachment in activity.get("attachments", []):
+                name = attachment.get("name", "")
+                if _CRASH_LOG_ATTACHMENT.match(name) and name not in crash_logs:
+                    crashed = True
+                    crash_logs.append(name)
+    return CriterionRun(
+        test_id=test_id,
+        records=tuple(records),
+        launch_time=launch_time,
+        teardown_time=teardown_time,
+        crashed=crashed,
+        crash_detail=crash_detail,
+        crash_attachments=tuple(crash_logs),
+    )
+
+
+@dataclass(frozen=True)
+class AppLogLine:
+    """One unified-log line from the app's captured output (verification V1, V3)."""
+
+    time: float
+    pid: int
+    process: str
+    message: str
+
+    @property
+    def event(self) -> str | None:
+        m = _AC_EVENT.search(self.message)
+        return m["event"] if m else None
+
+
+def parse_app_output(text: str) -> tuple[AppLogLine, ...]:
+    """Every timestamped log line in a `StandardOutputAndStandardError-<bundle>.txt`.
+
+    One file holds every launch in the test run (V3), so lines carry their own PID and
+    time. Lines without both — ``print()`` output, continuation lines — cannot be
+    attributed to a launch and are not evidence.
+    """
+    out: list[AppLogLine] = []
+    for line in text.splitlines():
+        m = _APP_LOG_LINE.match(line)
+        if not m:
+            continue
+        try:
+            when = datetime.strptime(m["ts"], "%Y-%m-%d %H:%M:%S.%f%z").timestamp()
+        except ValueError:
+            continue
+        out.append(
+            AppLogLine(
+                time=when, pid=int(m["pid"]), process=m["process"].strip(), message=m["message"]
+            )
+        )
+    return tuple(out)
+
+
+def parse_acceptance_shot(suggested_name: str) -> int | None:
+    m = _ACCEPTANCE_SHOT.match(suggested_name)
+    return int(m["index"]) if m else None
+
+
 # --- the shelling-out half ------------------------------------------------------------
 
 
@@ -344,3 +567,30 @@ class XcresultTool:
         if not manifest.exists():
             return ()
         return parse_attachments_manifest(json.loads(manifest.read_text()))
+
+    def acceptance_runs(self) -> tuple[CriterionRun, ...]:
+        """One CriterionRun per test case in the bundle."""
+        runs: list[CriterionRun] = []
+        for root in self.tests():
+            for case in root.test_cases():
+                data = self._get("activities", "--test-id", case.identifier or "")
+                runs.append(parse_acceptance_activities(data))
+        return tuple(runs)
+
+    def export_diagnostics(self, dest: Path) -> tuple[Path, ...]:
+        """Export diagnostics and return the app stdout/stderr captures in them.
+
+        ``StandardOutputAndStandardError.txt`` (no suffix) is the test runner's own
+        output and is not returned; the app's is ``...-<bundle id>.txt``.
+        """
+        dest = Path(dest)
+        if dest.exists():
+            shutil.rmtree(dest)
+        cmd = [
+            "xcrun", "xcresulttool", "export", "diagnostics",
+            "--path", str(self.bundle), "--output-path", str(dest),
+        ]  # fmt: skip
+        proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        if proc.returncode != 0:
+            raise XcresultError(f"export diagnostics failed: {proc.stderr.strip()}")
+        return tuple(sorted(dest.rglob(APP_OUTPUT_GLOB)))

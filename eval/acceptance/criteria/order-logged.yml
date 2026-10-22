@@ -1,0 +1,16 @@
+# AC3 alone, for the log_event cases (004-007). Each case changes only how the app logs.
+acceptance_schema: 1
+spec_id: CHK-7
+criteria:
+  - id: CHK-7.AC3
+    given: an order was placed
+    when: the confirmation screen appears
+    then: the order was submitted exactly once
+    surface: PaymentMethod
+    steps:
+      - tap: payment.placeOrder
+      - wait_for: confirmation.viewHistory
+    evidence: log_event
+    expect_log:
+      - event: order_submitted
+        count: 1

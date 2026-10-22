@@ -1,0 +1,846 @@
+{
+  "testIdentifier" : "SightlineAcceptance/test_AC_CAP_unreachable()",
+  "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_unreachable",
+  "testName" : "test_AC_CAP_unreachable()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.848,
+          "title" : "Start Test at 2026-10-11 13:37:43.848"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.871,
+          "title" : "Set Up"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740263.874,
+                  "title" : "Terminate com.sightline.fixtures.CheckoutDemo:20789"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740265.142,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740265.574,
+                  "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740263.874,
+              "title" : "Launch com.sightline.fixtures.CheckoutDemo"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.873,
+          "title" : "Open com.sightline.fixtures.CheckoutDemo"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740266.767,
+          "title" : "SIGHTLINE-ACC|eyJpIjo1LCJpZCI6IkNBUC51bnJlYWNoYWJsZSIsInBoYXNlIjoibGF1bmNoZWQiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740267.803,
+                  "title" : "Checking existence of `\"cart.continue\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740267.802,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.continue\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740266.768,
+          "title" : "Waiting 10.0s for \"cart.continue\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740267.905,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.continue\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740267.923,
+          "title" : "SIGHTLINE-ACC|eyJpIjo1LCJpZCI6IkNBUC51bnJlYWNoYWJsZSIsInBoYXNlIjoic3VyZmFjZSIsInN0YXR1cyI6Im9rIiwidiI6MX0"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740268.954,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740269.034,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740268.952,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740269.962,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740270.043,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740269.96,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740270.966,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740271.045,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740270.964,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740271.97,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740272.05,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740271.969,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740272.972,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740273.052,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740272.97,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740273.988,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740274.068,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740273.986,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740275.003,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740275.084,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740275.002,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740276.012,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740276.092,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740276.01,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740277.02,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740277.101,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740277.019,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740277.928,
+                  "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740278.009,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740277.927,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.doesNotExist\" Any`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740278.009,
+              "title" : "Checking existence of `\"cart.doesNotExist\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740267.923,
+          "title" : "Waiting 10.0s for \"cart.doesNotExist\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740278.06,
+              "title" : "Requesting snapshot of accessibility hierarchy for app with pid 20803"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740278.06,
+          "title" : "Collecting debug information to assist test failure triage"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740278.081,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740278.094,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740278.096,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740278.108,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740278.12,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740278.54,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740278.094,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740279.612,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740279.646,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740279.649,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740279.665,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740279.68,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740280.1,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740279.646,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740281.18,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740281.215,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740281.218,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740281.234,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740281.25,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740281.671,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740281.215,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740282.759,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740282.775,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740282.777,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740282.789,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740282.801,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740283.222,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740282.774,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740284.295,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740284.33,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740284.333,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740284.349,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740284.365,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740284.786,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740284.33,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740285.863,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740285.897,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740285.9,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740285.916,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740285.931,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740286.349,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740285.897,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740287.429,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740287.463,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740287.466,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740287.481,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740287.497,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740287.917,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740287.463,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740288.996,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740289.03,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740289.033,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740289.049,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740289.065,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740289.485,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740289.03,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740290.564,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740290.599,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740290.601,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740290.617,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740290.633,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740291.052,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740290.598,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740292.129,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740292.164,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740292.167,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740292.184,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740292.2,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740292.618,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740292.164,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740293.696,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740293.73,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740293.733,
+              "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740293.748,
+              "title" : "Check for interrupting elements affecting \"CheckoutDemo\" Application"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740293.765,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740294.184,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740293.73,
+          "title" : "Swipe up Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740295.263,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.doesNotExist\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740295.297,
+          "title" : "SIGHTLINE-ACC|eyJjb3VudCI6MCwiaSI6NSwiaWQiOiJDQVAudW5yZWFjaGFibGUiLCJuIjowLCJwaGFzZSI6InN0ZXAiLCJzdGF0dXMiOiJ1bnJlYWNoYWJsZSIsInRhcmdldCI6ImNhcnQuZG9lc05vdEV4aXN0IiwidiI6MX0"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740295.298,
+          "title" : "SIGHTLINE-ACC|eyJpIjo1LCJpZCI6IkNBUC51bnJlYWNoYWJsZSIsInBoYXNlIjoiZG9uZSIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740295.298,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}

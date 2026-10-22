@@ -1,0 +1,56 @@
+# The brief's example criteria, with AC3 moved from network_call to log_event
+# (addendum, 2026-10-11). Run against eval/fixtures/CheckoutDemo:
+#
+#   sightline accept --criteria eval/acceptance/examples/CHK-7.yml \
+#     --path eval/fixtures/CheckoutDemo --udid <udid>
+#
+# AC3 needs the app to log `SIGHTLINE-AC|order_submitted|...`. The base fixture does
+# not, so against it AC3 is a fail (expected 1, saw 0 — capture was live, the event never
+# came); the acceptance corpus case 004-order-logged-once adds the line and passes.
+acceptance_schema: 1
+spec_id: CHK-7
+provenance:
+  harness_version: 3f9c2e1
+  stage: implement
+criteria:
+  - id: CHK-7.AC1
+    given: a cart holding the sample order
+    when: the shopper continues to checkout
+    then: the subtotal covers every line item times its quantity
+    surface: CheckoutSummary
+    expect:
+      - id: checkout.subtotal
+        exists: true
+        label: "Subtotal $441.00"
+
+  - id: CHK-7.AC2
+    given: the shopper is on the payment screen
+    when: they place the order
+    then: the confirmation screen offers order history
+    surface: PaymentMethod
+    steps:
+      - tap: payment.placeOrder
+    expect:
+      - id: confirmation.viewHistory
+        exists: true
+        enabled: true
+
+  - id: CHK-7.AC3
+    given: an order was placed
+    when: the confirmation screen appears
+    then: the order was submitted exactly once
+    surface: PaymentMethod
+    steps:
+      - tap: payment.placeOrder
+      - wait_for: confirmation.viewHistory
+    evidence: log_event
+    expect_log:
+      - event: order_submitted
+        count: 1
+
+  - id: CHK-7.AC4
+    given: an order was placed
+    when: a minute passes
+    then: a confirmation email arrives
+    manual: true
+    reason: outside the app

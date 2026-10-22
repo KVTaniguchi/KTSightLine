@@ -1,0 +1,390 @@
+{
+  "testIdentifier" : "SightlineAcceptance/test_AC_CAP_absent()",
+  "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_absent",
+  "testName" : "test_AC_CAP_absent()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740172.031,
+          "title" : "Start Test at 2026-10-11 13:36:12.031"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740172.073,
+          "title" : "Set Up"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740172.637,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740173.04,
+                  "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740172.079,
+              "title" : "Launch com.sightline.fixtures.CheckoutDemo"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740172.078,
+          "title" : "Open com.sightline.fixtures.CheckoutDemo"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740174.459,
+          "title" : "SIGHTLINE-ACC|eyJpIjo2LCJpZCI6IkNBUC5hYnNlbnQiLCJwaGFzZSI6ImxhdW5jaGVkIiwidiI6MX0"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740175.504,
+                  "title" : "Checking existence of `\"cart.continue\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740175.502,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.continue\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740174.46,
+          "title" : "Waiting 10.0s for \"cart.continue\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740175.609,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.continue\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740175.638,
+          "title" : "SIGHTLINE-ACC|eyJpIjo2LCJpZCI6IkNBUC5hYnNlbnQiLCJwaGFzZSI6InN1cmZhY2UiLCJzdGF0dXMiOiJvayIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740176.674,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740176.727,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740176.673,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740177.662,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740177.714,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740177.661,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740178.653,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740178.704,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740178.651,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740179.642,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740179.694,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740179.641,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740180.732,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740180.785,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740180.731,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740181.72,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740181.772,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740181.719,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740182.708,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740182.758,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740182.706,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740183.691,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740183.742,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740183.689,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740184.678,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740184.731,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740184.677,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740185.642,
+                  "title" : "Checking existence of `Any (First Match)`"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740185.696,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740185.641,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740185.697,
+              "title" : "Checking existence of `Any (First Match)`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740175.638,
+          "title" : "Waiting 10.0s for Any (First Match) to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740185.727,
+              "title" : "Requesting snapshot of accessibility hierarchy for app with pid 20701"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.726,
+          "title" : "Collecting debug information to assist test failure triage"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.753,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.ghost\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.766,
+          "title" : "SIGHTLINE-ACC|eyJhY3R1YWwiOnsiZXhpc3RzIjpmYWxzZX0sImNvdW50IjowLCJpIjo2LCJpZCI6IkNBUC5hYnNlbnQiLCJuIjowLCJwaGFzZSI6ImV4cGVjdCIsInN0YXR1cyI6ImFic2VudCIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.766,
+          "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.attachmentContainer",
+          "attachments" : [
+            {
+              "lifetime" : "keepAlways",
+              "name" : "SIGHTLINE-ACC-SHOT-6_0_6E1FB3FB-F7DC-4D3F-9B09-5B78112F394E.png",
+              "payloadId" : "0~jKw70N6FEionHx2LBkJ8ynZRQ9hf-d1Q9nx2bOHW5IEuqjzTeqoweZDkv5XCMVMYvtB-CFVYuFtBXH1JhSSMZw==",
+              "timestamp" : 1791740185.808,
+              "uuid" : "F770C2E7-FD59-4FC4-B972-FB18D87DC9E4"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740185.808,
+              "title" : "SIGHTLINE-ACC-SHOT-6"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.808,
+          "title" : "Added attachment named 'SIGHTLINE-ACC-SHOT-6'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.809,
+          "title" : "SIGHTLINE-ACC|eyJpIjo2LCJpZCI6IkNBUC5hYnNlbnQiLCJuYW1lIjoiU0lHSFRMSU5FLUFDQy1TSE9ULTYiLCJwaGFzZSI6InNob3QiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.809,
+          "title" : "SIGHTLINE-ACC|eyJpIjo2LCJpZCI6IkNBUC5hYnNlbnQiLCJwaGFzZSI6ImRvbmUiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740185.809,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}

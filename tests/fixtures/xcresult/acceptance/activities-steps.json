@@ -1,0 +1,504 @@
+{
+  "testIdentifier" : "SightlineAcceptance/test_AC_CAP_steps()",
+  "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_steps",
+  "testName" : "test_AC_CAP_steps()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740250.397,
+          "title" : "Start Test at 2026-10-11 13:37:30.397"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740250.417,
+          "title" : "Set Up"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740250.42,
+                  "title" : "Terminate com.sightline.fixtures.CheckoutDemo:20786"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740251.675,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740252.139,
+                  "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740250.419,
+              "title" : "Launch com.sightline.fixtures.CheckoutDemo"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740250.418,
+          "title" : "Open com.sightline.fixtures.CheckoutDemo"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740253.352,
+          "title" : "SIGHTLINE-ACC|eyJpIjoyLCJpZCI6IkNBUC5zdGVwcyIsInBoYXNlIjoibGF1bmNoZWQiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740254.384,
+                  "title" : "Checking existence of `\"cart.continue\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740254.383,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"cart.continue\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740253.352,
+          "title" : "Waiting 10.0s for \"cart.continue\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740254.489,
+          "title" : "Get number of matches for: Elements matching predicate '\"cart.continue\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740254.508,
+          "title" : "Find the \"cart.continue\" Any"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740254.528,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740254.53,
+              "title" : "Find the \"cart.continue\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740254.545,
+              "title" : "Check for interrupting elements affecting \"cart.continue\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740254.56,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740254.848,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740254.528,
+          "title" : "Tap \"cart.continue\" Button"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740256.67,
+                  "title" : "Checking existence of `\"checkout.payment\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740256.669,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"checkout.payment\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740255.646,
+          "title" : "Waiting 10.0s for \"checkout.payment\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740256.764,
+          "title" : "Get number of matches for: Elements matching predicate '\"checkout.payment\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740256.78,
+          "title" : "Find the \"checkout.payment\" Any"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740256.801,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740256.803,
+              "title" : "Find the \"checkout.payment\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740256.818,
+              "title" : "Check for interrupting elements affecting \"checkout.payment\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740256.834,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740257.122,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740256.801,
+          "title" : "Tap \"checkout.payment\" Button"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740258.462,
+                  "title" : "Checking existence of `\"payment.disclosure\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740258.46,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"payment.disclosure\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740257.43,
+          "title" : "Waiting 10.0s for \"payment.disclosure\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740258.546,
+          "title" : "Get number of matches for: Elements matching predicate '\"payment.disclosure\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740258.561,
+          "title" : "SIGHTLINE-ACC|eyJpIjoyLCJpZCI6IkNBUC5zdGVwcyIsInBoYXNlIjoic3VyZmFjZSIsInN0YXR1cyI6Im9rIiwidiI6MX0"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740259.59,
+                  "title" : "Checking existence of `\"payment.placeOrder\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740259.589,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"payment.placeOrder\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740258.561,
+          "title" : "Waiting 10.0s for \"payment.placeOrder\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740259.658,
+          "title" : "Get number of matches for: Elements matching predicate '\"payment.placeOrder\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740259.674,
+          "title" : "Find the \"payment.placeOrder\" Any"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740259.696,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740259.698,
+              "title" : "Find the \"payment.placeOrder\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740259.712,
+              "title" : "Check for interrupting elements affecting \"payment.placeOrder\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740259.727,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740260.013,
+              "title" : "Wait for com.sightline.fixtures.CheckoutDemo to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740259.696,
+          "title" : "Tap \"payment.placeOrder\" Button"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740260.315,
+          "title" : "SIGHTLINE-ACC|eyJjb3VudCI6MSwiaSI6MiwiaWQiOiJDQVAuc3RlcHMiLCJuIjowLCJwaGFzZSI6InN0ZXAiLCJzdGF0dXMiOiJvayIsInRhcmdldCI6InBheW1lbnQucGxhY2VPcmRlciIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740261.34,
+                  "title" : "Checking existence of `\"confirmation.viewHistory\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740261.339,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"confirmation.viewHistory\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740260.317,
+          "title" : "Waiting 10.0s for \"confirmation.viewHistory\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740261.389,
+          "title" : "Get number of matches for: Elements matching predicate '\"confirmation.viewHistory\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740261.403,
+          "title" : "SIGHTLINE-ACC|eyJjb3VudCI6MSwiaSI6MiwiaWQiOiJDQVAuc3RlcHMiLCJuIjoxLCJwaGFzZSI6InN0ZXAiLCJzdGF0dXMiOiJvayIsInRhcmdldCI6ImNvbmZpcm1hdGlvbi52aWV3SGlzdG9yeSIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740262.435,
+                  "title" : "Checking existence of `Any (First Match)`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740262.435,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740261.403,
+          "title" : "Waiting 10.0s for Any (First Match) to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740262.448,
+          "title" : "Get number of matches for: Elements matching predicate '\"confirmation.viewHistory\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740262.457,
+          "title" : "Checking existence of `\"confirmation.viewHistory\" Any`"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740262.466,
+          "title" : "Find the \"confirmation.viewHistory\" Any"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740262.476,
+          "title" : "Find the \"confirmation.viewHistory\" Button"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740262.485,
+          "title" : "Find the \"confirmation.viewHistory\" Button"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740262.493,
+          "title" : "SIGHTLINE-ACC|eyJhY3R1YWwiOnsiZW5hYmxlZCI6dHJ1ZSwiZXhpc3RzIjp0cnVlLCJsYWJlbCI6IlZpZXcgb3JkZXIgaGlzdG9yeSIsInZhbHVlIjoiIn0sImNvdW50IjoxLCJpIjoyLCJpZCI6IkNBUC5zdGVwcyIsIm4iOjAsInBoYXNlIjoiZXhwZWN0Iiwic3RhdHVzIjoib2JzZXJ2ZWQiLCJ2IjoxfQ"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791740263.525,
+                  "title" : "Checking existence of `\"payment.placeOrder\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740263.523,
+              "title" : "Checking `Expect predicate `existsNoRetry == 0` for object \"payment.placeOrder\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740262.494,
+          "title" : "Waiting 10.0s for \"payment.placeOrder\" Any to not exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.576,
+          "title" : "Get number of matches for: Elements matching predicate '\"payment.placeOrder\" IN identifiers'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.587,
+          "title" : "SIGHTLINE-ACC|eyJhY3R1YWwiOnsiZXhpc3RzIjpmYWxzZX0sImNvdW50IjowLCJpIjoyLCJpZCI6IkNBUC5zdGVwcyIsIm4iOjEsInBoYXNlIjoiZXhwZWN0Iiwic3RhdHVzIjoiYWJzZW50IiwidiI6MX0"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.587,
+          "title" : "Find the Target Application 'com.sightline.fixtures.CheckoutDemo'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.attachmentContainer",
+          "attachments" : [
+            {
+              "lifetime" : "keepAlways",
+              "name" : "SIGHTLINE-ACC-SHOT-2_0_8866A428-06C7-4760-B9CE-319862E90857.png",
+              "payloadId" : "0~wx0Co8FAgs1gdbXLX9nG3aUCl8XTMIl2v6ZgxPZSn1HCz_LVRl6l1z0ohEa2d8aLaDGUQAhezlm_mTvUk-r-mw==",
+              "timestamp" : 1791740263.623,
+              "uuid" : "46A90FFF-954A-48B4-B898-19A99F803E32"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791740263.623,
+              "title" : "SIGHTLINE-ACC-SHOT-2"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.623,
+          "title" : "Added attachment named 'SIGHTLINE-ACC-SHOT-2'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.623,
+          "title" : "SIGHTLINE-ACC|eyJpIjoyLCJpZCI6IkNBUC5zdGVwcyIsIm5hbWUiOiJTSUdIVExJTkUtQUNDLVNIT1QtMiIsInBoYXNlIjoic2hvdCIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.userCreated",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.624,
+          "title" : "SIGHTLINE-ACC|eyJpIjoyLCJpZCI6IkNBUC5zdGVwcyIsInBoYXNlIjoiZG9uZSIsInYiOjF9"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791740263.624,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}

@@ -102,10 +102,183 @@ def test_pre_existing_defect_on_a_context_line_is_out_of_scope():
     assert [u.reason for u in unmapped] == ["not_in_diff"]
 
 
-def test_issue_without_an_identifier_is_unanchorable():
+def test_issue_with_no_element_at_all_is_unanchorable():
+    """element = nil: no identifier, no label, no frame. Nothing to anchor to."""
     changed = parse_diff(DIFF).files[0]
+    orphan = AuditIssue(
+        screen="Cart",
+        audit_type="hitRegion",
+        identifier="",
+        label="",
+        frame="nil",
+        description="Hit area is too small",
+        test_id="T/t()",
+    )
     findings, unmapped = build_findings(
-        (_issue(""),), changed=changed, source=SOURCE, evidence=[_ref()]
+        (orphan,), changed=changed, source=SOURCE, evidence=[_ref()]
+    )
+    assert findings == []
+    assert [u.reason for u in unmapped] == ["unanchorable"]
+
+
+def test_element_without_an_identifier_anchors_by_its_label_literal():
+    """OQ-FIXTURE-2, corrected: an element can have a label and no identifier."""
+    source = (
+        "struct V: View {\n"
+        "    var body: some View {\n"
+        '        Text("Estimated delivery")\n'
+        "    }\n"
+        "}\n"
+    )
+    diff = (
+        "diff --git a/V.swift b/V.swift\n"
+        "--- a/V.swift\n+++ b/V.swift\n"
+        "@@ -1,2 +1,5 @@\n"
+        + "".join(f" {line}\n" for line in source.splitlines()[:2])
+        + "".join(f"+{line}\n" for line in source.splitlines()[2:])
+    )
+    issue = AuditIssue(
+        screen="Checkout",
+        audit_type="textClipped",
+        identifier="",
+        label="Estimated delivery",
+        frame="(16.0, 142.0, 120.0, 20.5)",
+        description="Text clipped",
+        test_id="T/t()",
+    )
+    findings, unmapped = build_findings(
+        (issue,), changed=parse_diff(diff).files[0], source=source, evidence=[_ref()]
+    )
+    assert not unmapped
+    assert '"Estimated delivery"' in source.splitlines()[findings[0].anchor.line - 1]
+    assert findings[0].oracle_key == "textClipped:label=Estimated delivery"
+    assert '"Estimated delivery"' in findings[0].claim
+
+
+def test_a_label_anchored_fingerprint_survives_the_label_value_changing():
+    """Rule 3: fingerprints are content-derived. A label-anchored claim names a runtime
+    value, so without `normalize_claim` stripping quoted literals the bot would re-post
+    every time the price changed."""
+    from sightline.core.findings.models import fingerprint
+
+    claims = [f'`"Price ${n}.00"` is clipped at this text size.' for n in (185, 999)]
+    assert len({fingerprint("accessibility-audit", "V.swift", "V.body", c) for c in claims}) == 1
+
+
+def test_an_audit_type_outside_the_allowlist_does_not_anchor_by_label():
+    """Only `textClipped` may anchor by label (LABEL_ANCHORABLE_AUDIT_TYPES).
+
+    `contrast` is excluded on purpose: measured on eval case 003, the audit correctly
+    reports `Contrast failed` against the inner label of a stock `.bordered` button.
+    Anchoring that by label would comment on a system button style in every repo.
+    """
+    changed = parse_diff(DIFF).files[0]
+    issue = AuditIssue(
+        screen="Cart",
+        audit_type="contrast",
+        identifier="",
+        label="questionmark.circle",
+        frame="(29.0, 24.0, 18.0, 36.0)",
+        description="Contrast failed",
+        test_id="T/t()",
+    )
+    findings, unmapped = build_findings((issue,), changed=changed, source=SOURCE, evidence=[_ref()])
+    assert findings == []
+    assert [u.reason for u in unmapped] == ["unanchorable"]
+
+
+def test_interpolated_label_literal_matches_its_runtime_value():
+    r"""`.accessibilityLabel("Price \(item.formattedPrice)")` anchors `Price $185.00`.
+
+    The Cart screen's real `textClipped`. Interpolations are wildcards; the literal
+    segments around them must match verbatim.
+    """
+    source = (
+        "struct CartRow: View {\n"
+        "    var body: some View {\n"
+        "        Text(item.formattedPrice)\n"
+        '            .accessibilityLabel("Price \\(item.formattedPrice)")\n'
+        "    }\n"
+        "}\n"
+    )
+    diff = (
+        "diff --git a/CartView.swift b/CartView.swift\n"
+        "--- a/CartView.swift\n+++ b/CartView.swift\n"
+        "@@ -1,2 +1,6 @@\n"
+        + "".join(f" {line}\n" for line in source.splitlines()[:2])
+        + "".join(f"+{line}\n" for line in source.splitlines()[2:])
+    )
+    issue = AuditIssue(
+        screen="Cart",
+        audit_type="textClipped",
+        identifier="",
+        label="Price $185.00",
+        frame="(252.5, 256.75, 66.5, 20.5)",
+        description="Text clipped",
+        test_id="T/t()",
+    )
+    findings, unmapped = build_findings(
+        (issue,), changed=parse_diff(diff).files[0], source=source, evidence=[_ref()]
+    )
+    assert not unmapped
+    assert "accessibilityLabel" in source.splitlines()[findings[0].anchor.line - 1]
+    assert findings[0].oracle_key == "textClipped:label=Price $185.00"
+
+
+def test_a_label_matching_two_changed_lines_is_dropped_as_ambiguous():
+    """Picking one would be a guess, and a comment on the wrong line is worse."""
+    source = (
+        "struct V: View {\n"
+        "    var body: some View {\n"
+        '        Text("Subtotal")\n'
+        '        Text("Subtotal")\n'
+        "    }\n"
+        "}\n"
+    )
+    diff = (
+        "diff --git a/V.swift b/V.swift\n"
+        "--- a/V.swift\n+++ b/V.swift\n"
+        "@@ -1,2 +1,6 @@\n"
+        + "".join(f" {line}\n" for line in source.splitlines()[:2])
+        + "".join(f"+{line}\n" for line in source.splitlines()[2:])
+    )
+    issue = AuditIssue(
+        screen="Cart",
+        audit_type="textClipped",
+        identifier="",
+        label="Subtotal",
+        frame="(1.0, 2.0, 3.0, 4.0)",
+        description="Text clipped",
+        test_id="T/t()",
+    )
+    findings, unmapped = build_findings(
+        (issue,), changed=parse_diff(diff).files[0], source=source, evidence=[_ref()]
+    )
+    assert findings == []
+    assert [u.reason for u in unmapped] == ["ambiguous_label"]
+
+
+def test_a_literal_too_thin_to_identify_anything_does_not_anchor():
+    r"""`Text("\(total)")` would otherwise match every observed label."""
+    source = 'struct V: View {\n    var body: some View {\n        Text("\\(total)")\n    }\n}\n'
+    diff = (
+        "diff --git a/V.swift b/V.swift\n"
+        "--- a/V.swift\n+++ b/V.swift\n"
+        "@@ -1,2 +1,5 @@\n"
+        + "".join(f" {line}\n" for line in source.splitlines()[:2])
+        + "".join(f"+{line}\n" for line in source.splitlines()[2:])
+    )
+    issue = AuditIssue(
+        screen="Cart",
+        audit_type="textClipped",
+        identifier="",
+        label="$441.00",
+        frame="(1.0, 2.0, 3.0, 4.0)",
+        description="Text clipped",
+        test_id="T/t()",
+    )
+    findings, unmapped = build_findings(
+        (issue,), changed=parse_diff(diff).files[0], source=source, evidence=[_ref()]
     )
     assert findings == []
     assert [u.reason for u in unmapped] == ["unanchorable"]

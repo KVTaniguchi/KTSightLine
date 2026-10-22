@@ -1,0 +1,12 @@
+id: 003-fixture-launch-args
+title: A criterion starts the app in a fixture state through launch arguments
+criteria: ../criteria/single-item-cart.yml
+patch: change.patch
+config: config.yml
+notes: >
+  The patch teaches the app to honour `-SightlineCart single`; the case's config names
+  that fixture. The base fixture is unchanged. The same criterion without the fixture
+  still sees the default cart, so the fixture is what changed the state.
+expected:
+  FIX.single: {verdict: pass}
+  FIX.default: {verdict: pass}

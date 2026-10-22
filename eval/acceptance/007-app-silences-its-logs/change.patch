@@ -1,0 +1,40 @@
+diff --git a/CheckoutDemo/CheckoutDemoApp.swift b/CheckoutDemo/CheckoutDemoApp.swift
+index 20e35cf..4763450 100644
+--- a/CheckoutDemo/CheckoutDemoApp.swift
++++ b/CheckoutDemo/CheckoutDemoApp.swift
+@@ -2,6 +2,13 @@ import SwiftUI
+ 
+ @main
+ struct CheckoutDemoApp: App {
++    init() {
++        // Ship logs to the app's own file instead of the console. Common in real apps,
++        // and it takes the unified-log mirror with it: nothing reaches the result bundle.
++        freopen("/dev/null", "w", stdout)
++        freopen("/dev/null", "w", stderr)
++    }
++
+     var body: some Scene {
+         WindowGroup {
+             CartView()
+diff --git a/CheckoutDemo/OrderConfirmationView.swift b/CheckoutDemo/OrderConfirmationView.swift
+index 0c4d965..4c46b49 100644
+--- a/CheckoutDemo/OrderConfirmationView.swift
++++ b/CheckoutDemo/OrderConfirmationView.swift
+@@ -1,4 +1,7 @@
+ import SwiftUI
++import os
++
++private let acceptanceLog = Logger(subsystem: "com.sightline.fixtures.CheckoutDemo", category: "acceptance")
+ 
+ /// The control screen. No seeded defects — deliberately.
+ ///
+@@ -41,6 +44,9 @@ struct OrderConfirmationView: View {
+             }
+             .padding()
+         }
++        .onAppear {
++            acceptanceLog.notice("SIGHTLINE-AC|order_submitted|total=\(order.formattedSubtotal)")
++        }
+         .navigationTitle("Confirmation")
+         .navigationBarTitleDisplayMode(.inline)
+     }

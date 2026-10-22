@@ -147,10 +147,11 @@ open_questions:
     blocks: the accessibility-audit skill's anchoring logic
   - id: OQ-FIXTURE-2
     question: >
-      REVISED 2026-08-31. textClipped is NOT SwiftUI-blind: "Text clipped" fires on the
-      Cart screen at default size. But it arrives with element = nil, so it collapses
-      into OQ-FIXTURE-1 and cannot be anchored. It still did not fire for D-001 on
-      CheckoutSummary across four clipping shapes. Open: can we ever get an
-      attributable textClipped, or is Dynamic Type clipping permanently a
-      differential_render job?
-    blocks: whether dynamic-type-clipping can ever use structured_oracle
+      RESOLVED 2026-10-20 (D19). The premise recorded here on 2026-08-31 was wrong:
+      textClipped does NOT arrive with element = nil. On the Cart screen it arrives as
+      id= (empty), label=Price $185.00, frame=(252.5, 256.75, 66.5, 20.5) — an element
+      that exists and has no accessibilityIdentifier. It is anchorable by matching the
+      label against the source string literal, so Dynamic Type clipping is not
+      permanently a differential_render job. Still true: it did not fire for D-001 on
+      CheckoutSummary across four clipping shapes.
+    blocks: nothing — dynamic-type-clipping can use structured_oracle

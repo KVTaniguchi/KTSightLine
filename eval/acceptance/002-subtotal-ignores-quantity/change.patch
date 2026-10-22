@@ -1,0 +1,13 @@
+diff --git a/CheckoutDemo/Model.swift b/CheckoutDemo/Model.swift
+index 0b7396f..ce7d4dc 100644
+--- a/CheckoutDemo/Model.swift
++++ b/CheckoutDemo/Model.swift
+@@ -17,7 +17,7 @@ struct Order {
+     var deliveryEstimate: String
+ 
+     var subtotalCents: Int {
+-        items.reduce(0) { $0 + $1.priceCents * $1.quantity }
++        items.reduce(0) { $0 + $1.priceCents }
+     }
+ 
+     var formattedSubtotal: String {
