@@ -238,7 +238,6 @@ def diff(target: str) -> None:
         click.echo(f"  commentable(RIGHT): {sorted(f.commentable_lines)}")
 
 
-
 def _parse_surface(spec: str) -> Surface:
     """`Name`, `Name:tap1,tap2`, or `Name:tap1,tap2@waitFor`."""
     name, _, rest = spec.partition(":")
