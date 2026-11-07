@@ -14,7 +14,7 @@ from pathlib import Path
 
 from sightline.adapters.forge.base import AnchorRejected, ForgeAdapter, PullRequest
 from sightline.adapters.forge.github import validate_anchor
-from sightline.config import RepoConfig
+from sightline.config import PermissionAnswer, RepoConfig
 from sightline.core.diff.models import ChangeType, Diff
 from sightline.core.evidence.models import ArtifactKind
 from sightline.core.evidence.redaction import RedactionError, RedactionPolicy, RegionMask
@@ -53,6 +53,10 @@ class ReviewOptions:
     budget_usd: float = 0.50
     content_size: str = "large"
     appearance: str = "light"
+    permission_answer: PermissionAnswer = "allow"
+    """Deny to run a surface with its permissions refused (the permission-denied check).
+    Needs `deny_alerts:` in config; without it a prompt fails the run rather than
+    being granted by accident."""
     out_dir: Path = Path(".sightline/run")
     scratch_dir: Path = Path(".sightline/scratch")
     skills_dirs: list[Path] = field(default_factory=list)
@@ -127,7 +131,7 @@ def _run_runtime_tier(
             surfaces=surfaces,
             app_target=config.app_target,
             ui_test_target=config.ui_test_target,
-            dismiss_alerts=tuple(config.dismiss_alerts),
+            dismiss_alerts=config.alert_titles(answer=options.permission_answer),
         )
     except InjectionUnavailable as exc:
         # ADR-0003 §7: degrade with an actionable message; never block the merge.
@@ -204,7 +208,7 @@ def _run_runtime_tier(
         proposed.extend(found)
         unmapped.extend(skipped)
 
-    oracle = frozenset(f"{i.audit_type}:{i.identifier}" for i in postable)
+    oracle = frozenset(i.oracle_key for i in postable)
     gated = run_gate(proposed, StructuredOracleVerifier(oracle), skill_id=RUNTIME_SKILL_ID)
 
     suppressions = list(gated.suppressed)

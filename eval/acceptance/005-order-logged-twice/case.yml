@@ -1,0 +1,6 @@
+id: 005-order-logged-twice
+title: A double submit logs order_submitted twice
+criteria: ../criteria/order-logged.yml
+patch: change.patch
+expected:
+  CHK-7.AC3: {verdict: fail, actual: {count: 2}}

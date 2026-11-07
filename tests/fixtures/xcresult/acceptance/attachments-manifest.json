@@ -1,0 +1,234 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "F770C2E7-FD59-4FC4-B972-FB18D87DC9E4.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "SIGHTLINE-ACC-SHOT-6_0_6E1FB3FB-F7DC-4D3F-9B09-5B78112F394E.png",
+        "timestamp" : 1791740185.808
+      }
+    ],
+    "testIdentifier" : "SightlineAcceptance/test_AC_CAP_absent()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_absent"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "960A8097-114B-4826-A2FE-2C0021240B7D.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "SIGHTLINE-ACC-SHOT-4_0_5EB2B340-CF25-42B1-8996-A3514C3EAD72.png",
+        "timestamp" : 1791740191.26
+      }
+    ],
+    "testIdentifier" : "SightlineAcceptance/test_AC_CAP_ambiguous()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_ambiguous"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "81C50122-3319-4B12-8D41-2C4EEC5A848F.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_28281AFD-D3AE-4B4E-BECC-D5C443C8E539.txt",
+        "timestamp" : 1791740211.204
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "D3C487F8-D260-4F51-8D7B-0C83034DF074.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_FD3273C4-C385-4BEE-87D2-1CE9752EE07A.txt",
+        "timestamp" : 1791740210.22
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "7C213056-2F7E-4051-8C1A-EFC53CBE34BB.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_35EC9486-537B-41EA-8EED-F77EA816D74C.txt",
+        "timestamp" : 1791740209.295
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "BE6966F3-9412-4488-A9A3-4476ED5E2432.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_A84380DF-25DC-42CF-AE1D-4E5BC933E90B.txt",
+        "timestamp" : 1791740208.26
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "72D7F4E3-666E-4A44-86E5-FC38FCB9F452.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_BCBC4BAF-D0DA-4BAB-BE30-7058C439D843.txt",
+        "timestamp" : 1791740207.221
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "ABB37F97-32F0-446F-BBB5-A0E78390FB60.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_5783E0CA-177C-4A1B-A144-CF3D77A4CDCE.txt",
+        "timestamp" : 1791740206.289
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "FB863494-6AD5-442A-A612-1FF108EBE316.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_DA1244EF-ED50-4848-8048-B8613268B52A.txt",
+        "timestamp" : 1791740205.257
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "901368F4-F2FE-4A8C-958E-5F487405AAC1.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_101F2930-055B-4C30-A15C-DED5207E5DAB.txt",
+        "timestamp" : 1791740204.218
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "96223677-A030-42AB-BE4A-BE95B27200B2.ips",
+        "isAssociatedWithFailure" : false,
+        "originalFileName" : "CheckoutDemo-2026-10-11-133642.ips",
+        "suggestedHumanReadableName" : "Crash Log 2026-10-11 at 01.36.53 PM.ips",
+        "timestamp" : 1791740213.219
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "0D3E6395-FC8E-41BE-9740-E1A7F13048CA.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_36F5FC8C-AAE9-4C39-8730-D379844E0B5B.txt",
+        "timestamp" : 1791740203.264
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "E6B1A8B4-391E-4E42-9D64-A893C6EBCC18.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Debug description for `Any (First Match)`_0_C0C19948-EBB0-4D55-8C3C-8074E8F3735F.txt",
+        "timestamp" : 1791740202.237
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "9E4C8C6C-9934-4C82-A8D5-EEDD96A5C26A",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-11 at 01.36.41 PM",
+        "timestamp" : 1791740201.194
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "75DB0A64-9D9F-49DD-995C-ABC80FC48515",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-11 at 01.36.38 PM",
+        "timestamp" : 1791740198.259
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "2B836151-DC94-421D-A44F-0ADB3B4A0883",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-11 at 01.36.35 PM",
+        "timestamp" : 1791740195.911
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "8159C3A9-3E88-485E-8159-C59EFB06762A.mp4",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Screen Recording 2026-10-11 at 01.36.31 PM.mp4",
+        "timestamp" : 1791740191.498
+      }
+    ],
+    "testIdentifier" : "SightlineAcceptance/test_AC_CAP_crash()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_crash"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "0CEA71A2-2C1E-4D62-B0D5-72CEA650EAC7.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "SIGHTLINE-ACC-SHOT-1_0_22D20FC6-5097-44B6-AA05-45C21B68E4CF.png",
+        "timestamp" : 1791740230.999
+      }
+    ],
+    "testIdentifier" : "SightlineAcceptance/test_AC_CAP_fail()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_fail"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "447A283D-71F7-4FBF-95A7-88D76C6F3013.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "SIGHTLINE-ACC-SHOT-3_0_EA3C1F56-EAE9-4E26-B76E-47427FBB6563.png",
+        "timestamp" : 1791740242.368
+      }
+    ],
+    "testIdentifier" : "SightlineAcceptance/test_AC_CAP_log()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_log"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "98DB36FB-883D-4A36-9EE1-BD40CE57B15A.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "SIGHTLINE-ACC-SHOT-0_0_959C2D20-5C49-4C6B-9728-E6FFD2B2D6A1.png",
+        "timestamp" : 1791740250.171
+      }
+    ],
+    "testIdentifier" : "SightlineAcceptance/test_AC_CAP_pass()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_pass"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "27249C87-F693-4DFE-BE82-31E450E4133A",
+        "deviceName" : "Sightline iPhone SE (3rd generation)",
+        "exportedFileName" : "46A90FFF-954A-48B4-B898-19A99F803E32.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "SIGHTLINE-ACC-SHOT-2_0_8866A428-06C7-4760-B9CE-319862E90857.png",
+        "timestamp" : 1791740263.623
+      }
+    ],
+    "testIdentifier" : "SightlineAcceptance/test_AC_CAP_steps()",
+    "testIdentifierURL" : "test://com.apple.xcode/CheckoutDemo/CheckoutDemoUITests/SightlineAcceptance/test_AC_CAP_steps"
+  }
+]

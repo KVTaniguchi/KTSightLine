@@ -1,0 +1,6 @@
+id: 004-order-logged-once
+title: The confirmation screen logs order_submitted once
+criteria: ../criteria/order-logged.yml
+patch: change.patch
+expected:
+  CHK-7.AC3: {verdict: pass, actual: {count: 1}}

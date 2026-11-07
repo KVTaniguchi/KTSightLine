@@ -1,0 +1,36 @@
+Standard output and standard error from com.sightline.fixtures.CheckoutDemo with process ID 18307 beginning at 2026-10-11 17:13:18 +0000
+
+2026-10-11 13:13:19.089547-0400 CheckoutDemo[18307:951164] [acceptance] SIGHTLINE-AC|lvl_info|v=s3cr3t-value
+2026-10-11 13:13:19.089748-0400 CheckoutDemo[18307:951164] [acceptance] SIGHTLINE-AC|lvl_notice|v=s3cr3t-value
+2026-10-11 13:13:19.089774-0400 CheckoutDemo[18307:951164] [acceptance] SIGHTLINE-AC|lvl_error|v=s3cr3t-value
+2026-10-11 13:13:19.089803-0400 CheckoutDemo[18307:951164] [acceptance] SIGHTLINE-AC|privacy_default|v=s3cr3t-value
+2026-10-11 13:13:19.089831-0400 CheckoutDemo[18307:951164] [acceptance] SIGHTLINE-AC|privacy_private|v=s3cr3t-value
+SPIKE-PRINT|launch
+2026-10-11 13:13:19.423019-0400 CheckoutDemo[18307:951181] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x106a8cfb0>: {
+2026-10-11 13:13:27.764809-0400 CheckoutDemo[18307:951164] [acceptance] SIGHTLINE-AC|order_submitted|total=$441.00
+2026-10-11 13:13:31.837755-0400 CheckoutDemo[18322:951632] [acceptance] SIGHTLINE-AC|lvl_info|v=s3cr3t-value
+2026-10-11 13:13:31.837959-0400 CheckoutDemo[18322:951632] [acceptance] SIGHTLINE-AC|lvl_notice|v=s3cr3t-value
+2026-10-11 13:13:31.837985-0400 CheckoutDemo[18322:951632] [acceptance] SIGHTLINE-AC|lvl_error|v=s3cr3t-value
+2026-10-11 13:13:31.838005-0400 CheckoutDemo[18322:951632] [acceptance] SIGHTLINE-AC|privacy_default|v=s3cr3t-value
+2026-10-11 13:13:31.838027-0400 CheckoutDemo[18322:951632] [acceptance] SIGHTLINE-AC|privacy_private|v=s3cr3t-value
+SPIKE-PRINT|launch
+2026-10-11 13:13:32.143457-0400 CheckoutDemo[18322:951655] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x106694fe0>: {
+2026-10-11 13:13:38.886187-0400 CheckoutDemo[18322:951632] [acceptance] SIGHTLINE-AC|order_submitted|total=$441.00
+2026-10-11 13:13:42.239329-0400 CheckoutDemo[18329:951921] [acceptance] SIGHTLINE-AC|lvl_info|v=s3cr3t-value
+2026-10-11 13:13:42.239534-0400 CheckoutDemo[18329:951921] [acceptance] SIGHTLINE-AC|lvl_notice|v=s3cr3t-value
+2026-10-11 13:13:42.239565-0400 CheckoutDemo[18329:951921] [acceptance] SIGHTLINE-AC|lvl_error|v=s3cr3t-value
+2026-10-11 13:13:42.239585-0400 CheckoutDemo[18329:951921] [acceptance] SIGHTLINE-AC|privacy_default|v=s3cr3t-value
+2026-10-11 13:13:42.239608-0400 CheckoutDemo[18329:951921] [acceptance] SIGHTLINE-AC|privacy_private|v=s3cr3t-value
+SPIKE-PRINT|launch
+2026-10-11 13:13:42.544147-0400 CheckoutDemo[18329:951934] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x10228d0a0>: {
+2026-10-11 13:13:49.216850-0400 CheckoutDemo[18329:951921] [acceptance] SIGHTLINE-AC|order_submitted|total=$441.00
+2026-10-11 13:13:49.217027-0400 CheckoutDemo[18329:951921] [acceptance] SIGHTLINE-AC|about_to_crash
+CheckoutDemo/OrderConfirmationView.swift:48: Fatal error: spike crash
+2026-10-11 13:13:49.217229-0400 CheckoutDemo[18329:951921] CheckoutDemo/OrderConfirmationView.swift:48: Fatal error: spike crash
+2026-10-11 13:14:15.125325-0400 CheckoutDemo[18364:953389] [acceptance] SIGHTLINE-AC|lvl_info|v=s3cr3t-value
+2026-10-11 13:14:15.125520-0400 CheckoutDemo[18364:953389] [acceptance] SIGHTLINE-AC|lvl_notice|v=s3cr3t-value
+2026-10-11 13:14:15.125543-0400 CheckoutDemo[18364:953389] [acceptance] SIGHTLINE-AC|lvl_error|v=s3cr3t-value
+2026-10-11 13:14:15.125559-0400 CheckoutDemo[18364:953389] [acceptance] SIGHTLINE-AC|privacy_default|v=s3cr3t-value
+2026-10-11 13:14:15.125592-0400 CheckoutDemo[18364:953389] [acceptance] SIGHTLINE-AC|privacy_private|v=s3cr3t-value
+SPIKE-PRINT|launch
+2026-10-11 13:14:15.435204-0400 CheckoutDemo[18364:953426] [Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x104285320>: {

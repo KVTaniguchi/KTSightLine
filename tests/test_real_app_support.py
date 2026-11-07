@@ -157,6 +157,72 @@ def test_missing_override_is_an_error_not_an_empty_config(tmp_path):
         RepoConfig.load(tmp_path, override=tmp_path / "nope.yml")
 
 
+# --- permission answers ---------------------------------------------------------------
+#
+# Camera and notifications are not `simctl privacy` services (re-confirmed on Xcode
+# 27.1, 2026-10-20), and `grant location` is a no-op on the 26.5 simulator (D14), so
+# answering the prompt is the only mechanism there is. These pin that a run answers one
+# way or the other and never both.
+
+
+def _answers_config() -> RepoConfig:
+    return RepoConfig.model_validate(
+        {
+            "dismiss_alerts": ["Allow While Using App", "Allow"],
+            "deny_alerts": ["Don't Allow"],
+        }
+    )
+
+
+def test_allow_and_deny_titles_are_never_merged():
+    """A merged list would answer whichever button the alert happens to show first."""
+    config = _answers_config()
+    assert config.alert_titles() == ("Allow While Using App", "Allow")
+    assert config.alert_titles(answer="deny") == ("Don't Allow",)
+    assert "Allow" not in config.alert_titles(answer="deny")
+
+
+def test_denying_without_a_deny_title_yields_nothing_rather_than_allowing():
+    """The caller must fail loudly. Silently granting makes the check pass wrongly."""
+    config = RepoConfig.model_validate({"dismiss_alerts": ["Allow"]})
+    assert config.alert_titles(answer="deny") == ()
+
+
+def test_deny_titles_reach_the_rendered_driver():
+    config = _answers_config()
+    src = render_driver([Surface("Dex")], dismiss_alerts=config.alert_titles(answer="deny"))
+    assert 'alertButtons: [String] = ["Don\'t Allow"]' in src
+    assert "Allow While Using App" not in src
+
+
+def test_deny_titles_reach_the_acceptance_payload():
+    from sightline.core.acceptance.criteria import CriteriaFile
+    from sightline.runners.xcode.acceptance_driver import build_payload
+
+    config = _answers_config()
+    criteria = CriteriaFile.model_validate(
+        {
+            "acceptance_schema": 1,
+            "spec_id": "S-1",
+            "criteria": [
+                {
+                    "id": "S-1.AC1",
+                    "given": "g",
+                    "when": "w",
+                    "then": "t",
+                    "expect": [{"id": "a.b", "exists": True}],
+                }
+            ],
+        }
+    )
+    payload = build_payload(list(criteria.criteria), config, permission_answer="deny")
+    assert payload["alertButtons"] == ["Don't Allow"]
+    assert build_payload(list(criteria.criteria), config)["alertButtons"] == [
+        "Allow While Using App",
+        "Allow",
+    ]
+
+
 # --- local git forge ------------------------------------------------------------------
 
 

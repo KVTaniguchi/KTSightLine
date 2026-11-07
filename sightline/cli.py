@@ -10,13 +10,16 @@ from pathlib import Path
 
 import click
 
+from sightline.acceptance import AcceptOptions, CriteriaInvalid, run_accept
 from sightline.adapters.forge.base import ForgeAdapter
 from sightline.adapters.forge.github import GitHubAdapter
 from sightline.adapters.forge.local_git import LocalGitAdapter
+from sightline.config import PermissionAnswer, RepoConfig
+from sightline.core.acceptance.lint import lint_file
 from sightline.core.findings.render import render_preview
 from sightline.core.impact.analyzer import analyze
 from sightline.core.telemetry.trajectory import SkillTrace, Trajectory
-from sightline.eval_harness import run_corpus
+from sightline.eval_harness import ACCEPTANCE_VERDICTS, run_acceptance_corpus, run_corpus
 from sightline.gate import GateInputs
 from sightline.gate import decide as decide_gate
 from sightline.review import ReviewOptions
@@ -235,10 +238,6 @@ def diff(target: str) -> None:
         click.echo(f"  commentable(RIGHT): {sorted(f.commentable_lines)}")
 
 
-if __name__ == "__main__":
-    main()
-
-
 def _parse_surface(spec: str) -> Surface:
     """`Name`, `Name:tap1,tap2`, or `Name:tap1,tap2@waitFor`."""
     name, _, rest = spec.partition(":")
@@ -267,6 +266,11 @@ def _parse_surface(spec: str) -> Surface:
 @click.option("--appearance", type=click.Choice(["light", "dark"]), default="light")
 @click.option("--scratch", type=click.Path(path_type=Path), default=Path(".sightline/scratch"))
 @click.option("--out", type=click.Path(path_type=Path), default=Path(".sightline/run"))
+@click.option(
+    "--deny-permissions",
+    is_flag=True,
+    help="Answer every system permission prompt with its deny button (needs `deny_alerts:`).",
+)
 def audit(
     path: Path,
     project_relpath: str,
@@ -278,6 +282,7 @@ def audit(
     appearance: str,
     scratch: Path,
     out: Path,
+    deny_permissions: bool,
 ) -> None:
     """Run the runtime accessibility audit against a local checkout.
 
@@ -289,6 +294,17 @@ def audit(
     """
     run_id = uuid.uuid4().hex[:12]
     surfaces = [_parse_surface(s) for s in surface_specs]
+    answer: PermissionAnswer = "deny" if deny_permissions else "allow"
+    # Config is read for the alert titles alone: with a permission prompt covering the
+    # app, `performAccessibilityAudit` throws "Invalid target app" and audits nothing.
+    alert_titles = RepoConfig.load(Path(path)).alert_titles(answer=answer)
+    if deny_permissions and not alert_titles:
+        click.echo(
+            "--deny-permissions needs `deny_alerts:` in .sightline/config.yml; "
+            "without a deny title the prompt would be left up, not denied.",
+            err=True,
+        )
+        raise SystemExit(2)
 
     try:
         workspace = prepare_workspace(
@@ -298,6 +314,7 @@ def audit(
             surfaces=surfaces,
             app_target=app_target,
             ui_test_target=ui_test_target,
+            dismiss_alerts=alert_titles,
         )
     except InjectionUnavailable as exc:
         # ADR-0003 §7: degrade, never explode. The message names the fix.
@@ -352,6 +369,140 @@ def audit(
     click.echo(f"trajectory: {trajectory.finish().write(Path(out) / f'trajectory-{run_id}.json')}")
 
 
+@main.command()
+@click.option(
+    "--criteria",
+    "criteria_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    required=True,
+    help="Acceptance criteria file (ADR-0004).",
+)
+@click.option(
+    "--path",
+    "checkout",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=Path("."),
+    help="Checkout or worktree to build. Never modified.",
+)
+@click.option("--udid", default=None, help="Simulator UDID (overrides config).")
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help="Use this config instead of <path>/.sightline/config.yml.",
+)
+@click.option("--content-size", default="large", show_default=True)
+@click.option("--appearance", type=click.Choice(["light", "dark"]), default="light")
+@click.option("--scratch", type=click.Path(path_type=Path), default=Path(".sightline/scratch"))
+@click.option("--out", type=click.Path(path_type=Path), default=Path(".sightline/run/accept"))
+@click.option(
+    "--summary-file",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Append a markdown verdict table. Point at $GITHUB_STEP_SUMMARY in CI.",
+)
+@click.option(
+    "--strict",
+    is_flag=True,
+    help="Exit 1 on any fail, 2 if nothing could run. Never non-zero for not_verifiable alone.",
+)
+def accept(
+    criteria_path: Path,
+    checkout: Path,
+    udid: str | None,
+    config_path: Path | None,
+    content_size: str,
+    appearance: str,
+    scratch: Path,
+    out: Path,
+    summary_file: Path | None,
+    strict: bool,
+) -> None:
+    """Check acceptance criteria against a running build. One verdict per criterion.
+
+    Builds the checkout in a scratch clone, drives the app on one simulator, and
+    reports pass, fail, or not_verifiable for each criterion, each backed by a record
+    in the .xcresult. Needs no PR and no forge, and makes no model call.
+
+    Exits 0 by default. A criteria file that fails lint never runs, and exits 2.
+    """
+    try:
+        result = run_accept(
+            AcceptOptions(
+                criteria=criteria_path,
+                checkout=checkout,
+                udid=udid,
+                config_path=config_path,
+                content_size=content_size,
+                appearance=appearance,
+                out_dir=out,
+                scratch_dir=scratch,
+                summary_file=summary_file,
+            )
+        )
+    except CriteriaInvalid as exc:
+        for issue in exc.issues:
+            click.echo(str(issue), err=True)
+        click.echo("criteria failed lint; nothing ran", err=True)
+        raise SystemExit(2) from exc
+
+    for issue in result.lint:
+        click.echo(str(issue), err=True)
+    report = result.report
+    click.echo(f"{report.spec_id} · {report.status.replace('_', ' ')}")
+    for c in report.criteria:
+        reason = f" ({c.reason.value})" if c.reason else ""
+        click.echo(f"  {c.verdict.value:<15} {c.id}{reason}  [{c.evidence_type.value}]")
+        if c.verdict.value == "fail":
+            for o in c.observations:
+                if o.met is False:
+                    click.echo(f"      {o.target}: expected {o.expected}, got {o.actual}")
+        elif c.detail:
+            click.echo(f"      {c.detail}")
+    counts = " · ".join(f"{n} {v}" for v, n in report.summary.by_verdict.items())
+    click.echo(f"\n{counts}")
+    click.echo(f"report: {result.report_path}")
+    click.echo(f"trajectory: {result.trajectory_path}")
+    raise SystemExit(report.exit_code(strict=strict))
+
+
+@main.command()
+@click.option(
+    "--criteria",
+    "criteria_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    required=True,
+)
+@click.option(
+    "--path",
+    "checkout",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=Path("."),
+    help="Repo whose .sightline/config.yml names the surfaces and fixtures.",
+)
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+)
+def lint(criteria_path: Path, checkout: Path, config_path: Path | None) -> None:
+    """Lint an acceptance criteria file. Runs anywhere; needs no Xcode.
+
+    Exits 1 on any error. Every message names the fix.
+    """
+    config = RepoConfig.load(checkout, override=config_path)
+    _, issues = lint_file(criteria_path, config)
+    for issue in issues:
+        click.echo(str(issue))
+    errors = sum(i.level == "error" for i in issues)
+    warnings = len(issues) - errors
+    click.echo(f"{criteria_path}: {errors} error(s), {warnings} warning(s)")
+    if errors:
+        raise SystemExit(1)
+
+
 @main.command("eval")
 @click.option("--corpus", type=click.Path(exists=True, path_type=Path), default=Path("eval/corpus"))
 @click.option(
@@ -370,6 +521,19 @@ def audit(
     help="Run cases against this git repo at each case's `base:` commit, "
     "instead of the vendored fixture.",
 )
+@click.option(
+    "--suite",
+    type=click.Choice(["review", "acceptance"]),
+    default="review",
+    show_default=True,
+    help="review: findings scored for precision/recall. acceptance: verdicts scored "
+    "as a confusion matrix.",
+)
+@click.option(
+    "--acceptance-corpus",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=Path("eval/acceptance"),
+)
 def eval_command(
     corpus: Path,
     fixture: Path,
@@ -378,12 +542,19 @@ def eval_command(
     only: str | None,
     content_size: str,
     target_repo: Path | None,
+    suite: str,
+    acceptance_corpus: Path,
 ) -> None:
-    """Score the eval corpus for precision and recall.
+    """Score an eval corpus.
 
-    Exits non-zero if any case has a false positive or a false negative, so this is
-    usable as a gate on our own PRs.
+    The review suite scores precision and recall and exits non-zero on any false
+    positive or false negative. The acceptance suite scores verdicts and exits non-zero
+    on any false pass, false fail, wrong reason, or case that did not run. Both are
+    usable as gates on our own PRs.
     """
+    if suite == "acceptance":
+        _eval_acceptance(acceptance_corpus, fixture, udid, workdir / "acceptance", only)
+        return
     score = run_corpus(
         Path(corpus),
         fixture=Path(fixture),
@@ -416,6 +587,37 @@ def eval_command(
         f"\nprecision {score.precision:.2f}  recall {score.recall:.2f}  "
         f"(tp {score.tp} · fp {score.fp} · fn {score.fn})"
     )
+    if not score.passed:
+        raise SystemExit(1)
+
+
+def _eval_acceptance(
+    corpus: Path, fixture: Path, udid: str, workdir: Path, only: str | None
+) -> None:
+    score = run_acceptance_corpus(corpus, fixture=fixture, udid=udid, workdir=workdir, only=only)
+    for result in score.results:
+        click.echo(f"\n[{'PASS' if result.passed else 'FAIL'}] {result.case.id}")
+        click.echo(f"       {result.case.title}")
+        if result.error:
+            click.echo(f"       error: {result.error}")
+        for cid, (verdict, reason) in result.observed.items():
+            want = result.case.expected[cid]
+            got = verdict + (f" ({reason})" if reason else "")
+            mark = "✔" if (verdict, reason or want.reason) == (want.verdict, want.reason) else "✘"
+            click.echo(f"       {mark} {cid:<20} {got}")
+        for cid in result.false_passes:
+            click.echo(f"       ✘ FALSE PASS {cid}")
+        for cid in result.false_fails:
+            click.echo(f"       ✘ FALSE FAIL {cid}")
+        for line in result.mismatches:
+            click.echo(f"       ✘ {line}")
+
+    matrix = score.matrix
+    click.echo("\nexpected \\ observed   pass   fail   not_verifiable")
+    for expected in ACCEPTANCE_VERDICTS:
+        row = "".join(f"{matrix[(expected, o)]:>7}" for o in ACCEPTANCE_VERDICTS)
+        click.echo(f"{expected:<20}{row}")
+    click.echo(f"\nfalse passes {score.false_passes} · false fails {score.false_fails}")
     if not score.passed:
         raise SystemExit(1)
 
@@ -469,3 +671,9 @@ def gate(target: str, checkout: Path, skills_dir: tuple[Path, ...], budget: floa
             handle.write(f"runtime={'true' if runtime else 'false'}\n")
             handle.write(f"stage={stage}\n")
             handle.write(f"reason={reason}\n")
+
+
+if __name__ == "__main__":
+    # Must stay last: every command below this line is invisible to
+    # `python -m sightline.cli` if main() runs before its decorator does.
+    main()

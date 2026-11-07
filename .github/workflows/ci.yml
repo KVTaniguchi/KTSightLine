@@ -43,6 +43,13 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --frozen
+      # V7: the schema pin was only ever checked against a local Xcode. The runner's
+      # is older (P2: 26.4.1 by default), so print both and let a rejection of the
+      # pinned version be the loud failure XcresultTool is written to raise.
+      - name: Report toolchain
+        run: |
+          xcodebuild -version
+          xcrun xcresulttool version
       - name: Create simulator
         id: sim
         run: |

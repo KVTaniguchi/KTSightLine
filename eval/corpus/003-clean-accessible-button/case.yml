@@ -7,4 +7,12 @@ notes: >
   runtime tier fires and pays a full build and simulator run — and must still produce
   nothing. A no-op diff would not test that; this does. Labelled via Label(), 44pt
   minimum height, semantic colours inherited from the button style.
+
+  CAVEAT, measured 2026-10-20: this case is clean only because `contrast` is excluded
+  from LABEL_ANCHORABLE_AUDIT_TYPES (D20). The audit does report `Contrast failed`
+  against this button's inner label — `.buttonStyle(.bordered)` renders tinted text on
+  a near-white fill, ~3.5:1 against a 4.5:1 threshold — and that element carries no
+  identifier of its own, so it is dropped rather than judged. If the allowlist ever
+  admits `contrast`, this case starts failing and the button needs rebuilding (or the
+  check needs to tell inherited colours from chosen ones). See OQ-CONTRAST-1.
 expected: []

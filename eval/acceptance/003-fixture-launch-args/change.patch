@@ -1,0 +1,34 @@
+diff --git a/CheckoutDemo/CartView.swift b/CheckoutDemo/CartView.swift
+index 24cf25e..a530f57 100644
+--- a/CheckoutDemo/CartView.swift
++++ b/CheckoutDemo/CartView.swift
+@@ -1,7 +1,7 @@
+ import SwiftUI
+ 
+ struct CartView: View {
+-    private let order = Order.sample
++    private let order = Order.launchCart
+ 
+     var body: some View {
+         NavigationStack {
+diff --git a/CheckoutDemo/Model.swift b/CheckoutDemo/Model.swift
+index 0b7396f..95b8aba 100644
+--- a/CheckoutDemo/Model.swift
++++ b/CheckoutDemo/Model.swift
+@@ -24,6 +24,16 @@ struct Order {
+         (Double(subtotalCents) / 100).formatted(.currency(code: "USD"))
+     }
+ 
++    /// UI tests pass `-SightlineCart single` to start from a one-line cart.
++    static var launchCart: Order {
++        UserDefaults.standard.string(forKey: "SightlineCart") == "single" ? single : sample
++    }
++
++    static let single = Order(
++        items: [LineItem(name: "Leather Belt", priceCents: 6400, quantity: 2)],
++        deliveryEstimate: "Thursday, September 10"
++    )
++
+     static let sample = Order(
+         items: [
+             LineItem(name: "Merino Crew Sweater", priceCents: 12800, quantity: 1),

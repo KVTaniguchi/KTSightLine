@@ -1,0 +1,15 @@
+id: 001-checkout-baseline
+title: The unmodified fixture, with one criterion per not_verifiable path an author meets first
+criteria: ../criteria/baseline.yml
+notes: >
+  No patch. AC1 and AC2 hold on the fixture as shipped. The rest are not_verifiable for
+  reasons that have nothing to do with the app being wrong: a manual criterion, an
+  evidence type with no executor, a control the build does not have, and an identifier
+  three rows share (cart.removeItem). None of them may come back pass or fail.
+expected:
+  CHK-7.AC1: {verdict: pass}
+  CHK-7.AC2: {verdict: pass}
+  CHK-7.AC4: {verdict: not_verifiable, reason: manual}
+  BASE.network: {verdict: not_verifiable, reason: evidence_type_unsupported}
+  BASE.unreachable: {verdict: not_verifiable, reason: step_unreachable}
+  BASE.ambiguous: {verdict: not_verifiable, reason: ambiguous_element}

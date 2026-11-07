@@ -1,0 +1,10 @@
+id: 007-app-silences-its-logs
+title: The app logs order_submitted but redirects stdout and stderr away
+criteria: ../criteria/order-logged.yml
+patch: change.patch
+notes: >
+  The negative control for the liveness rule. The event happens, but nothing from the
+  app reaches the result bundle, so Sightline cannot tell "logged once" from "never
+  logged". That must be log_unavailable — never a fail, and above all never a pass.
+expected:
+  CHK-7.AC3: {verdict: not_verifiable, reason: log_unavailable}

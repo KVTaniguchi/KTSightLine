@@ -46,6 +46,40 @@ precision 1.00  recall 1.00  (tp 1 · fp 0 · fn 0)
 The two patches are identical except for one `.accessibilityLabel` line. The 13 issues
 both share are the Dex screen's pre-existing sub-threshold warnings.
 
+## The acceptance corpus
+
+`eval/acceptance/` scores `sightline accept` ([ADR-0004](../docs/adr/0004-acceptance-tier.md)),
+separately, so the review score above keeps its meaning.
+
+```bash
+uv run sightline eval --suite acceptance --udid <simulator-udid>
+```
+
+```
+expected \ observed   pass   fail   not_verifiable
+pass                      6      0      0
+fail                      0      4      0
+not_verifiable            0      0      6
+
+false passes 0 · false fails 0
+```
+
+Measured 2026-10-11, Xcode 27.1, iOS 26.5 simulator. Exits non-zero on any false pass,
+false fail, wrong `not_verifiable` reason, missing expected `actual`, or criterion the
+case does not score.
+
+| Case | Why it exists |
+|---|---|
+| `001-checkout-baseline` | The unmodified fixture: two passes, then one criterion per `not_verifiable` path that has nothing to do with the app being wrong — manual, `network_call`, a control the build lacks, and `cart.removeItem`, which three rows share |
+| `002-subtotal-ignores-quantity` | The brief's example criteria against a patch that drops quantity: AC1 must fail with `Subtotal $377.00` recorded |
+| `003-fixture-launch-args` | A `fixtures:` entry (in the case's own config) starts the app with a one-line cart; the patch is what makes the app honour it |
+| `004`–`006` | `order_submitted` logged once, twice, never: pass, fail with 2, fail with 0 |
+| `007-app-silences-its-logs` | The app logs the event but redirects stdout/stderr. Must be `log_unavailable`: the negative control for the liveness rule |
+
+A case is `case.yml` (`criteria:`, optional `patch:` and `config:`, and `expected:` per
+criterion ID with `verdict`, optional `reason` and `actual`), plus its patch. Generate
+patches the same way as below.
+
 ## What each case is for
 
 | Case | Why it exists |

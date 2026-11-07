@@ -73,20 +73,23 @@ def test_tests_tree_yields_identifiable_test_cases():
 # --- xcresult: audit issues, the part that decides what gets posted ------------------
 
 
-def test_cart_screen_filters_ten_issues_down_to_the_two_seeded_defects():
+def test_cart_screen_filters_ten_issues_down_to_the_three_attributable_failures():
     """The precision story, end to end, on real captured output.
 
-    Ten raw issues on the Cart screen. Two survive: the seeded unlabelled button
-    (D-004) and the seeded 16x16 tap target (D-005). The other eight are sub-threshold
-    warnings or unattributable failures.
+    Ten raw issues on the Cart screen. Three survive: the seeded unlabelled button
+    (D-004), the seeded 16x16 tap target (D-005), and the clipped price label
+    recovered on 2026-10-20. The other seven are sub-threshold warnings or failures
+    with no element at all.
     """
     issues = parse_audit_issues(load("activities-cart.json"))
     assert len(issues) == 10
 
     postable = postable_issues(issues)
-    assert {(i.audit_type, i.identifier) for i in postable} == {
+    assert {(i.audit_type, i.identifier or f"label={i.label}") for i in postable} == {
         ("sufficientElementDescription", "cart.help"),
         ("hitRegion", "cart.removeItem"),
+        # Recovered 2026-10-20: an element with a label but no identifier (OQ-FIXTURE-2).
+        ("textClipped", "label=Price $185.00"),
     }
 
 
@@ -103,15 +106,35 @@ def test_partially_unsupported_is_suppressed():
     assert dt and all(not i.is_failure for i in dt)
 
 
-def test_unattributable_failures_are_not_postable():
-    """OQ-FIXTURE-1: element = nil means no identifier and no frame to anchor to.
+def test_failures_with_no_element_at_all_are_not_postable():
+    """OQ-FIXTURE-1: element = nil means no identifier, no label and no frame.
 
     ADR-0002 forbids inventing one, so these are dropped rather than mis-anchored.
+    Note the predicate: ``not has_element``, not ``not identifier``. Those are
+    different sets, and conflating them is what OQ-FIXTURE-2 got wrong.
     """
     issues = parse_audit_issues(load("activities-cart.json"))
-    orphans = [i for i in issues if i.is_failure and not i.identifier]
-    assert orphans, "fixture should contain unattributable failures"
+    orphans = [i for i in issues if i.is_failure and not i.has_element]
+    assert orphans, "fixture should contain element-less failures"
     assert all(i not in postable_issues(issues) for i in orphans)
+
+
+def test_an_element_without_an_identifier_is_postable_by_label():
+    """OQ-FIXTURE-2, corrected 2026-10-20 against this very fixture.
+
+    The documented premise was that `textClipped` arrives with element = nil. It does
+    not: it arrives with an element that has a label and a frame but no
+    `accessibilityIdentifier`. That is anchorable, so it is postable.
+    """
+    issues = parse_audit_issues(load("activities-cart.json"))
+    clipped = [i for i in issues if i.audit_type == "textClipped"]
+    assert len(clipped) == 1
+    issue = clipped[0]
+    assert issue.identifier == ""
+    assert issue.has_element
+    assert issue.label == "Price $185.00"
+    assert issue in postable_issues(issues)
+    assert issue.oracle_key == "textClipped:label=Price $185.00"
 
 
 def test_checkout_screen_yields_nothing_postable():
